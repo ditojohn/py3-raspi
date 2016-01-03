@@ -1,4 +1,5 @@
 #!/usr/bin/ksh
+. ./project_setup.cfg
 
 ################################################################
 # Syntax :	ksh spelling_bee.ksh contestYear mode chapterNum|wordRange
