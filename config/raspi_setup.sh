@@ -5,6 +5,8 @@
 # Setup Git projects and configuration files
 # cd ~; mkdir projects; cd projects; mkdir raspi; cd raspi
 # git init
+# git config --global user.email "you@example.com"
+# git config --global user.name "Your Name"
 # git remote add raspi https://github.com/ditojohn/raspi.git
 # git pull raspi master
 #
@@ -23,12 +25,12 @@ sudo apt-get install wpagui
 SETUP_CFG_DIR=/etc/network
 SETUP_CFG_FIL=interfaces
 sudo cp -p ${SETUP_CFG_DIR}/${SETUP_CFG_FIL} ${SETUP_CFG_DIR}/${SETUP_CFG_FIL}.${SETUP_TS}.bak
-sudo cat ${SETUP_DIR}/${SETUP_CFG_FIL} > ${SETUP_CFG_DIR}/${SETUP_CFG_FIL}
+sudo cat ${SETUP_DIR}/${SETUP_CFG_FIL} | sudo dd of=${SETUP_CFG_DIR}/${SETUP_CFG_FIL}
 
 SETUP_CFG_DIR=/etc/wpa_supplicant
 SETUP_CFG_FIL=wpa_supplicant.conf
 sudo cp -p ${SETUP_CFG_DIR}/${SETUP_CFG_FIL} ${SETUP_CFG_DIR}/${SETUP_CFG_FIL}.${SETUP_TS}.bak
-sudo cat ${SETUP_DIR}/${SETUP_CFG_FIL} > ${SETUP_CFG_DIR}/${SETUP_CFG_FIL}
+sudo cat ${SETUP_DIR}/${SETUP_CFG_FIL} | sudo dd of=${SETUP_CFG_DIR}/${SETUP_CFG_FIL}
 sudo chmod 600 ${SETUP_CFG_DIR}/${SETUP_CFG_FIL}
 sudo adduser pi netdev
 
@@ -47,16 +49,16 @@ cd ~/.config; mkdir autostart; cd autostart
 SETUP_CFG_DIR=~/.config/autostart
 SETUP_CFG_FIL=x11vnc.desktop
 sudo touch ${SETUP_CFG_DIR}/${SETUP_CFG_FIL}
-sudo cat ${SETUP_DIR}/${SETUP_CFG_FIL} > ${SETUP_CFG_DIR}/${SETUP_CFG_FIL}
+sudo cat ${SETUP_DIR}/${SETUP_CFG_FIL} | sudo dd of=${SETUP_CFG_DIR}/${SETUP_CFG_FIL}
 
 SETUP_CFG_DIR=/boot
 SETUP_CFG_FIL=config.txt
 sudo cp -p ${SETUP_CFG_DIR}/${SETUP_CFG_FIL} ${SETUP_CFG_DIR}/${SETUP_CFG_FIL}.${SETUP_TS}.bak
 # Uncomment hdmi_force_hotplug=1 in /boot/config.txt
-sudo cat ${SETUP_CFG_DIR}/${SETUP_CFG_FIL}.${SETUP_TS}.bak | awk '/hdmi_force_hotplug=1/ {gsub(/^#/, "", $0)} {print $0}' > ${SETUP_CFG_DIR}/${SETUP_CFG_FIL}
+sudo cat ${SETUP_CFG_DIR}/${SETUP_CFG_FIL}.${SETUP_TS}.bak | sudo awk '/hdmi_force_hotplug=1/ {gsub(/^#/, "", $0)} {print $0}' | sudo dd of=${SETUP_CFG_DIR}/${SETUP_CFG_FIL}
 
-echo "VNC configuration - Manual 'Boot to desktop' update"
-echo "Use 'sudo raspi-config' to configure 'Boot to desktop' option manually."
+echo "VNC configuration - Manual 'Desktop Autologin' update"
+echo "Use 'sudo raspi-config' to select '3 Boot Options > B4 Desktop Autologin' option manually."
 read -p "Press any key when ready ..." -n1 -s; echo ""
 echo "VNC configuration - Setup complete"
 
@@ -71,10 +73,8 @@ cd ~
 
 SETUP_CFG_DIR=~
 SETUP_CFG_FIL=.profile
-sudo cp -p ${SETUP_CFG_DIR}/${SETUP_CFG_FIL} ${SETUP_CFG_DIR}/${SETUP_CFG_FIL}.${SETUP_TS}.bak
-echo "" >> ${SETUP_CFG_DIR}/${SETUP_CFG_FIL}
-echo '# setup profile customization' >> ${SETUP_CFG_DIR}/${SETUP_CFG_FIL}
-echo '. ~/projects/raspi/config/.profile' >> ${SETUP_CFG_DIR}/${SETUP_CFG_FIL}
+cp -p ${SETUP_CFG_DIR}/${SETUP_CFG_FIL} ${SETUP_CFG_DIR}/${SETUP_CFG_FIL}.${SETUP_TS}.bak
+cat ${SETUP_DIR}/profile_addendum.txt >> ${SETUP_CFG_DIR}/${SETUP_CFG_FIL}
 echo "User Profile - Setup complete"
 
 # Manual post-installation steps required to be completed:

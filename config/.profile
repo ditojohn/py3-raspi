@@ -2,15 +2,19 @@
 alias off="sudo poweroff"
 alias py="sudo python"
 
-# define project functions
-export PROJ_ROOT=/home/pi/projects/raspi
+if [ -d "$HOME/projects/raspi" ] ; then
+    export PRJ_ROOT=$HOME/projects/raspi
+fi
 
-function proj {
+prj() {
 	project="$1"
-	echo ""
-	echo "Switching to project ${project}."
-	cd ${PROJ_ROOT}/${project}
-	. ./project_setup.cfg
+	if [ -r "${PRJ_ROOT}/${project}/project_setup.cfg" ] ; then
+		echo ""
+		echo "Switching to project ${project}."
+		echo ""
+		cd ${PRJ_ROOT}/${project}
+		. "${PRJ_ROOT}/${project}/project_setup.cfg"
+	fi
 }
 
-proj spelling-bee
+prj spelling-bee
