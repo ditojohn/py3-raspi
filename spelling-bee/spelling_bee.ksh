@@ -2,58 +2,68 @@
 . ./project_setup.cfg
 
 ################################################################
-# Syntax :	ksh spelling_bee.ksh contestYear mode chapterNum|wordRange
-# where		contestYear is the year of the contest in YYYY format
-#			mode is chapter or word.
+# Syntax :	ksh spelling_bee.ksh runMode contestYear mode selection
+# where		runMode is practice or test.
+#			contestYear is the year of the contest in YYYY format
+#			mode is chapter, count or word.
 #				In chapter mode, the next argument is the chapter number
-#					chapterNum is the chapter of the word list to be practiced.
+#					selection is the chapter number of the word list to be practiced.
 #					Default chapter size is 50 words.
+#				In count mode, the next argument is the word range
+#					selection is the index range of words in the word list to be practiced.
 #				In word mode, the next argument is the word range
-#					wordRange is the range of words in the word list to be practiced.
-# Example:	ksh spelling_bee.ksh 2016 chapter 7
-# 			ksh spelling_bee.ksh 2016 word 10-15
+#					selection is the range of words in the word list to be practiced.
+# Example:	ksh spelling_bee.ksh practice 2016 chapter 7
+# 			ksh spelling_bee.ksh test 2016 count 10-15
+# 			ksh spelling_bee.ksh practice 2016 word lary-frees
 ################################################################
 
 ################################################################
-####    Korn Shell function to read one character from
-####    standard input (STDIN) without requiring a carriage
-####    return.  This function would typically be used in a
-####    shell script to detect a key press.
-####
-####    Load this file into your current environment as follows:
-####
-####    . ./getch
-####
-####    Thats "dot-space-dot-slash-getch-dot-sh"
-####
-####    You will then be able to issue the command "getch"
-####    from your current environment to retrieve one character.
-####
-####    SYNTAX: getch [-q]
-####
-####                   -q = quiet mode, no output
-####
-####    AUTHOR: Dana French (dfrench@mtxia.com)
-####
-####    See http://www.mtxia.com/js/Downloads/Scripts/Korn/Functions/visualSelect/index.shtml
-####    visualSelect menu system for a full implementation of "getch" 
-####    capturing function keys, arrow keys, and other cursor movement keys.
-#### 
+# Configuration variables
 ################################################################
-function getch {
-    typeset TMP_GETCH
-    typeset STAT_GETCH="0"
-    stty raw
-    TMP_GETCH=`dd bs=1 count=1 2> /dev/null`
-    STAT_GETCH="${?}"
-    stty -raw
+SB_CHAPTER_SIZE=50
+SB_MEANING_COUNT=3
+SB_REPEAT_COUNT=3
+SB_REPEAT_DELAY=2
 
-    if [[ "_${1}" != "_-q" ]]
-    then
-        print -r -- "${TMP_GETCH}"
-    fi
-    return ${STAT_GETCH}
+################################################################
+# Internal variables
+################################################################
+SB_LIST_BULLET='•'
+SB_RIGHT_SYMBOL='√'
+SB_WRONG_SYMBOL='X'
+SB_KEYBOARD_MENU="[N]ext [P]revious [R]epeat Re[v]iew [S]how [H]elp E[x]it"
+
+SB_WORD_LIST_URL="$DATA/spelling_bee_@YEAR@.txt"
+SB_TMP_WORD_ENTRY="${DATA}/sbtmpentry.xml"
+SB_TMP_WORD_CLIP="${DATA}/sbtmpclip.wav"
+SB_TMP_TEST_RESULTS="${DATA}/sbtmptest.dat"
+
+#Sample dictionary API URL - http://www.dictionaryapi.com/api/v1/references/collegiate/xml/test?key=cbbd4001-c94d-493a-ac94-7268a7e41f6f
+SB_DICT_MW_KEY="cbbd4001-c94d-493a-ac94-7268a7e41f6f"
+SB_DICT_MW_ENTRY_URL="http://www.dictionaryapi.com/api/v1/references/collegiate/xml/@WORD@?key=${SB_DICT_MW_KEY}"
+SB_DICT_MW_CLIP_URL="http://media.merriam-webster.com/soundc11/@FOLDER@/@CLIP@"
+
+################################################################
+# Debug Configuration
+################################################################
+_DEBUG="off"
+
+DEBUG()
+{
+	[ "$_DEBUG" == "on" ] &&  print -n "DEBUG: " && $@
 }
+
+WATCH()
+{
+	varName="$@"
+	varValue=$(eval echo "\$${varName}")
+	[ "$_DEBUG" == "on" ] &&  print -n "DEBUG: " && echo "\$${varName} = ${varValue}"
+}
+
+################################################################
+# Function Definitions
+################################################################
 
 getXMLValues()
 {
@@ -64,48 +74,85 @@ getXMLValues()
 	xmlString="$(echo "${xmlString}" | sed "s/<${xmlElement}>/\n<${xmlElement}>/g" | grep -i "<${xmlElement}>")"
 	echo "${xmlString}" | while read -r line
 	do
-		echo "${line}" | sed -n "/${xmlElement}/{s/.*<${xmlElement}>\(.*\)<\/${xmlElement}>.*/\1/;p}" | cut -d ':' -f 2 | sed "s/^/• /g" | sed "s/<[/a-zA-Z_]*>//g"
+		echo "${line}" | sed -n "/${xmlElement}/{s/.*<${xmlElement}>\(.*\)<\/${xmlElement}>.*/\1/;p}" | cut -d ':' -f 2 | sed "s/<[/a-zA-Z_]*>//g"
 	done | head -n ${xmlTopN}
+}
+
+displayAsList()
+{
+	inputString="$1"
+	bullet="$2"
+
+	echo "${inputString}" | while read -r line
+	do
+		echo "${line}" | sed "s/^/${bullet} /g"
+	done
 }
 
 lookupWord()
 {
 	word="$1"
 
-	#Sample dictionary API URL - http://www.dictionaryapi.com/api/v1/references/collegiate/xml/test?key=cbbd4001-c94d-493a-ac94-7268a7e41f6f
-	dictURL="http://www.dictionaryapi.com/api/v1/references/collegiate/xml"
-	dictKey="key=cbbd4001-c94d-493a-ac94-7268a7e41f6f"
-	clipBase="http://media.merriam-webster.com/soundc11"
+	# Download dictionary entry
+	dictEntryURL="$(echo "${SB_DICT_MW_ENTRY_URL}" | sed "s/@WORD@/${word}/g")"
+	WATCH dictEntryURL
+	wget -qO- "${dictEntryURL}" > ${SB_TMP_WORD_ENTRY}
+	dictXMLEntry="$(cat ${SB_TMP_WORD_ENTRY})"
+	WATCH dictXMLEntry
 
-	# Get dictionary entry
-	dictXMLEntry=$(wget -qO- "${dictURL}/${word}?${dictKey}")
-
-	#wordClip=$(echo ${dictXMLEntry} | sed -n 's:.*<wav>\(.*\)</wav>.*:\1:p')	# Pick default (last) sound clip reference
+	# Download audio and repeat dictionary entry pronounciation
 	wordClip=$(getXMLValues "${dictXMLEntry}" "wav" "1")						# Pick first sound clip reference
+	WATCH wordClip
 	wordClipFolder=$(echo ${wordClip} | cut -c 1 )
-	wordClipURL=$(echo ${clipBase}/${wordClipFolder}/${wordClip})
+	wordClipURL="$(echo "${SB_DICT_MW_CLIP_URL}" | sed "s/@FOLDER@/${wordClipFolder}/g" | sed "s/@CLIP@/${wordClip}/g")"
+	WATCH wordClipURL
+	wget -qO- ${wordClipURL} > ${SB_TMP_WORD_CLIP}
+}
 
-	# Pronounce dictionary entry
-	wget -qO- ${wordClipURL} | aplay -q;
+getWordIndex()
+{
+	token="$1"
+	echo "${wordList}" | grep -i -n -e "^${token}" | head -n 1 | awk -F":" '{print $1}'
+}
 
-	# Lookup dictionary entry
-	wordMeaning=$(getXMLValues "${dictXMLEntry}" "dt" "3")						# Pick top three meanings
-	echo "${wordMeaning}"
+lookupWordByIndex()
+{
+	word=$(echo "${wordList}" | head -n ${wordIndex} | tail -1)
+	lookupWord "${word}"
+}
+
+displayMeaning()
+{
+	# Retrieve meaning from dictionary entry
+	dictXMLEntry="$(cat ${SB_TMP_WORD_ENTRY})"
+	wordMeaning=$(getXMLValues "${dictXMLEntry}" "dt" "${SB_MEANING_COUNT}")						# Pick top n meanings
+
+	echo ""
+	echo "Word #${wordIndex} means"
+	displayAsList "${wordMeaning}" "${SB_LIST_BULLET}"
+}
+
+pronounceWord()
+{
+	for i in {1..${SB_REPEAT_COUNT}}
+	do
+		aplay -q ${SB_TMP_WORD_CLIP}
+		DEBUG echo "Pronunciation #${i}"
+		sleep ${SB_REPEAT_DELAY}
+	done
 }
 
 displayWord()
 {
-	echo ""
-	echo "Word #${wordIndex} means"
-	#print -n " [${word}]"
-	lookupWord "${word}"
+	displayMeaning
+	pronounceWord
 }
 
 displayWordList()
 {
 	echo ""
 	echo "Review Chapter [${chapterNum}/${chapterCount}] Words [${wordListStart}-${wordListEnd}]"
-	head -n ${wordListEnd} ${wordList} | tail -n ${activeWordCount} | column -x
+	echo "${wordList}" | head -n ${wordListEnd} | tail -n ${activeWordCount} | column -x
 }
 
 displayAbout()
@@ -113,92 +160,222 @@ displayAbout()
 	echo ""
 	echo "Spelling Bee ${contestYear}"
 	echo "Word Count [${wordCount}] Chapter [${chapterNum}/${chapterCount}] Words [${wordListStart}-${wordListEnd}]"
-	echo "Keyboard Menu: ${keyboardMenu}"
+	echo "Keyboard Menu: ${SB_KEYBOARD_MENU}"
 }
 
 captureUserInput()
 {
 	echo ""
 	print -n "> "
-	read userInput </dev/tty
-	#echo "User input: ${userInput}"
+	read -n1 userInput </dev/tty
+	WATCH userInput 
 }
 
-# Main program
-chapterSize=50
-keyboardMenu="[N]ext [R]epeat Re[v]iew [H]elp E[x]it"
+initWordList()
+{
+	wordListFile="$(echo "${SB_WORD_LIST_URL}" | sed "s/@YEAR@/${contestYear}/g")"
+	wordCount=$(wc -l ${wordListFile} | awk '{print $1}')
+	chapterCount=$((($wordCount+$SB_CHAPTER_SIZE-1)/$SB_CHAPTER_SIZE))		# Find number of chapters by computing the ceiling
+	wordList="$(cat ${wordListFile})"
 
-contestYear=$1
-mode=$2
+	if [[ ${mode} == "chapter" ]]; then
+		chapterNum=${selection}
 
-wordList=$DATA/spelling_bee_${contestYear}.txt
-wordCount=$(wc -l ${wordList} | awk '{print $1}')
-chapterCount=$((($wordCount+$chapterSize-1)/$chapterSize))		# Find number of chapters by computing the ceiling
+		wordListStart=$((($chapterNum-1)*$SB_CHAPTER_SIZE+1))
 
-if [[ ${mode} == "chapter" ]]; then
-	chapterNum=$3
-	wordListStart=$((($chapterNum-1)*$chapterSize+1))
-	wordListEnd=$(($wordListStart+$chapterSize-1))
-	if [[ ${wordListEnd} -gt ${wordCount} ]]; then
-		wordListEnd=wordCount
+		wordListEnd=$(($wordListStart+$SB_CHAPTER_SIZE-1))
+		if [[ ${wordListEnd} -gt ${wordCount} ]]; then
+			wordListEnd=$wordCount
+		fi
+	elif [[ ${mode} == "count" ]]; then
+		chapterNum="-"
+
+		wordListStart=$(echo ${selection} | awk -F"-" '{print $1}')
+		WATCH wordListStart
+
+		wordListEnd=$(echo ${selection} | awk -F"-" '{print $2}')
+		WATCH wordListEnd
+		if [[ "${wordListEnd}" == "" || ${wordListEnd} -gt ${wordCount} ]]; then
+			wordListEnd=$wordCount
+		fi
+		WATCH wordListEnd
+	else
+		chapterNum="-"
+		
+		wordStart=$(echo ${selection} | awk -F"-" '{print $1}')
+		WATCH wordStart
+		wordListStart=$(getWordIndex "${wordStart}")
+
+		wordEnd=$(echo ${selection} | awk -F"-" '{print $2}')
+		WATCH wordEnd
+		if [[ "${wordEnd}" == "" ]]; then
+			wordListEnd=$wordCount
+		else
+			wordListEnd=$(getWordIndex "${wordEnd}")
+		fi
 	fi
-else
-	chapterNum="-"
-	wordListStart=$(echo $3 | cut -d "-" -f 1)
-	wordListEnd=$(echo $3 | cut -d "-" -f 2)
-	if [[ ${wordListEnd} -gt ${wordCount} ]]; then
-		wordListEnd=wordCount
-	fi
-fi
-activeWordCount=$(($wordListEnd-$wordListStart+1))
+	activeWordCount=$(($wordListEnd-$wordListStart+1))
+}
 
-displayAbout
-echo ""
-print -n "Ready to practice? Press enter when ready ... "
-#read userInput </dev/tty
-getch -q
-echo ""
+runPractice()
+{
+	echo ""
+	print -n "Ready to practice? Press any key when ready ... "
+	stty -echo
+	read -n1 userInput </dev/tty
+	stty echo
+	echo ""
 
-wordIndex=0
-while read word
-do
-	wordIndex=$((wordIndex+1))
-	if [[ ${wordIndex} -lt ${wordListStart} ]]; then
-		continue
-	elif [[ ${wordIndex} -gt ${wordListEnd} ]]; then
-		break
-	fi
-
-	displayWord
-	captureUserInput
+	wordIndex=${wordListStart}
+	WATCH wordIndex
 
 	while true
 	do
-		if [[ ${userInput} = [nN] ]]; then
+		if [[ ${wordIndex} -lt ${wordListStart} ]]; then
 			break
-		elif [[ ${userInput} = [rR] ]]; then
-			displayWord
-			captureUserInput
-		elif [[ ${userInput} = [vV] ]]; then
-			displayWordList
-			captureUserInput
-		elif [[ ${userInput} = [hH] ]]; then
-			displayAbout
-			captureUserInput
-		elif [[ ${userInput} = [xX] ]]; then
-			echo ""
-			echo "Thank you for practicing for Spelling Bee."
-			echo ""
-			exit
-		else
-			echo ""
-			echo "Invalid response."
-			displayAbout
-			captureUserInput
+		elif [[ ${wordIndex} -gt ${wordListEnd} ]]; then
+			break
 		fi
-	done
-done < ${wordList}
 
-echo ""
-echo "Thank you for practicing for Spelling Bee."
-echo ""
+		lookupWordByIndex
+		displayWord
+		captureUserInput
+		echo ""
+
+		while true
+		do
+			if [[ ${userInput} = [nN] ]]; then
+				wordIndex=$((wordIndex+1))
+				break
+			elif [[ ${userInput} = [pP] ]]; then
+				wordIndex=$((wordIndex-1))
+				break
+			elif [[ ${userInput} = [rR] ]]; then
+				displayWord
+				captureUserInput
+				echo ""
+			elif [[ ${userInput} = [vV] ]]; then
+				displayWordList
+				captureUserInput
+				echo ""
+			elif [[ ${userInput} = [hH] ]]; then
+				displayAbout
+				captureUserInput
+				echo ""
+			elif [[ ${userInput} = [sS] ]]; then
+				echo ""
+				echo "Word #${wordIndex} is ${word}"
+				captureUserInput
+				echo ""
+			elif [[ ${userInput} = [xX] ]]; then
+				exitApp
+			else
+				echo ""
+				echo "Invalid response."
+				displayAbout
+				captureUserInput
+				echo ""
+			fi
+		done
+	done
+}
+
+displayTestResults()
+{
+	echo ""
+	echo "The test is now complete. Displaying results..."
+	displayAbout | grep -v "Keyboard Menu"
+	echo "Date [${testDate}]"
+	echo ""
+	echo "Answer Sheet: Score [${testCorrectCount}/${testTotalCount}]"
+	cat ${SB_TMP_TEST_RESULTS} | awk -F: -v rsym="${SB_RIGHT_SYMBOL}" -v wsym="${SB_WRONG_SYMBOL}" '$1 ~ rsym {print $1 " " $2} $1 ~ wsym {print $1 " " $2 " (" $3 ")"}' | column -x
+	echo ""
+	echo "Practice Words:"
+	cat ${SB_TMP_TEST_RESULTS} | grep -e "^${SB_WRONG_SYMBOL}" | awk -F: '{print $3}' | column -x
+}
+
+runTest()
+{
+	echo ""
+	print -n "Ready for the test? Press any key when ready ... "
+	stty -echo
+	read -n1 userInput </dev/tty
+	stty echo
+	echo ""
+
+	testDate=$(date)
+	testTotalCount=${activeWordCount}
+	testCorrectCount=0
+
+	userResponse=""
+	testValuation=""
+	rm -f ${SB_TMP_TEST_RESULTS}
+
+	wordIndex=${wordListStart}
+	WATCH wordIndex
+
+	while true
+	do
+		if [[ ${wordIndex} -lt ${wordListStart} ]]; then
+			break
+		elif [[ ${wordIndex} -gt ${wordListEnd} ]]; then
+			break
+		fi
+
+		lookupWordByIndex
+		echo ""
+		echo "Reading out word #${wordIndex}..."
+		pronounceWord
+		print -n "Enter spelling: "
+		read userResponse
+
+		if [[ "${userResponse}" == "${word}" ]]; then
+			testValuation="${SB_RIGHT_SYMBOL}:${userResponse}:${word}"
+			testCorrectCount=$((testCorrectCount+1))
+			echo "${testValuation}" | awk -F: '{print $1 " " $2}'
+		else
+			testValuation="${SB_WRONG_SYMBOL}:${userResponse}:${word}"
+			echo "${testValuation}" | awk -F: '{print $1 " " $2 " (" $3 ")"}'
+		fi
+
+		# Save valuation
+		echo "${testValuation}" >> ${SB_TMP_TEST_RESULTS}
+
+		wordIndex=$((wordIndex+1))
+	done
+
+	displayTestResults
+}
+
+exitApp()
+{
+	# Cleanup temp files
+	rm -f ${SB_TMP_WORD_ENTRY}
+	rm -f ${SB_TMP_WORD_CLIP}
+	rm -f ${SB_TMP_TEST_RESULTS}
+
+	echo ""
+	echo "Thank you for practicing for Spelling Bee."
+	echo ""
+	exit
+}
+
+################################################################
+# Main Program
+################################################################
+
+runMode=$1
+contestYear=$2
+mode=$3
+selection=$4
+
+initWordList
+displayAbout
+
+if [[ ${runMode} == "practice" ]]; then
+	runPractice
+else
+	runTest
+fi
+
+exitApp
