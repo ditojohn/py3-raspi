@@ -22,11 +22,13 @@ checkin() {
 	gitProject="$1"
 	gitComment="$2"
 
+	cd $PROJ_ROOT
 	git status
 	git add *
 	git commit -m "${gitComment}"
 	git push "${gitProject}" master
 	git status
+	cd -
 }
 
 # spelling-bee project
