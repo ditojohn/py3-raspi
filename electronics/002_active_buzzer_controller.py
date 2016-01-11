@@ -31,6 +31,7 @@
 # Collector: Right
 #==================================================================
 
+import logging
 import threading
 import time
 import rpimod.gpio.devicecontrol as GDC
@@ -55,6 +56,17 @@ cntlrBlinkDelay = 0.5
 
 # Configuration block - END
 
+# Debugging block - START
+
+logger = logging.getLogger()
+handler = logging.StreamHandler()
+formatter = logging.Formatter('%(asctime)s %(name)-12s %(levelname)-8s %(message)s')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
+logger.setLevel(logging.INFO)
+
+# Debugging block - END
+
 cntlrName = "RPi2 " + cntlrDeviceType + " Controller"
 cntlrInputCommandReadFlag = True
 
@@ -63,10 +75,12 @@ class inputThread (threading.Thread):
         threading.Thread.__init__(self)
         self.threadID = threadID
         self.name = name
+
     def run(self):
-        #print "Starting " + self.name + "\n"
+        logger.debug('Starting %s', self.name)
         capture_input(self.name)
-        #print "Exiting " + self.name + "\n"
+        logger.debug('Exiting %s', self.name)
+
 
 def capture_input(threadName):
     global cntlrInputCommandReadFlag
@@ -88,21 +102,22 @@ def capture_input(threadName):
         if cntlrCommand == cntlrExitCommand:
             cntlrInputCommandReadFlag = False
 
+
 class outputThread (threading.Thread):
     def __init__(self, threadID, name):
         threading.Thread.__init__(self)
         self.threadID = threadID
         self.name = name
+        
     def run(self):
-        #print "Starting " + self.name + "\n"
+        logger.debug('Starting %s', self.name)
         display_output(self.name)
-        #print "Exiting " + self.name + "\n"
+        logger.debug('Exiting %s', self.name)
+
 
 def display_output(threadName):
     global cntlrName
     global cntlrDeviceName
-    global cntlrDeviceType
-    global cntlrIOMode
     global cntlrLogicState
     global cntlrPin
 
@@ -118,7 +133,8 @@ def display_output(threadName):
     global cntlrExitCommand
 
     devCntlr = GDC.DeviceController(cntlrName)
-    dev = GDC.Device(cntlrDeviceName, cntlrDeviceType, cntlrIOMode, cntlrLogicState, devCntlr, cntlrPin)
+    #dev = GDC.Device(cntlrDeviceName, cntlrDeviceType, cntlrIOMode, cntlrLogicState, devCntlr, cntlrPin)
+    dev = GDC.ActiveBuzzerDevice(cntlrDeviceName, cntlrLogicState, devCntlr, cntlrPin)
 
     while True:
         if cntlrInputCommandReadFlag == False:
@@ -136,7 +152,6 @@ def display_output(threadName):
             dev.switch("OFF")
             cntlrPrevCommand = cntlrCommand
         time.sleep(cntlrOutputCommandScanDelay)
-        cntlrPrevCommand = cntlrCommand
 
     dev.close()
     devCntlr.close()

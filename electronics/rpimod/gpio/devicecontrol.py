@@ -7,8 +7,18 @@
 # Date        : 2015/12/03
 #--------------------------------------------------------------------------------------------------
 
+import logging
 import RPi.GPIO as GPIO
-import rpi2lib.math.functions as MATH
+import rpimod.math.functions as MATH
+
+# Debugging block - START
+logger = logging.getLogger()
+handler = logging.StreamHandler()
+formatter = logging.Formatter('%(asctime)s %(name)-12s %(levelname)-8s %(message)s')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
+logger.setLevel(logging.DEBUG)
+# Debugging block - END
 
 # Device type constants
 INPUT_DEVICE = 1
@@ -153,9 +163,11 @@ class ColorChannel(object):
         value: An integer between 0 and 255 representing the color value
         channel: An integer representing the GPIO channel or pin used by the device
         frequency: An integer representing the PWM frequency of the GPIO channel in Hz
+        PWM:
         duty_cycle(): A number between 0 and 100 representing the PWM duty cycle equivalent of the color value
     """
     def __init__(self, color, value, channel, frequency, PWM):
+        logger.debug('ColorChannel.__init__: Executing for %s', color)
         self.color = color
         self.value = value
         self.channel = channel
@@ -163,6 +175,7 @@ class ColorChannel(object):
         self.PWM = PWM
 
     def duty_cycle(self, logic_state):
+        logger.debug('ColorChannel.duty_cycle: Executing')
         if logic_state == ACTIVE_HIGH:
             return MATH.map(self.value, 0, 255, 0, 100)
         elif logic_state == ACTIVE_LOW:
@@ -175,26 +188,33 @@ class RGBLedDevice(Device):
     An RGB LED electronic device that can be controlled by the GPIO module,
     derived from the Device base class.
     It has the following additional attributes:
-
+    color_channels: A dictionary of ColorChannel objects representing the RGB channels
     """
     def __init__(self, name, logic_state, controller, channels, frequency=DEFAULT_PWM_FREQ):
+        logger.debug('RGBLedDevice.__init__: Executing')
         super(RGBLedDevice, self).__init__(name, "RGB LED", OUTPUT_DEVICE, logic_state, controller, DEFAULT_CHANNEL)
         
         # Initialize and setup color channels
         self.color_channels = {}
         for color in RGB_COLOR_LIST:
+            logger.debug('RGBLedDevice.__init__: Initializing %s color channel', color)
             self.controller.setup(channels[color], self.channel_mode, self.level)
             self.controller.switch(channels[color], self.level)
             current_PWM = self.controller.PWM(channels[color], frequency)
             self.color_channels[color] = ColorChannel(color, 0, channels[color], frequency, current_PWM)
 
     def switch(self, switch_mode):
+        print "Switch mode: " + switch_mode
+        print "Current level: " + str(self.level)
+        print "GPIO.HIGH is " + str(GPIO.HIGH)
+        self.display_color()
         if switch_mode == "ON":
-            self.level = not self.default_level                           # device on
+            self.level = 1 - self.default_level                           # device on
             # Start PWM channels
             for color in RGB_COLOR_LIST:
                 current_channel = self.color_channels[color]
                 current_channel.PWM.start(current_channel.duty_cycle(self.logic_state))
+                print color + ":" + str(current_channel.duty_cycle(self.logic_state))
         elif switch_mode == "OFF":
             self.level = self.default_level                               # device off
             # Stop PWM channels
@@ -202,6 +222,23 @@ class RGBLedDevice(Device):
                 current_channel = self.color_channels[color]
                 current_channel.PWM.stop()
                 self.controller.switch(current_channel.channel, self.level)
+        elif switch_mode == "TOGGLE":
+            self.level = 1 - self.level                                  # device toggle
+            if self.level == self.default_level:
+                #print "Toggle: turning off\n"
+                # Stop PWM channels
+                for color in RGB_COLOR_LIST:
+                    current_channel = self.color_channels[color]
+                    current_channel.PWM.stop()
+                    self.controller.switch(current_channel.channel, self.level)
+            else:
+                #print "Toggle: turning on\n"
+                # Start PWM channels
+                for color in RGB_COLOR_LIST:
+                    current_channel = self.color_channels[color]
+                    current_channel.PWM.start(current_channel.duty_cycle(self.logic_state))
+        print "Switch mode: " + switch_mode
+        print "Switched level: " + str(self.level)
 
     def set_color(self, values):
         # Set PWM channels
@@ -209,3 +246,29 @@ class RGBLedDevice(Device):
             self.color_channels[color].value = values[color]
             current_channel = self.color_channels[color]
             current_channel.PWM.ChangeDutyCycle(current_channel.duty_cycle(self.logic_state))
+
+    def change_color(self, color, increment):
+        # Retrieve current RGB values
+        newColorValues = {}
+        for colorIndex in RGB_COLOR_LIST:
+            newColorValues[colorIndex] = self.color_channels[colorIndex].value
+
+        # Set new RGB value
+        newColorValue = newColorValues[color] + increment
+        if newColorValue < 0:
+            newColorValue = 0
+        elif newColorValue > 255:
+            newColorValue = 255
+        newColorValues[color] = newColorValue
+
+        self.set_color(newColorValues)
+
+    def display_color(self):
+        index=1
+        print "[",
+        for colorIndex in RGB_COLOR_LIST:
+            if index != 1:
+                print ",",
+            print str(self.color_channels[colorIndex].value),
+            index+=1
+        print "]",
