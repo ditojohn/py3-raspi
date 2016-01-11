@@ -27,7 +27,7 @@
 
 import threading
 import time
-import rpi2lib.gpio.devicecontrol as GDC
+import rpimod.gpio.devicecontrol as GDC
 
 # Configuration block - START
 
@@ -43,6 +43,7 @@ cntlrAltCommand = "BLINK"
 cntlrExitCommand = "EXIT"
 
 cntlrCommand = "OFF"
+cntlrPrevCommand = ""
 cntlrOutputCommandScanDelay = 0.5
 cntlrBlinkDelay = 0.5
 
@@ -102,6 +103,7 @@ def display_output(threadName):
     global cntlrInputCommandReadFlag
     global cntlrOutputCommandScanDelay
     global cntlrCommand
+    global cntlrPrevCommand    
     global cntlrBlinkDelay
 
     global cntlrOnCommand
@@ -117,13 +119,17 @@ def display_output(threadName):
         if cntlrInputCommandReadFlag == False:
             break
         elif cntlrCommand == cntlrOnCommand or cntlrCommand == cntlrOffCommand:
-            dev.switch(cntlrCommand)
+            if cntlrCommand != cntlrPrevCommand:
+                dev.switch(cntlrCommand)
+                cntlrPrevCommand = cntlrCommand
         elif cntlrCommand == cntlrAltCommand:
             while cntlrCommand == cntlrAltCommand:
                 dev.switch("TOGGLE")
+                cntlrPrevCommand = cntlrCommand
                 time.sleep(cntlrBlinkDelay)
         else:
             dev.switch("OFF")
+            cntlrPrevCommand = cntlrCommand
         time.sleep(cntlrOutputCommandScanDelay)
 
     dev.close()
