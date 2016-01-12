@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 
 #--------------------------------------------------------------------------------------------------
-# File name   : 001_led_controller.py
-# Description : Multi-threaded I/O program to read commands from stdin to control an LED
+# File name   : 009_rgb_led_controller.py
+# Description : Multi-threaded I/O program to read commands from stdin to control an RGB LED
 # Author      : Dito Manavalan
-# Date        : 2015/12/02
+# Date        : 2016/01/08
 #--------------------------------------------------------------------------------------------------
 
 #==================================================================
@@ -27,15 +27,18 @@
 
 import threading
 import time
-import rpi2lib.gpio.devicecontrol as GDC
+import rpimod.gpio.devicecontrol as GDC
 
 # Configuration block - START
 
-cntlrDeviceName = "Red LED"
-cntlrDeviceType = "LED"
+cntlrDeviceName = "RGB LED"
+cntlrDeviceType = "RGB LED"
 cntlrIOMode = GDC.OUTPUT_DEVICE
 cntlrLogicState = GDC.ACTIVE_LOW
-cntlrPin = 11                                                         # set pin # 11
+cntlrPWMFrequency = 100
+
+#cntlrPin = 11                                                         # set pin # 11
+cntlrPins = {'Red':11, 'Green':12, 'Blue':13}
 
 cntlrOnCommand = "ON"
 cntlrOffCommand = "OFF"
@@ -43,6 +46,8 @@ cntlrAltCommand = "BLINK"
 cntlrExitCommand = "EXIT"
 
 cntlrCommand = "OFF"
+cntlrPrevCommand = ""
+cntlrColorCommand = ""
 cntlrOutputCommandScanDelay = 0.5
 cntlrBlinkDelay = 0.5
 
@@ -56,14 +61,16 @@ class inputThread (threading.Thread):
         threading.Thread.__init__(self)
         self.threadID = threadID
         self.name = name
+
     def run(self):
-        #print "Starting " + self.name + "\n"
+        #logger.debug('Starting %s', self.name)
         capture_input(self.name)
-        #print "Exiting " + self.name + "\n"
+        #logger.debug('Exiting %s', self.name)
 
 def capture_input(threadName):
     global cntlrInputCommandReadFlag
     global cntlrCommand
+    global cntlrColorCommand
 
     global cntlrOnCommand
     global cntlrOffCommand
@@ -73,9 +80,11 @@ def capture_input(threadName):
     while True:
         if cntlrInputCommandReadFlag == False:
             break
-        rawCommand = raw_input(cntlrDeviceName + ":" + cntlrCommand.ljust(6) + " > ").upper()
-        if rawCommand in [cntlrOnCommand, cntlrOffCommand, cntlrAltCommand, cntlrExitCommand]:
-            cntlrCommand = rawCommand
+        rawCommand = raw_input(cntlrDeviceName + ":" + cntlrCommand.ljust(6) + " > ")
+        if rawCommand.upper() in [cntlrOnCommand, cntlrOffCommand, cntlrAltCommand, cntlrExitCommand]:
+            cntlrCommand = rawCommand.upper()
+        #elif rawCommand in ["R", "r", "G", "g", "B", "b"]:
+        #    cntlrColorCommand = rawCommand
         else:
             print "! Unknown command", rawCommand
         if cntlrCommand == cntlrExitCommand:
@@ -86,22 +95,23 @@ class outputThread (threading.Thread):
         threading.Thread.__init__(self)
         self.threadID = threadID
         self.name = name
+
     def run(self):
-        #print "Starting " + self.name + "\n"
+        #logger.debug('Starting %s', self.name)
         display_output(self.name)
-        #print "Exiting " + self.name + "\n"
+        #logger.debug('Exiting %s', self.name)
 
 def display_output(threadName):
     global cntlrName
     global cntlrDeviceName
-    #global cntlrDeviceType
-    #global cntlrIOMode
     global cntlrLogicState
     global cntlrPin
 
     global cntlrInputCommandReadFlag
     global cntlrOutputCommandScanDelay
     global cntlrCommand
+    global cntlrPrevCommand
+    global cntlrColorCommand
     global cntlrBlinkDelay
 
     global cntlrOnCommand
@@ -111,19 +121,25 @@ def display_output(threadName):
 
     devCntlr = GDC.DeviceController(cntlrName)
     #dev = GDC.Device(cntlrDeviceName, cntlrDeviceType, cntlrIOMode, cntlrLogicState, devCntlr, cntlrPin)
-    dev = GDC.LedDevice(cntlrDeviceName, cntlrLogicState, devCntlr, cntlrPin)
+    dev = GDC.RGBLedDevice(cntlrDeviceName, cntlrLogicState, devCntlr, cntlrPins, cntlrPWMFrequency)
 
     while True:
+        #print "Current Command: " + cntlrCommand + "; Previous Command: " + cntlrPrevCommand + "\n"
         if cntlrInputCommandReadFlag == False:
             break
         elif cntlrCommand == cntlrOnCommand or cntlrCommand == cntlrOffCommand:
-            dev.switch(cntlrCommand)
+            if cntlrCommand != cntlrPrevCommand:
+                dev.switch(cntlrCommand)
+                cntlrPrevCommand = cntlrCommand
         elif cntlrCommand == cntlrAltCommand:
             while cntlrCommand == cntlrAltCommand:
                 dev.switch("TOGGLE")
+                cntlrPrevCommand = cntlrCommand
                 time.sleep(cntlrBlinkDelay)
         else:
             dev.switch("OFF")
+            cntlrPrevCommand = cntlrCommand
+
         time.sleep(cntlrOutputCommandScanDelay)
 
     dev.close()
