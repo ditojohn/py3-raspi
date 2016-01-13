@@ -38,7 +38,7 @@ cntlrLogicState = GDC.ACTIVE_LOW
 cntlrPWMFrequency = 100
 
 #cntlrPin = 11                                                         # set pin # 11
-cntlrPins = {'Red':11, 'Green':12, 'Blue':13}
+cntlrPins = {'RED':11, 'GREEN':12, 'BLUE':13}
 
 cntlrOnCommand = "ON"
 cntlrOffCommand = "OFF"
@@ -83,8 +83,8 @@ def capture_input(threadName):
         rawCommand = raw_input(cntlrDeviceName + ":" + cntlrCommand.ljust(6) + " > ")
         if rawCommand.upper() in [cntlrOnCommand, cntlrOffCommand, cntlrAltCommand, cntlrExitCommand]:
             cntlrCommand = rawCommand.upper()
-        #elif rawCommand in ["R", "r", "G", "g", "B", "b"]:
-        #    cntlrColorCommand = rawCommand
+        elif rawCommand.upper() in GDC.RGB_COLOR_DICT:
+            cntlrColorCommand = rawCommand.upper()
         else:
             print "! Unknown command", rawCommand
         if cntlrCommand == cntlrExitCommand:
@@ -140,13 +140,19 @@ def display_output(threadName):
             dev.switch("OFF")
             cntlrPrevCommand = cntlrCommand
 
+        # apply color updates
+        if cntlrColorCommand != "":
+            #print "! Setting color to", cntlrColorCommand
+            dev.set_color(GDC.RGB_COLOR_DICT[cntlrColorCommand])
+            cntlrColorCommand = ""
+
         time.sleep(cntlrOutputCommandScanDelay)
 
     dev.close()
     devCntlr.close()
 
 # Main program
-print "[" + cntlrName + ": " + cntlrOnCommand + "/" + cntlrOffCommand + "/" + cntlrAltCommand + "/" + cntlrExitCommand + "]"
+print "[" + cntlrName + ": " + cntlrOnCommand + "/" + cntlrOffCommand + "/" + cntlrAltCommand + "/[COLOR]/" + cntlrExitCommand + "]"
 
 # Create new threads
 threadRead = inputThread(1, "Reader")

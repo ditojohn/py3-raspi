@@ -33,26 +33,24 @@ DEFAULT_PWM_FREQ = 50
 DEFAULT_CHANNEL = 11
 
 # RGB LED constants
-RGB_COLOR_LIST = ["Red", "Green", "Blue"]
+RGB_COLOR_LIST = ["RED", "GREEN", "BLUE"]
 RGB_COLOR_DICT = {
-'OFF'  :{'Red':000, 'Green':000, 'Blue':000},
-'ON'  :{'Red':255, 'Green':255, 'Blue':255},
-'Black'  :{'Red':000, 'Green':000, 'Blue':000},
-'Gray'  :{'Red':128, 'Green':128, 'Blue':128},
-'Red'    :{'Red':255, 'Green':000, 'Blue':000},
-'Pink'   :{'Red':255, 'Green':192, 'Blue':203},
-'Violet' :{'Red':238, 'Green':130, 'Blue':238},
-'Purple' :{'Red':128, 'Green':000, 'Blue':128},
-'Green'  :{'Red':000, 'Green':255, 'Blue':000},
-'Yellow'  :{'Red':255, 'Green':255, 'Blue':000},
-'Gold'  :{'Red':255, 'Green':215, 'Blue':000},
-'Orange'  :{'Red':255, 'Green':165, 'Blue':000},
-'Blue'   :{'Red':000, 'Green':000, 'Blue':255},
-'Indigo' :{'Red':075, 'Green':000, 'Blue':130},
-'Lavender' :{'Red':230, 'Green':230, 'Blue':250},
-'Sky Blue' :{'Red':135, 'Green':206, 'Blue':235},
-'Turquoise' :{'Red':064, 'Green':224, 'Blue':208},
-'White'  :{'Red':255, 'Green':255, 'Blue':255}
+'BLACK'     :{'RED':000, 'GREEN':000, 'BLUE':000},
+'GRAY'      :{'RED':128, 'GREEN':128, 'BLUE':128},
+'RED'       :{'RED':255, 'GREEN':000, 'BLUE':000},
+'PINK'      :{'RED':255, 'GREEN':192, 'BLUE':203},
+'VIOLET'    :{'RED':238, 'GREEN':130, 'BLUE':238},
+'PURPLE'    :{'RED':128, 'GREEN':000, 'BLUE':128},
+'GREEN'     :{'RED':000, 'GREEN':255, 'BLUE':000},
+'YELLOW'    :{'RED':255, 'GREEN':255, 'BLUE':000},
+'GOLD'      :{'RED':255, 'GREEN':215, 'BLUE':000},
+'ORANGE'    :{'RED':255, 'GREEN':165, 'BLUE':000},
+'BLUE'      :{'RED':000, 'GREEN':000, 'BLUE':255},
+'INDIGO'    :{'RED':075, 'GREEN':000, 'BLUE':130},
+'LAVENDER'  :{'RED':230, 'GREEN':230, 'BLUE':250},
+'SKY BLUE'  :{'RED':135, 'GREEN':206, 'BLUE':235},
+'TURQUOISE' :{'RED':064, 'GREEN':224, 'BLUE':208},
+'WHITE'     :{'RED':255, 'GREEN':255, 'BLUE':255}
 }
 
 class DeviceController(object):
@@ -192,33 +190,42 @@ class RGBLedDevice(Device):
     An RGB LED electronic device that can be controlled by the GPIO module,
     derived from the Device base class.
     It has the following additional attributes:
+    init_color_value: An integer representing the initial color value for each of the color channels, e.g 255 for white
+    init_duty_cycle: An integer representing the initial (off) duty cycle for each of the color channels, e.g 100 for ACTIVE_LOW
     color_channels: A dictionary of ColorChannel objects representing the RGB channels
     """
     def __init__(self, name, logic_state, controller, channels, frequency=DEFAULT_PWM_FREQ):
-        logger.debug('RGBLedDevice.__init__: Executing [GPIO.HIGH is %s; GPIO.LOW is %s]', str(GPIO.HIGH), str(GPIO.LOW))
         super(RGBLedDevice, self).__init__(name, "RGB LED", OUTPUT_DEVICE, logic_state, controller, DEFAULT_CHANNEL)
         
         # Initialize and setup color channels
         logger.debug('RGBLedDevice.__init__: Current level is %s', str(self.level))
+
+        # set white as the default color
+        self.init_color_value = 255
+        # set duty cycle to keep the LED off via PWM
+        if self.logic_state == ACTIVE_LOW:
+            self.off_duty_cycle = 100
+        else:
+            self.off_duty_cycle = 0
+        
         self.color_channels = {}
         for color in RGB_COLOR_LIST:
             logger.debug('RGBLedDevice.__init__: Initializing %s color channel', color)
             # Set channel to output mode
             self.controller.setup(channels[color], self.channel_mode, self.level)
-            # Switch channel off
-            self.controller.switch(channels[color], self.level)
+            # Switch channel to high state
+            self.controller.switch(channels[color], GPIO.HIGH)
             # Set PWM for channel
             current_PWM = self.controller.PWM(channels[color], frequency)
-            # Set color channel
-            self.color_channels[color] = ColorChannel(color, 0, channels[color], frequency, current_PWM)
+            # Set color channel and initial color value
+            self.color_channels[color] = ColorChannel(color, self.init_color_value, channels[color], frequency, current_PWM)
             # The following section is to be used when the color of the RGB LED needs to be adjusted via PWM
-            #logger.debug('RGBLedDevice.__init__: Starting PWM with duty cycle %s', self.color_channels[color].duty_cycle(self.logic_state))
-            #self.color_channels[color].PWM.start(self.color_channels[color].duty_cycle(self.logic_state))
-
+            logger.debug('RGBLedDevice.__init__: Starting PWM with duty cycle %s', str(self.off_duty_cycle))
+            self.color_channels[color].PWM.start(self.off_duty_cycle)
 
     def switch_off(self):
-        logger.debug('RGBLedDevice.switch_off: Current RGB value is (%s,%s,%s)', str(self.color_channels['Red'].value), str(self.color_channels['Green'].value), str(self.color_channels['Blue'].value))
-        logger.debug('RGBLedDevice.switch_off: Current RGB duty cycle is (%s,%s,%s)', str(self.color_channels['Red'].duty_cycle(self.logic_state)), str(self.color_channels['Green'].duty_cycle(self.logic_state)), str(self.color_channels['Blue'].duty_cycle(self.logic_state)))
+        logger.debug('RGBLedDevice.switch_off: Current RGB value is (%s,%s,%s)', str(self.color_channels['RED'].value), str(self.color_channels['GREEN'].value), str(self.color_channels['BLUE'].value))
+        logger.debug('RGBLedDevice.switch_off: Current RGB duty cycle is (%s,%s,%s)', str(self.color_channels['RED'].duty_cycle(self.logic_state)), str(self.color_channels['GREEN'].duty_cycle(self.logic_state)), str(self.color_channels['BLUE'].duty_cycle(self.logic_state)))
 
         self.level = self.default_level                               # device off
         logger.debug('RGBLedDevice.switch_off: Switched level is %s', str(self.level))
@@ -226,15 +233,14 @@ class RGBLedDevice(Device):
         for color in RGB_COLOR_LIST:
             current_channel = self.color_channels[color]
             # The following section is to be used when the color of the RGB LED needs to be adjusted via PWM
-            #logger.debug('RGBLedDevice.switch: Stopping PWM for %s channel', color)
-            #current_channel.PWM.stop() # Not required to stop PWM
-            #self.set_color(RGB_COLOR_DICT['OFF'])
+            logger.debug('RGBLedDevice.switch: Switching off PWM for %s channel', color)
+            self.color_channels[color].PWM.ChangeDutyCycle(self.off_duty_cycle)
             # The following section is to be used when the RGB LED has to be operated in ON/OFF mode
-            self.controller.switch(current_channel.channel, self.level)
+            #self.controller.switch(current_channel.channel, self.level)
 
     def switch_on(self):
-        logger.debug('RGBLedDevice.switch_on: Current RGB value is (%s,%s,%s)', str(self.color_channels['Red'].value), str(self.color_channels['Green'].value), str(self.color_channels['Blue'].value))
-        logger.debug('RGBLedDevice.switch_on: Current RGB duty cycle is (%s,%s,%s)', str(self.color_channels['Red'].duty_cycle(self.logic_state)), str(self.color_channels['Green'].duty_cycle(self.logic_state)), str(self.color_channels['Blue'].duty_cycle(self.logic_state)))
+        logger.debug('RGBLedDevice.switch_on: Current RGB value is (%s,%s,%s)', str(self.color_channels['RED'].value), str(self.color_channels['GREEN'].value), str(self.color_channels['BLUE'].value))
+        logger.debug('RGBLedDevice.switch_on: Current RGB duty cycle is (%s,%s,%s)', str(self.color_channels['RED'].duty_cycle(self.logic_state)), str(self.color_channels['GREEN'].duty_cycle(self.logic_state)), str(self.color_channels['BLUE'].duty_cycle(self.logic_state)))
 
         self.level = 1 - self.default_level                           # device on
         logger.debug('RGBLedDevice.switch_on: Switched level is %s', str(self.level))
@@ -242,16 +248,15 @@ class RGBLedDevice(Device):
         for color in RGB_COLOR_LIST:
             current_channel = self.color_channels[color]
             # The following section is to be used when the color of the RGB LED needs to be adjusted via PWM
-            #logger.debug('RGBLedDevice.switch_on: Starting PWM for %s channel', color)
-            #current_channel.PWM.start(current_channel.duty_cycle(self.logic_state))
-            #self.set_color(RGB_COLOR_DICT['ON'])
+            logger.debug('RGBLedDevice.switch: Switching on PWM for %s channel', color)
+            self.color_channels[color].PWM.ChangeDutyCycle(self.color_channels[color].duty_cycle(self.logic_state))
             # The following section is to be used when the RGB LED has to be operated in ON/OFF mode
-            self.controller.switch(current_channel.channel, self.level)
+            #self.controller.switch(current_channel.channel, self.level)
 
     def switch(self, switch_mode):
         logger.debug('RGBLedDevice.switch: Executing in %s mode', switch_mode)
         logger.debug('RGBLedDevice.switch: Current level is %s', str(self.level))
-        logger.debug('RGBLedDevice.switch: Current RGB value is (%s,%s,%s)', str(self.color_channels['Red'].value), str(self.color_channels['Green'].value), str(self.color_channels['Blue'].value))
+        logger.debug('RGBLedDevice.switch: Current RGB value is (%s,%s,%s)', str(self.color_channels['RED'].value), str(self.color_channels['GREEN'].value), str(self.color_channels['BLUE'].value))
 
         if switch_mode == "ON":
             self.switch_on()
@@ -264,7 +269,7 @@ class RGBLedDevice(Device):
                 self.switch_off()
     
     def set_color(self, values):
-        # Set PWM channels
+        # Set PWM for channels
         for color in RGB_COLOR_LIST:
             self.color_channels[color].value = values[color]
             self.color_channels[color].PWM.ChangeDutyCycle(self.color_channels[color].duty_cycle(self.logic_state))
