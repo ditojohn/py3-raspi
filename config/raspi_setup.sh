@@ -25,12 +25,12 @@ sudo apt-get install wpagui
 SETUP_CFG_DIR=/etc/network
 SETUP_CFG_FIL=interfaces
 sudo cp -p ${SETUP_CFG_DIR}/${SETUP_CFG_FIL} ${SETUP_CFG_DIR}/${SETUP_CFG_FIL}.${SETUP_TS}.bak
-sudo cat ${SETUP_DIR}/${SETUP_CFG_FIL} | sudo dd of=${SETUP_CFG_DIR}/${SETUP_CFG_FIL}
+sudo cat ${SETUP_DIR}/${SETUP_CFG_FIL} | sudo tee ${SETUP_CFG_DIR}/${SETUP_CFG_FIL}
 
 SETUP_CFG_DIR=/etc/wpa_supplicant
 SETUP_CFG_FIL=wpa_supplicant.conf
 sudo cp -p ${SETUP_CFG_DIR}/${SETUP_CFG_FIL} ${SETUP_CFG_DIR}/${SETUP_CFG_FIL}.${SETUP_TS}.bak
-sudo cat ${SETUP_DIR}/${SETUP_CFG_FIL} | sudo dd of=${SETUP_CFG_DIR}/${SETUP_CFG_FIL}
+sudo cat ${SETUP_DIR}/${SETUP_CFG_FIL} | sudo tee ${SETUP_CFG_DIR}/${SETUP_CFG_FIL}
 sudo chmod 600 ${SETUP_CFG_DIR}/${SETUP_CFG_FIL}
 sudo adduser pi netdev
 
@@ -46,16 +46,17 @@ sudo apt-get install x11vnc
 x11vnc -storepasswd
 cd ~/.config; mkdir autostart; cd autostart
 
+echo "VNC configuration - Creating autostart entry"
 SETUP_CFG_DIR=~/.config/autostart
 SETUP_CFG_FIL=x11vnc.desktop
 sudo touch ${SETUP_CFG_DIR}/${SETUP_CFG_FIL}
-sudo cat ${SETUP_DIR}/${SETUP_CFG_FIL} | sudo dd of=${SETUP_CFG_DIR}/${SETUP_CFG_FIL}
+sudo cat ${SETUP_DIR}/${SETUP_CFG_FIL} | sudo tee ${SETUP_CFG_DIR}/${SETUP_CFG_FIL}
 
+echo "VNC configuration - Boot config update"
 SETUP_CFG_DIR=/boot
 SETUP_CFG_FIL=config.txt
 sudo cp -p ${SETUP_CFG_DIR}/${SETUP_CFG_FIL} ${SETUP_CFG_DIR}/${SETUP_CFG_FIL}.${SETUP_TS}.bak
-# Uncomment hdmi_force_hotplug=1 in /boot/config.txt
-sudo cat ${SETUP_CFG_DIR}/${SETUP_CFG_FIL}.${SETUP_TS}.bak | sudo awk '/hdmi_force_hotplug=1/ {gsub(/^#/, "", $0)} {print $0}' | sudo dd of=${SETUP_CFG_DIR}/${SETUP_CFG_FIL}
+sudo cat ${SETUP_DIR}/boot_config_addendum.txt | sudo tee -a ${SETUP_CFG_DIR}/${SETUP_CFG_FIL}
 
 echo "VNC configuration - Manual 'Desktop Autologin' update"
 echo "Use 'sudo raspi-config' to select '3 Boot Options > B4 Desktop Autologin' option manually."

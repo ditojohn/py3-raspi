@@ -1,0 +1,21 @@
+
+# setup boot config customization
+
+# uncomment if hdmi display is not detected and composite is being output
+hdmi_force_hotplug=1
+
+# uncomment to force a specific HDMI mode 
+# leaving everything commented will force VGA
+# HDMI_DMT_UXGA_60 = 0x33 /* 1600x1200 60Hz */
+hdmi_group=2
+hdmi_mode=51
+# HDMI_DMT_1080p_60 = 0x52 /* 1920x1080 60Hz, Same as HDMI_CEA_1080p60 */
+#hdmi_group=2
+#hdmi_mode=82
+# HDMI_DMT_WUXGA_60 = 0x45 /* 1920x1200 60Hz */
+#hdmi_group=2
+#hdmi_mode=69
+
+# uncomment to force a HDMI mode rather than DVI.
+# This can make audio work in DMT (computer monitor) modes
+hdmi_drive=2
