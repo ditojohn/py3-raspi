@@ -15,6 +15,7 @@ proj() {
 		echo ""
 		cd ${PROJ_ROOT}/${project}
 		. "${PROJ_ROOT}/${project}/project_setup.cfg"
+		ls
 	fi
 }
 
@@ -32,12 +33,16 @@ checkin() {
 }
 
 # spelling-bee project
-proj spelling-bee
+#proj spelling-bee
 
-alias sbp="ksh spelling_bee.ksh practice 2016"
-alias sbt="ksh spelling_bee.ksh test 2016"
+#alias sbp="ksh spelling_bee.ksh practice 2016"
+#alias sbt="ksh spelling_bee.ksh test 2016"
 
-echo "Spelling Bee instructions:"
-echo "To practice: sbp word lary-frees"
-echo "To test    : sbt chapter 1"
+#echo "Spelling Bee instructions:"
+#echo "To practice: sbp word lary-frees"
+#echo "To test    : sbt chapter 1"
+
+# electronics project
+proj electronics
+
 echo ""

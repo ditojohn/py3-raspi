@@ -1,5 +1,5 @@
 
-# setup profile customization'
+# setup profile customization
 if [ -r "$HOME/projects/raspi/config/.profile" ] ; then
     . $HOME/projects/raspi/config/.profile
 fi
