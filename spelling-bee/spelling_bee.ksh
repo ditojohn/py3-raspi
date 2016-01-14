@@ -32,7 +32,7 @@ SB_REPEAT_DELAY=1.5
 SB_LIST_BULLET='•'
 SB_RIGHT_SYMBOL='√'
 SB_WRONG_SYMBOL='X'
-SB_PRACTICE_KEYBOARD_MENU="[N]ext [P]revious [R]epeat Re[v]iew [S]how [H]elp E[x]it"
+SB_PRACTICE_KEYBOARD_MENU="[N]ext [P]revious [R]epeat Re[v]iew [S]how [L]ookup [H]elp E[x]it"
 SB_TEST_KEYBOARD_MENU="E[x]it"
 
 SB_WORD_LIST_URL="$DATA/spelling_bee_@YEAR@.txt"
@@ -44,6 +44,9 @@ SB_TMP_TEST_RESULTS="${DATA}/sbtmptest.dat"
 SB_DICT_MW_KEY="cbbd4001-c94d-493a-ac94-7268a7e41f6f"
 SB_DICT_MW_ENTRY_URL="http://www.dictionaryapi.com/api/v1/references/collegiate/xml/@WORD@?key=${SB_DICT_MW_KEY}"
 SB_DICT_MW_CLIP_URL="http://media.merriam-webster.com/soundc11/@FOLDER@/@CLIP@"
+
+SB_DICT_MW_ENTRY_ERR=0
+SB_DICT_MW_CLIP_ERR=0
 
 ################################################################
 # Debug Configuration
@@ -94,20 +97,53 @@ lookupWord()
 {
     word="$1"
 
-    # Download dictionary entry
+    # Determine dictionary entry URL
     dictEntryURL="$(echo "${SB_DICT_MW_ENTRY_URL}" | sed "s/@WORD@/${word}/g")"
     WATCH dictEntryURL
+    
+    # Download dictionary entry
     wget -qO- "${dictEntryURL}" > ${SB_TMP_WORD_ENTRY}
     dictXMLEntry="$(cat ${SB_TMP_WORD_ENTRY})"
     WATCH dictXMLEntry
 
-    # Download audio and repeat dictionary entry pronounciation
+    # Retrieve meaning from dictionary entry
+    dictXMLEntry="$(cat ${SB_TMP_WORD_ENTRY})"
+    wordMeaning=$(getXMLValues "${dictXMLEntry}" "dt" "${SB_MEANING_COUNT}")    # Pick top n meanings
+    if [[ "${wordMeaning}" == "" ]]; then
+        SB_DICT_MW_ENTRY_ERR=1
+          # Clear retrieved dictionary entry
+        rm -f ${SB_TMP_WORD_ENTRY}
+    else
+        SB_DICT_MW_ENTRY_ERR=0
+    fi
+
+    # Retrieve pronunciation audio clip filename
     wordClip=$(getXMLValues "${dictXMLEntry}" "wav" "1")                        # Pick first sound clip reference
     WATCH wordClip
-    wordClipFolder=$(echo ${wordClip} | cut -c 1 )
-    wordClipURL="$(echo "${SB_DICT_MW_CLIP_URL}" | sed "s/@FOLDER@/${wordClipFolder}/g" | sed "s/@CLIP@/${wordClip}/g")"
-    WATCH wordClipURL
-    wget -qO- ${wordClipURL} > ${SB_TMP_WORD_CLIP}
+
+    if [[ "${wordClip}" == "" ]]; then
+        SB_DICT_MW_CLIP_ERR=1
+        # Clear previously retrieved audio clip
+        rm -f ${SB_TMP_WORD_CLIP}
+    else
+        SB_DICT_MW_CLIP_ERR=0
+        # Determine audio clip folder
+        # Reference: http://www.dictionaryapi.com/info/faq-audio-image.htm
+        if [[ "${wordClip}" =~ ^bix.* ]]; then
+            wordClipFolder="bix"
+        elif [[ "${wordClip}" =~ ^gg.* ]]; then
+            wordClipFolder="gg"
+        elif [[ "${wordClip}" =~ ^[0-9].* ]]; then
+            wordClipFolder="number"
+        else
+            wordClipFolder=$(echo ${wordClip} | cut -c 1 )
+        fi
+        wordClipURL="$(echo "${SB_DICT_MW_CLIP_URL}" | sed "s/@FOLDER@/${wordClipFolder}/g" | sed "s/@CLIP@/${wordClip}/g")"
+        WATCH wordClipURL
+        
+        # Download audio clip
+        wget -qO- ${wordClipURL} > ${SB_TMP_WORD_CLIP}
+    fi
 }
 
 getWordIndex()
@@ -124,27 +160,38 @@ lookupWordByIndex()
 
 displayMeaning()
 {
-    # Retrieve meaning from dictionary entry
-    dictXMLEntry="$(cat ${SB_TMP_WORD_ENTRY})"
-    wordMeaning=$(getXMLValues "${dictXMLEntry}" "dt" "${SB_MEANING_COUNT}")                        # Pick top n meanings
+    if [[ "${SB_DICT_MW_ENTRY_ERR}" == "0" ]]; then
+        # Retrieve meaning from dictionary entry
+        dictXMLEntry="$(cat ${SB_TMP_WORD_ENTRY})"
+        wordMeaning=$(getXMLValues "${dictXMLEntry}" "dt" "${SB_MEANING_COUNT}")                        # Pick top n meanings
 
-    echo ""
-    echo "Word #${wordIndex} means"
-    displayAsList "${wordMeaning}" "${SB_LIST_BULLET}"
+        displayAsList "${wordMeaning}" "${SB_LIST_BULLET}"
+    else
+        print "ERROR: Unable to lookup dictionary definition"
+    fi
 }
 
 pronounceWord()
 {
-    for i in {1..${SB_REPEAT_COUNT}}
-    do
-        aplay -q ${SB_TMP_WORD_CLIP}
-        DEBUG echo "Pronunciation #${i}"
-        sleep ${SB_REPEAT_DELAY}
-    done
+    if [[ "${SB_DICT_MW_CLIP_ERR}" == "0" ]]; then
+        # Play and repeat dictionary entry pronounciation
+        for i in {1..${SB_REPEAT_COUNT}}
+        do
+            aplay -q ${SB_TMP_WORD_CLIP}
+            DEBUG echo "Pronunciation #${i}"
+            sleep ${SB_REPEAT_DELAY}
+        done
+    else
+        print "ERROR: Unable to lookup audio pronunciation"
+    fi
 }
 
 displayWord()
 {
+    displayTitle="$1"
+    
+    echo ""
+    echo "${displayTitle}"
     displayMeaning
     pronounceWord
 }
@@ -243,35 +290,53 @@ runPractice()
         fi
 
         lookupWordByIndex
-        displayWord
+        displayWord "Word #${wordIndex} means"
         captureUserInput
         echo ""
 
         while true
         do
+            # Move to [n]ext word
             if [[ ${userInput} = [nN] ]]; then
                 wordIndex=$((wordIndex+1))
                 break
+            # Move to [p]revious word
             elif [[ ${userInput} = [pP] ]]; then
                 wordIndex=$((wordIndex-1))
                 break
+            # [R]epeat current word
             elif [[ ${userInput} = [rR] ]]; then
-                displayWord
+                displayWord "Word #${wordIndex} means"
                 captureUserInput
                 echo ""
+            # Re[v]iew active word list
             elif [[ ${userInput} = [vV] ]]; then
                 displayWordList
                 captureUserInput
                 echo ""
-            elif [[ ${userInput} = [hH] ]]; then
-                displayAbout
-                captureUserInput
-                echo ""
+            # [S]how current word spelling
             elif [[ ${userInput} = [sS] ]]; then
                 echo ""
                 echo "Word #${wordIndex} is ${word}"
                 captureUserInput
                 echo ""
+            # [L]ookup word meaning and pronunciation
+            elif [[ ${userInput} = [lL] ]]; then
+                userWord=""
+                print -n "Enter word to be looked up: "
+                read userWord </dev/tty
+                lookupWord "${userWord}"
+                displayWord  "${userWord} means"
+                # Reset to current word
+                lookupWordByIndex
+                captureUserInput
+                echo ""
+            # Display [h]elp and statistics
+            elif [[ ${userInput} = [hH] ]]; then
+                displayAbout
+                captureUserInput
+                echo ""
+            # E[x]it application
             elif [[ ${userInput} = [xX] ]]; then
                 exitApp
             else
