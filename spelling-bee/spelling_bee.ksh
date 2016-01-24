@@ -3,7 +3,7 @@
 
 ################################################################
 # Syntax :    ksh spelling_bee.ksh runMode contestYear mode selection
-# where        runMode is practice or test.
+# where      runMode is practice, scan or test.
 #            contestYear is the year of the contest in YYYY format
 #            mode is chapter, count or word.
 #                In chapter mode, the next argument is the chapter number
@@ -16,15 +16,13 @@
 # Example:    ksh spelling_bee.ksh practice 2016 chapter 7
 #             ksh spelling_bee.ksh test 2016 count 10-15
 #             ksh spelling_bee.ksh practice 2016 word lary-frees
+#             ksh spelling_bee.ksh scan 2016 count 10-15
 ################################################################
 
 ################################################################
-# Configuration variables
+# Spelling Bee Configuration variables
 ################################################################
-SB_CHAPTER_SIZE=50
-SB_MEANING_COUNT=3
-SB_REPEAT_COUNT=2
-SB_REPEAT_DELAY=1.5
+. ./spelling_bee.cfg
 
 ################################################################
 # Internal variables
@@ -37,9 +35,14 @@ SB_TEST_KEYBOARD_MENU="E[x]it"
 
 SB_WORD_LIST_URL="$DATA/spelling_bee_@YEAR@.txt"
 SB_TMP_WORD_ENTRY="${DATA}/sbtmpentry.xml"
+SB_TMP_WORD_DEFN="${DATA}/sbtmpdefn.dat"
 SB_TMP_WORD_CLIP="${DATA}/sbtmpclip.wav"
 SB_TMP_TEST_RESULTS="${DATA}/sbtmptest.dat"
+SB_ERR_LOG="${DATA}/sberr.log"
 
+#Sample offline dictionary definition - ${SB_DICT_OFFLINE_DIR}/sb_${word}.dat
+#Sample offline pronunciation audio clip - ${SB_DICT_OFFLINE_DIR}/sb_${word}.wav
+SB_DICT_OFFLINE_DIR="${DATA}"
 #Sample dictionary API URL - http://www.dictionaryapi.com/api/v1/references/collegiate/xml/test?key=cbbd4001-c94d-493a-ac94-7268a7e41f6f
 SB_DICT_MW_KEY="cbbd4001-c94d-493a-ac94-7268a7e41f6f"
 SB_DICT_MW_ENTRY_URL="http://www.dictionaryapi.com/api/v1/references/collegiate/xml/@WORD@?key=${SB_DICT_MW_KEY}"
@@ -78,43 +81,63 @@ getXMLValues()
     xmlString="$(echo "${xmlString}" | sed "s/<${xmlElement}>/\n<${xmlElement}>/g" | grep -i "<${xmlElement}>")"
     echo "${xmlString}" | while read -r line
     do
-        echo "${line}" | sed -n "/${xmlElement}/{s/.*<${xmlElement}>\(.*\)<\/${xmlElement}>.*/\1/;p}" | cut -d ':' -f 2 | sed "s/<[/a-zA-Z_]*>//g"
+        #echo "${line}" | sed -n "/${xmlElement}/{s/.*<${xmlElement}>\(.*\)<\/${xmlElement}>.*/\1/;p}" | cut -d ':' -f 2 | sed "s/<[/a-zA-Z_]*>//g"
+        echo "${line}" | sed -n "/${xmlElement}/{s/.*<${xmlElement}>\(.*\)<\/${xmlElement}>.*/\1/;p}" | cut -d ':' -f 2
     done | head -n ${xmlTopN}
 }
 
 displayAsList()
 {
-    inputString="$1"
+    #inputString="$1"
+    dataFile="$1"
     bullet="$2"
 
-    echo "${inputString}" | while read -r line
-    do
-        echo "${line}" | sed "s/^/${bullet} /g"
-    done
+    #echo "${inputString}" | while read -r line
+    #do
+    #    echo "${line}" | sed "s/^/${bullet} /g"
+    #done
+    cat "${dataFile}" | sed "s/^/${bullet} /g"
 }
 
 lookupWord()
 {
     word="$1"
 
-    # Determine dictionary entry URL
-    dictEntryURL="$(echo "${SB_DICT_MW_ENTRY_URL}" | sed "s/@WORD@/${word}/g")"
-    WATCH dictEntryURL
-    
-    # Download dictionary entry
-    wget -qO- "${dictEntryURL}" > ${SB_TMP_WORD_ENTRY}
-    dictXMLEntry="$(cat ${SB_TMP_WORD_ENTRY})"
-    WATCH dictXMLEntry
-
-    # Retrieve meaning from dictionary entry
-    dictXMLEntry="$(cat ${SB_TMP_WORD_ENTRY})"
-    wordMeaning=$(getXMLValues "${dictXMLEntry}" "dt" "${SB_MEANING_COUNT}")    # Pick top n meanings
-    if [[ "${wordMeaning}" == "" ]]; then
-        SB_DICT_MW_ENTRY_ERR=1
-          # Clear retrieved dictionary entry
-        rm -f ${SB_TMP_WORD_ENTRY}
+    # Check offline for dictionary definition
+    offlineDefinition="${SB_DICT_OFFLINE_DIR}/sb_${word}.dat"
+    if [[ -e "${offlineDefinition}" && -s "${offlineDefinition}" ]]; then
+        cp ${offlineDefinition} ${SB_TMP_WORD_DEFN}
     else
-        SB_DICT_MW_ENTRY_ERR=0
+        # Determine dictionary entry URL
+        dictEntryURL="$(echo "${SB_DICT_MW_ENTRY_URL}" | sed "s/@WORD@/${word}/g")"
+        WATCH dictEntryURL
+        
+        # Download dictionary entry
+        wget -qO- "${dictEntryURL}" > ${SB_TMP_WORD_ENTRY}
+
+	    # Retrieve meaning from dictionary entry
+        dictXMLEntry="$(cat ${SB_TMP_WORD_ENTRY})"
+        WATCH dictXMLEntry
+
+	    # Check word form with dictionary entry
+	    wordEntry=$(getXMLValues "${dictXMLEntry}" "ew" "1")
+	    matchWord=$(echo ${word} | tr '[:lower:]' '[:upper:]')
+	    matchWordEntry=$(echo ${wordEntry} | tr '[:lower:]' '[:upper:]')
+	    if [[ "${matchWordEntry}" != "${matchWord}" ]]; then
+	        echo "ERROR:Entry mismatch:${word}" >> ${SB_ERR_LOG}
+	    fi
+
+	    wordMeaning=$(getXMLValues "${dictXMLEntry}" "dt" "${SB_MEANING_COUNT}")    # Pick top n meanings
+	    if [[ "${wordMeaning}" == "" ]]; then
+	        SB_DICT_MW_ENTRY_ERR=1
+	        echo "ERROR:Missing Entry:${word}" >> ${SB_ERR_LOG}
+	        # Clear retrieved dictionary entry
+	        rm -f ${SB_TMP_WORD_ENTRY}
+	    else
+	        SB_DICT_MW_ENTRY_ERR=0
+	        echo "${wordMeaning}" > ${offlineDefinition}
+	        cp ${offlineDefinition} ${SB_TMP_WORD_DEFN}
+	    fi
     fi
 
     # Retrieve pronunciation audio clip filename
@@ -123,26 +146,35 @@ lookupWord()
 
     if [[ "${wordClip}" == "" ]]; then
         SB_DICT_MW_CLIP_ERR=1
+        echo "ERROR:Missing Audio:${word}" >> ${SB_ERR_LOG}
         # Clear previously retrieved audio clip
         rm -f ${SB_TMP_WORD_CLIP}
     else
         SB_DICT_MW_CLIP_ERR=0
-        # Determine audio clip folder
-        # Reference: http://www.dictionaryapi.com/info/faq-audio-image.htm
-        if [[ "${wordClip}" =~ ^bix.* ]]; then
-            wordClipFolder="bix"
-        elif [[ "${wordClip}" =~ ^gg.* ]]; then
-            wordClipFolder="gg"
-        elif [[ "${wordClip}" =~ ^[0-9].* ]]; then
-            wordClipFolder="number"
+
+        # Check offline for pronunciation audio clip
+        offlineAudioClip="${SB_DICT_OFFLINE_DIR}/sb_${word}.wav"
+        if [[ -e "${offlineAudioClip}" && -s "${offlineAudioClip}" ]]; then
+            cp ${offlineAudioClip} ${SB_TMP_WORD_CLIP}
         else
-            wordClipFolder=$(echo ${wordClip} | cut -c 1 )
+            # Determine audio clip folder
+            # Reference: http://www.dictionaryapi.com/info/faq-audio-image.htm
+            if [[ "${wordClip}" =~ ^bix.* ]]; then
+                wordClipFolder="bix"
+            elif [[ "${wordClip}" =~ ^gg.* ]]; then
+                wordClipFolder="gg"
+            elif [[ "${wordClip}" =~ ^[0-9].* ]]; then
+                wordClipFolder="number"
+            else
+                wordClipFolder=$(echo ${wordClip} | cut -c 1 )
+            fi
+            wordClipURL="$(echo "${SB_DICT_MW_CLIP_URL}" | sed "s/@FOLDER@/${wordClipFolder}/g" | sed "s/@CLIP@/${wordClip}/g")"
+            WATCH wordClipURL
+
+            # Download audio clip
+            wget -qO- ${wordClipURL} > ${offlineAudioClip}
+            cp ${offlineAudioClip} ${SB_TMP_WORD_CLIP}
         fi
-        wordClipURL="$(echo "${SB_DICT_MW_CLIP_URL}" | sed "s/@FOLDER@/${wordClipFolder}/g" | sed "s/@CLIP@/${wordClip}/g")"
-        WATCH wordClipURL
-        
-        # Download audio clip
-        wget -qO- ${wordClipURL} > ${SB_TMP_WORD_CLIP}
     fi
 }
 
@@ -161,11 +193,7 @@ lookupWordByIndex()
 displayMeaning()
 {
     if [[ "${SB_DICT_MW_ENTRY_ERR}" == "0" ]]; then
-        # Retrieve meaning from dictionary entry
-        dictXMLEntry="$(cat ${SB_TMP_WORD_ENTRY})"
-        wordMeaning=$(getXMLValues "${dictXMLEntry}" "dt" "${SB_MEANING_COUNT}")                        # Pick top n meanings
-
-        displayAsList "${wordMeaning}" "${SB_LIST_BULLET}"
+        displayAsList "${SB_TMP_WORD_DEFN}" "${SB_LIST_BULLET}"
     else
         print "ERROR: Unable to lookup dictionary definition"
     fi
@@ -210,7 +238,7 @@ displayAbout()
     echo "Word Count [${wordCount}] Chapter [${chapterNum}/${chapterCount}] Words [${wordListStart}-${wordListEnd}]"
     if [[ ${runMode} == "practice" ]]; then
         echo "Practice Keyboard Menu: ${SB_PRACTICE_KEYBOARD_MENU}"
-    else
+    elif [[ ${runMode} == "test" ]]; then
         echo "Test Keyboard Menu: ${SB_TEST_KEYBOARD_MENU}"
     fi
 }
@@ -418,6 +446,36 @@ runTest()
     displayTestResults
 }
 
+runErrorScan()
+{
+    echo ""
+    print -n "Ready for error scan? Press any key when ready ... "
+    stty -echo
+    read -n1 userInput </dev/tty
+    stty echo
+    echo ""
+
+    wordIndex=${wordListStart}
+    WATCH wordIndex
+
+    while true
+    do
+        if [[ ${wordIndex} -lt ${wordListStart} ]]; then
+            break
+        elif [[ ${wordIndex} -gt ${wordListEnd} ]]; then
+            break
+        fi
+
+        lookupWordByIndex
+        echo "Scanned word #${wordIndex}: ${word}"
+
+        wordIndex=$((wordIndex+1))
+    done
+
+    echo ""
+    echo "Errors logged to ${SB_ERR_LOG}"
+}
+
 initApp()
 {
     # clear screen
@@ -433,6 +491,7 @@ exitApp()
 
     # Cleanup temp files
     rm -f ${SB_TMP_WORD_ENTRY}
+    rm -f ${SB_TMP_WORD_DEFN}
     rm -f ${SB_TMP_WORD_CLIP}
     rm -f ${SB_TMP_TEST_RESULTS}
 
@@ -458,6 +517,8 @@ displayAbout
 
 if [[ ${runMode} == "practice" ]]; then
     runPractice
+elif [[ ${runMode} == "scan" ]]; then
+    runErrorScan
 else
     runTest
 fi
