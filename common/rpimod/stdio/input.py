@@ -51,3 +51,7 @@ class _GetchWindows:
         return msvcrt.getch()
 
 getch = _Getch()
+
+def get_keypress(prompt):
+    print prompt ,
+    return getch()

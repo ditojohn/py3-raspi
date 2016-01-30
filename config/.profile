@@ -35,8 +35,11 @@ checkin() {
 # spelling-bee project
 proj spelling-bee
 
-alias sbp="ksh spelling_bee.ksh practice 2016"
-alias sbt="ksh spelling_bee.ksh test 2016"
+#alias sbp="ksh spelling_bee.ksh practice 2016"
+#alias sbt="ksh spelling_bee.ksh test 2016"
+
+alias sbp="sudo python spelling_bee.py practice 2016"
+alias sbt="sudo python spelling_bee.py test 2016"
 
 echo "Spelling Bee instructions:"
 echo "To practice: sbp word lary-frees"
