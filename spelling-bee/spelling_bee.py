@@ -42,7 +42,7 @@ import common.rpimod.stdio.output as coutput
 
 SB_CHAPTER_SIZE = 50
 SB_MEANING_COUNT = 3
-SB_REPEAT_COUNT = 0
+SB_REPEAT_COUNT = 1
 SB_REPEAT_DELAY = 1.5
 SB_TEST_MODE = "easy"                                           # Available test modes are: easy, medium and difficult
 SB_DATA_DIR = "/home/pi/projects/raspi/spelling-bee/data"
@@ -67,6 +67,9 @@ SB_RIGHT_SYMBOL = '√'
 SB_WRONG_SYMBOL = 'X'
 SB_PRACTICE_KEYBOARD_MENU = "[N]ext [P]revious [R]epeat Re[v]iew [S]how [L]ookup [H]elp E[x]it"
 SB_TEST_KEYBOARD_MENU = "[R]epeat E[x]it"
+
+SB_PRACTICE_WORD_DEFN_TITLE="\n\nDefinition of word #{INDEX}:"
+SB_LOOKUP_WORD_DEFN_TITLE="\nDefinition of {WORD}:"
 
 SB_ERR_LOG = "sberr.log"
 
@@ -178,6 +181,8 @@ class SpellingBee(object):
 
         return cleansedXML
 
+    # todo: Improve lookup/pronunciation with root word match e.g. resume, molasses
+    # todo: Implement dictionary XML parsing as a library
     def parse_word_clip(self, entryXML):
         wordClip = ""
 
@@ -244,8 +249,8 @@ class SpellingBee(object):
 
         return wordDefinition
 
-    def lookup_word_definition(self, index):
-        self.activeWord = self.wordList[index]
+    def lookup_dictionary_by_word(self, word):
+        self.activeWord = word.strip()
         
         # Setup connection and error logging
         connectionPool = urllib3.PoolManager()
@@ -302,7 +307,8 @@ class SpellingBee(object):
             if wordClip == "":
                 errorFile.write("ERROR:Missing Audio:{0}\n".format(self.activeWord).decode('utf-8'))
             else:
-                # Determine audio clip folder. Reference: http://www.dictionaryapi.com/info/faq-audio-image.htm
+                # Determine audio clip folder.
+                # Reference: http://www.dictionaryapi.com/info/faq-audio-image.htm
                 if re.match('^bix.*', wordClip):
                     wordClipFolder = "bix"
                 elif re.match('^gg.*', wordClip):
@@ -324,7 +330,10 @@ class SpellingBee(object):
         # Close connection and error logging
         errorFile.close()
         connectionPool.clear()
-        
+
+    def lookup_dictionary_by_index(self, index):
+        self.lookup_dictionary_by_word(self.wordList[index])
+       
 
     def print_word_definition(self):
         if self.activeDefinition == "":
@@ -432,6 +441,7 @@ def display_help(runMode):
     else:
         print "{0} Keyboard Menu: {1}".format(runMode.title(), SB_TEST_KEYBOARD_MENU)
 
+# todo: Implement goto feature to specify new start/stop words
 def run_practice(spellBee):
 
     spellBee.display_about()
@@ -445,8 +455,8 @@ def run_practice(spellBee):
             break
 
         # Lookup word definition
-        spellBee.lookup_word_definition(wordIndex)
-        spellBee.display_word_cue("\n\nWord #" + str(wordIndex) + " means:")
+        spellBee.lookup_dictionary_by_index(wordIndex)
+        spellBee.display_word_cue(SB_PRACTICE_WORD_DEFN_TITLE.format(INDEX=wordIndex + 1))
         userInput = cinput.get_keypress(SB_PROMPT_SYMBOL)
         
         while True:
@@ -460,7 +470,7 @@ def run_practice(spellBee):
                 break
             # [R]epeat current word
             elif userInput.lower() == "r":
-                spellBee.display_word_cue("\n\nWord #" + str(wordIndex) + " means:")
+                spellBee.display_word_cue(SB_PRACTICE_WORD_DEFN_TITLE.format(INDEX=wordIndex + 1))
                 userInput = cinput.get_keypress(SB_PROMPT_SYMBOL)
             # Re[v]iew active word list
             elif userInput.lower() == "v":
@@ -474,8 +484,11 @@ def run_practice(spellBee):
             # [L]ookup word definition and pronunciation
             elif userInput.lower() == "l":
                 print "\n"
-                # todo: implement lookup function
-                print "Under construction..."
+                userLookupWord = raw_input("Enter word to be looked up: ").strip()
+                spellBee.lookup_dictionary_by_word(userLookupWord)
+                spellBee.display_word_cue(SB_LOOKUP_WORD_DEFN_TITLE.format(WORD=userLookupWord))
+                # Reset lookup to current word
+                spellBee.lookup_dictionary_by_index(wordIndex)
                 userInput = cinput.get_keypress(SB_PROMPT_SYMBOL)
             # Display [h]elp and statistics
             elif userInput.lower() == "h":
@@ -514,8 +527,8 @@ def run_test(spellBee):
             break
 
         # Lookup word definition
-        spellBee.lookup_word_definition(wordIndex)
-        spellBee.display_word_cue("\n\nWord #" + str(wordIndex) + " means:")
+        spellBee.lookup_dictionary_by_index(wordIndex)
+        spellBee.display_word_cue(SB_PRACTICE_WORD_DEFN_TITLE.format(INDEX=wordIndex + 1))
         userResponse = raw_input("Enter spelling: ").strip()
 
         # E[x]it test
@@ -565,7 +578,7 @@ def run_error_scan(spellBee):
             break
 
         # Lookup word definition
-        spellBee.lookup_word_definition(wordIndex)
+        spellBee.lookup_dictionary_by_index(wordIndex)
         print "Scanned word #{0}: {1}".format(wordIndex + 1, spellBee.activeWord)
 
         # Move to next word
