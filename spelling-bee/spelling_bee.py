@@ -28,6 +28,7 @@ import math
 import re
 import urllib3
 import codecs
+import unicodedata
 from xml.dom import minidom
 import pygame
 
@@ -41,8 +42,9 @@ import common.rpimod.stdio.output as coutput
 
 SB_CHAPTER_SIZE = 50
 SB_MEANING_COUNT = 3
-SB_REPEAT_COUNT = 1
+SB_REPEAT_COUNT = 0
 SB_REPEAT_DELAY = 1.5
+SB_TEST_MODE = "easy"                                           # Available test modes are: easy, medium and difficult
 SB_DATA_DIR = "/home/pi/projects/raspi/spelling-bee/data"
 
 ################################################################
@@ -94,7 +96,6 @@ class SpellingBee(object):
 
         wordFileName = SB_DATA_DIR + "/" + SB_DICT_WORD_FILE
         wordFileName = wordFileName.format(YEAR=year)
-        #wordFile = open(wordFileName, "r")
         wordFile = codecs.open(wordFileName, mode='r', encoding='utf-8')
         self.wordList = wordFile.read().encode('utf-8').splitlines()                # Use of splitlines() avoids the newline character from being stored in the word list
         wordFile.close()
@@ -155,7 +156,6 @@ class SpellingBee(object):
     def print_active_word_list(self):
         self.display_about()
         print ""
-        # todo: fix columnize function considering number of bytes instead of characters
         coutput.columnize(self.wordList[self.activeRangeStart : self.activeRangeEnd + 1], 5)
 
     def get_word_index(self, searchWord):
@@ -250,7 +250,6 @@ class SpellingBee(object):
         # Setup connection and error logging
         connectionPool = urllib3.PoolManager()
         errorFileName = SB_DATA_DIR + "/" + SB_ERR_LOG
-        #errorFile = open(errorFileName, "a")
         errorFile = codecs.open(errorFileName, mode='a', encoding='utf-8')
 
         # Check offline for dictionary entry
@@ -303,8 +302,7 @@ class SpellingBee(object):
             if wordClip == "":
                 errorFile.write("ERROR:Missing Audio:{0}\n".format(self.activeWord).decode('utf-8'))
             else:
-                # Determine audio clip folder
-                # Reference: http://www.dictionaryapi.com/info/faq-audio-image.htm
+                # Determine audio clip folder. Reference: http://www.dictionaryapi.com/info/faq-audio-image.htm
                 if re.match('^bix.*', wordClip):
                     wordClipFolder = "bix"
                 elif re.match('^gg.*', wordClip):
@@ -362,6 +360,39 @@ class SpellingBee(object):
         self.activeTestScore = ""
         self.activeTestValuations = []
         self.activePracticeWords = []
+
+    def valuate_test_response(self, testResponse, testWord, testMode):
+        valuationMode = testMode.lower()
+        valuationResponse = unicode(testResponse, 'utf-8').strip()
+        valuationWord = unicode(testWord, 'utf-8').strip()
+
+        if testMode == "easy":
+            testDifficultyLevel = 0
+        elif testMode == "medium":
+            testDifficultyLevel = 1
+        elif testMode == "difficult":
+            testDifficultyLevel = 2
+
+        # Rule difficulty goes from high to low
+        # Most difficult rule would be relaxed in most number of levels
+        if testDifficultyLevel < 2:
+            # Relax foreign character restriction
+            valuationResponse = unicodedata.normalize('NFKD', valuationResponse).encode('ASCII', 'ignore')
+            valuationResponse = unicode(valuationResponse, 'utf-8')
+            valuationWord = unicodedata.normalize('NFKD', valuationWord).encode('ASCII', 'ignore')
+            valuationWord = unicode(valuationWord, 'utf-8')
+
+        if testDifficultyLevel < 1:
+            # Relax letter case restriction
+            valuationResponse = valuationResponse.lower()
+            valuationWord = valuationWord.lower()
+
+        if valuationResponse == valuationWord:
+            valuationResult = True
+        else:
+            valuationResult = False
+
+        return valuationResult
 
     def log_test_result(self, testDate, testScore):
         self.activeTestDate = testDate
@@ -485,7 +516,7 @@ def run_test(spellBee):
         # Lookup word definition
         spellBee.lookup_word_definition(wordIndex)
         spellBee.display_word_cue("\n\nWord #" + str(wordIndex) + " means:")
-        userResponse = raw_input("Enter spelling: ")
+        userResponse = raw_input("Enter spelling: ").strip()
 
         # E[x]it test
         if userResponse.lower() == "x":
@@ -495,18 +526,21 @@ def run_test(spellBee):
             continue
         else:
             # Process correct response
-            if userResponse == spellBee.activeWord:
+            if spellBee.valuate_test_response(userResponse, spellBee.activeWord, SB_TEST_MODE):
                 testValuation = SB_RIGHT_SYMBOL + " " + userResponse
                 testCorrectCount += 1
             # Process incorrect response
             else:
-                testValuation = SB_WRONG_SYMBOL + " " + userResponse + " (" + spellBee.activeWord + ")"
+                testValuation = SB_WRONG_SYMBOL + " " + userResponse
                 spellBee.log_practice_word(spellBee.activeWord)
+
+            # Indicate correct form of the answer, if different from the response
+            if userResponse != spellBee.activeWord:
+                testValuation = testValuation + " (" + spellBee.activeWord + ")"
             
             # Save and display valuation
             spellBee.log_test_valuation(testValuation)
             print " " * 50 + testValuation
-    
 
         # Move to next word
         wordIndex += 1

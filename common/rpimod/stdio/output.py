@@ -21,12 +21,12 @@ def columnize(list, numCols):
     elementMargin = OUT_MARGIN_WIDTH                               
 
     if len(list) > 0:
-        elementMaxLength = max([len(element) for element in list])
+        elementMaxLength = max([len(unicode(element, 'utf-8')) for element in list])
 
         for rowIndex in range(0, rowCount):
             elementIndex = rowIndex
             for colIndex in range(0, colCount):
                 if elementIndex < elementCount:
-                    print list[elementIndex].ljust(elementMaxLength + elementMargin, ' '),
+                    print unicode(list[elementIndex], 'utf-8').ljust(elementMaxLength + elementMargin, ' '),
                     elementIndex += rowCount
             print ""                                    # print row break
