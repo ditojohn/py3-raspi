@@ -176,7 +176,7 @@ pedigree
 hubbub
 several
 galaxy
-torent
+torrent
 announcer
 beverage
 waist
