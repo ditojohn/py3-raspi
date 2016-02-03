@@ -1,0 +1,5 @@
+
+# setup bashrc customization
+if [ -r "$HOME/projects/raspi/config/.bashrc" ] ; then
+    . $HOME/projects/raspi/config/.bashrc
+fi

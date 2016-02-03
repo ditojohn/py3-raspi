@@ -69,14 +69,14 @@ sudo apt-get install ksh
 echo "Custom packages - Setup complete"
 
 
-echo "User Profile - Setting up ..."
+echo "bashrc - Setting up ..."
 cd ~
 
 SETUP_CFG_DIR=~
-SETUP_CFG_FIL=.profile
+SETUP_CFG_FIL=.bashrc
 cp -p ${SETUP_CFG_DIR}/${SETUP_CFG_FIL} ${SETUP_CFG_DIR}/${SETUP_CFG_FIL}.${SETUP_TS}.bak
-cat ${SETUP_DIR}/profile_addendum.txt >> ${SETUP_CFG_DIR}/${SETUP_CFG_FIL}
-echo "User Profile - Setup complete"
+cat ${SETUP_DIR}/bashrc_addendum.txt >> ${SETUP_CFG_DIR}/${SETUP_CFG_FIL}
+echo "bashrc - Setup complete"
 
 # Manual post-installation steps required to be completed:
 #
