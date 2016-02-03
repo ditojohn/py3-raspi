@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*-
 
 ################################################################
-# Syntax :   sudo python spelling_bee.py runMode contestYear mode selection
-# where      runMode is practice, scan or test.
-#            contestYear is the year of the contest in YYYY format
+# Syntax :   sudo python spelling_bee.py runMode contestList mode selection
+# where      runMode is study, practice, scan or test.
+#            contestList is the word list identifier for the contest in YYYY[-language][-challenge] format
 #            mode is chapter, count or word.
 #                In chapter mode, the next argument is the chapter number
 #                    selection is the chapter number of the word list to be practiced.
@@ -13,7 +13,8 @@
 #                    selection is the index range of words in the word list to be practiced.
 #                In word mode, the next argument is the word range
 #                    selection is the range of words in the word list to be practiced.
-# Example:    sudo python spelling_bee.py practice 2016 chapter 7
+# Example:    sudo python spelling_bee.py study 2016 chapter 7
+#             sudo python spelling_bee.py practice 2016-asian-languages count 1
 #             sudo python spelling_bee.py test 2016 count 10-15
 #             sudo python spelling_bee.py practice 2016 word lary-frees
 #             sudo python spelling_bee.py scan 2016 count 10-15
@@ -47,12 +48,19 @@ SB_REPEAT_DELAY = 1.5
 SB_TEST_MODE = "easy"                                           # Available test modes are: easy, medium and difficult
 SB_DATA_DIR = "/home/pi/projects/raspi/spelling-bee/data"
 
+# Spelling Bee Word Lists: Processing Tips
+# Obtain word lists from http://myspellit.com/
+# Copy lists from the print section and paste into excel
+# Apply the foll. regex replacements to cleanse words
+#    "^[0-9]*\. "  
+#    " [\[][0-9]*]$"
+
 ################################################################
 # Internal variables
 ################################################################
 
-SB_DICT_OFFLINE_DIR = SB_DATA_DIR
-SB_DICT_WORD_FILE = "spelling_bee_{YEAR}.txt"
+SB_DICT_OFFLINE_DIR = SB_DATA_DIR + '/dict'
+SB_DICT_WORD_FILE = "spelling_bee_{LISTID}.txt"
 SB_DICT_OFFLINE_ENTR = "sb_{WORD}.xml"
 SB_DICT_OFFLINE_CLIP = "sb_{WORD}.wav"
 
@@ -68,6 +76,7 @@ SB_WRONG_SYMBOL = 'X'
 SB_PRACTICE_KEYBOARD_MENU = "[N]ext [P]revious [R]epeat Re[v]iew [S]how [L]ookup [H]elp E[x]it"
 SB_TEST_KEYBOARD_MENU = "[R]epeat E[x]it"
 
+SB_STUDY_WORD_DEFN_TITLE="\n\nDefinition of word #{INDEX} ({WORD}):"
 SB_PRACTICE_WORD_DEFN_TITLE="\n\nDefinition of word #{INDEX}:"
 SB_LOOKUP_WORD_DEFN_TITLE="\nDefinition of {WORD}:"
 
@@ -78,7 +87,7 @@ class SpellingBee(object):
     """
     A Spelling Bee assistant to help with word list navigation and dictionary lookup.
     It has the following attributes:
-        contestYear: A string representing the year of the spelling bee contest
+        contestList: A string representing the word list identifier for the contest in YYYY[-language][-challenge] format
         wordList: A list containing words loaded from wordFile
         activeChapter: 
         activeRangeStart: 
@@ -94,11 +103,11 @@ class SpellingBee(object):
         chapter_count():
         active_word_count():
     """
-    def __init__(self, year, mode, selection):
-        self.contestYear = year
+    def __init__(self, listID, mode, selection):
+        self.contestList = listID
 
         wordFileName = SB_DATA_DIR + "/" + SB_DICT_WORD_FILE
-        wordFileName = wordFileName.format(YEAR=year)
+        wordFileName = wordFileName.format(LISTID=listID)
         wordFile = codecs.open(wordFileName, mode='r', encoding='utf-8')
         self.wordList = wordFile.read().encode('utf-8').splitlines()                # Use of splitlines() avoids the newline character from being stored in the word list
         wordFile.close()
@@ -147,13 +156,13 @@ class SpellingBee(object):
         return len(self.wordList)
 
     def chapter_count(self):
-        return int(math.ceil(len(self.wordList)/SB_CHAPTER_SIZE))
+        return int(math.ceil(float(len(self.wordList))/float(SB_CHAPTER_SIZE)))
 
     def active_word_count(self):
         return (self.activeRangeEnd - self.activeRangeStart + 1)
 
     def display_about(self):
-        print "Spelling Bee {0}".format(self.contestYear)
+        print "Spelling Bee {0}".format(self.contestList)
         print "Word Count [{0}] Chapter [{1}/{2}] Words [{3}-{4}]".format(self.word_count(), self.activeChapter, self.chapter_count(), self.activeRangeStart + 1, self.activeRangeEnd + 1)
 
     def print_active_word_list(self):
@@ -181,23 +190,60 @@ class SpellingBee(object):
 
         return cleansedXML
 
-    # todo: Improve lookup/pronunciation with root word match e.g. resume, molasses
+    # todo: Improve lookup/pronunciation with root word match e.g. idiosyncratic <uor>
     # todo: Implement dictionary XML parsing as a library
-    def parse_word_clip(self, entryXML):
+    def parse_word_clip(self, word, entryXML):
+        currentWord = unicode(word, 'utf-8')
+        sourceXML = entryXML
+
+        sourceXML = self.cleanse_formatting(sourceXML)
+        dictEntryXML = minidom.parseString(sourceXML)
         wordClip = ""
 
-        wordClips = []
-        dictEntryXML = minidom.parseString(entryXML)
-        # Process <wav> elements
-        wavElements = dictEntryXML.getElementsByTagName('wav')
-        for wavElement in wavElements:
-            if wavElement.firstChild.nodeType == wavElement.firstChild.TEXT_NODE:
-                wordClips.append(wavElement.firstChild.data)
-        if len(wordClips) != 0:
-            wordClips.sort()
-            wordClip = wordClips[0]
+        # Process <entry> elements
+        entryElements = dictEntryXML.getElementsByTagName('entry')
+        if len(entryElements) != 0:
+            
+            # Set default entry to first entry
+            matchingEntry = entryElements[0]
+
+            # Pass #1: Process <hw> tag to locate matching entry
+            for entryElement in entryElements:
+                hwElements = entryElement.getElementsByTagName('hw')
+                if len(hwElements) != 0:
+                    if hwElements[0].firstChild.nodeType == hwElements[0].firstChild.TEXT_NODE:
+                        rootWord = hwElements[0].firstChild.data.replace("*", "")
+                        if rootWord == currentWord:
+                            matchingEntry = entryElement
+                            break
+
+            # todo: Implement pass to scan <uor> tag
+            
+            # Pass #2: Process <wav> tag to locate first available pronunciation
+            if matchingEntry == entryElements[0]:
+                for entryElement in entryElements:
+                    
+                    tempClip = ""
+                    
+                    # Process <wav> elements
+                    wavElements = entryElement.getElementsByTagName('wav')
+                    for wavIndex, wavElement in enumerate(wavElements, start=0):
+                        if wavElement.firstChild.nodeType == wavElement.firstChild.TEXT_NODE:
+                            tempClip = wavElement.firstChild.data
+
+                    if tempClip != "":
+                        matchingEntry = entryElement
+                        break
+
+            # Retrieve clip from matched dictionary entry
+            # Process <wav> elements
+            wavElements = matchingEntry.getElementsByTagName('wav')
+            if len(wavElements) != 0:
+                if wavElements[0].firstChild.nodeType == wavElements[0].firstChild.TEXT_NODE:
+                    wordClip = wavElements[0].firstChild.data
 
         return wordClip
+
 
     def parse_word_root(self, entryXML):
         wordRoot = ""
@@ -214,38 +260,72 @@ class SpellingBee(object):
 
         return wordRoot
 
-    def parse_word_definition(self, entryXML):
+    def parse_word_definition(self, word, entryXML):
+        currentWord = unicode(word, 'utf-8')
+        sourceXML = entryXML
+
+        sourceXML = self.cleanse_formatting(sourceXML)
+        dictEntryXML = minidom.parseString(sourceXML)
         wordDefinition = ""
 
-        sourceXML = entryXML
-        sourceXML = self.cleanse_formatting(sourceXML)
-
-        dictEntryXML = minidom.parseString(sourceXML)
         # Process <entry> elements
         entryElements = dictEntryXML.getElementsByTagName('entry')
         if len(entryElements) != 0:
-            for entryElement in entryElements:
-                # Retrieve definition from dictionary entry
-                # Process <dt> elements
-                dtElements = entryElement.getElementsByTagName('dt')
-                for dtIndex, dtElement in enumerate(dtElements, start=0):
-                    if dtElement.firstChild.nodeType == dtElement.firstChild.TEXT_NODE:
-                        dtText = dtElement.firstChild.data.replace(":", "")
-                        if dtText != "":
-                            wordDefinition = wordDefinition + dtText.strip() + "\n"
-                    
-                    # Process <sx> elements
-                    sxElements = dtElement.getElementsByTagName('sx')
-                    for sxIndex, sxElement in enumerate(sxElements, start=0):
-                        if sxElement.firstChild.nodeType == dtElement.firstChild.TEXT_NODE:
-                            sxText = sxElement.firstChild.data.replace(":", "")
-                            if sxIndex < len(sxElements) - 1:
-                                wordDefinition = wordDefinition + sxText.strip() + ", "
-                            else:
-                                wordDefinition = wordDefinition + sxText.strip() + "\n"
+            
+            # Set default entry to first entry
+            matchingEntry = entryElements[0]
 
-                if wordDefinition != "":
-                    break
+            # Pass #1: Process <hw> tag to locate matching entry
+            for entryElement in entryElements:
+                hwElements = entryElement.getElementsByTagName('hw')
+                if len(hwElements) != 0:
+                    if hwElements[0].firstChild.nodeType == hwElements[0].firstChild.TEXT_NODE:
+                        rootWord = hwElements[0].firstChild.data.replace("*", "")
+                        if rootWord == currentWord:
+                            matchingEntry = entryElement
+                            break
+
+            # Pass #2: Process <dt> tag to locate first available definition
+            if matchingEntry == entryElements[0]:
+                for entryElement in entryElements:
+                    
+                    tempDefinition = ""
+                    
+                    # Process <dt> elements
+                    dtElements = entryElement.getElementsByTagName('dt')
+                    for dtIndex, dtElement in enumerate(dtElements, start=0):
+                        if dtElement.firstChild.nodeType == dtElement.firstChild.TEXT_NODE:
+                            tempDefinition = tempDefinition + dtElement.firstChild.data.replace(":", "") + ";"
+
+                        # Process <sx> elements
+                        sxElements = dtElement.getElementsByTagName('sx')
+                        for sxIndex, sxElement in enumerate(sxElements, start=0):
+                            if sxElement.firstChild.nodeType == dtElement.firstChild.TEXT_NODE:
+                                tempDefinition = tempDefinition + sxElement.firstChild.data.replace(":", "") + ";"
+
+                    if tempDefinition != "":
+                        matchingEntry = entryElement
+                        break
+
+
+            # Retrieve definition from matched dictionary entry
+            # Process <dt> elements
+            dtElements = matchingEntry.getElementsByTagName('dt')
+            for dtIndex, dtElement in enumerate(dtElements, start=0):
+                if dtElement.firstChild.nodeType == dtElement.firstChild.TEXT_NODE:
+                    dtText = dtElement.firstChild.data.replace(":", "")
+                    if dtText != "":
+                        wordDefinition = wordDefinition + dtText.strip() + "\n"
+                
+                # Process <sx> elements
+                sxElements = dtElement.getElementsByTagName('sx')
+                for sxIndex, sxElement in enumerate(sxElements, start=0):
+                    if sxElement.firstChild.nodeType == dtElement.firstChild.TEXT_NODE:
+                        sxText = sxElement.firstChild.data.replace(":", "")
+                        if sxIndex < len(sxElements) - 1:
+                            wordDefinition = wordDefinition + sxText.strip() + ", "
+                        else:
+                            wordDefinition = wordDefinition + sxText.strip() + "\n"
 
         return wordDefinition
 
@@ -268,7 +348,7 @@ class SpellingBee(object):
             self.activeEntry = offlineEntryFile.read().encode('utf-8')
             offlineEntryFile.close()
 
-            self.activeDefinition = self.parse_word_definition(self.activeEntry)
+            self.activeDefinition = self.parse_word_definition(self.activeWord, self.activeEntry)
         else:
             # Download dictionary entry
             dictEntryURL = SB_DICT_MW_ENTRY_URL.format(WORD=self.activeWord, KEY=SB_DICT_MW_KEY).replace(" ", "%20")
@@ -288,7 +368,7 @@ class SpellingBee(object):
                 errorFile.write("ERROR:Entry Mismatch:{0}\n".format(self.activeWord).decode('utf-8'))
 
             # Retrieve word definition
-            self.activeDefinition = self.parse_word_definition(dictEntryResponse.data)
+            self.activeDefinition = self.parse_word_definition(self.activeWord, dictEntryResponse.data)
             if self.activeDefinition == "":
                 errorFile.write("ERROR:Missing Definition:{0}\n".format(self.activeWord).decode('utf-8'))
 
@@ -301,7 +381,7 @@ class SpellingBee(object):
             self.activePronunciation = offlineProncnFileName
         else:
             # Retrieve pronunciation audio clip filename
-            wordClip = self.parse_word_clip(self.activeEntry)
+            wordClip = self.parse_word_clip(self.activeWord, self.activeEntry)
 
             # Save pronunciation offline
             if wordClip == "":
@@ -334,7 +414,7 @@ class SpellingBee(object):
     def lookup_dictionary_by_index(self, index):
         self.lookup_dictionary_by_word(self.wordList[index])
        
-
+    # todo: Exclude meanings from being displayed if it contains the word itself
     def print_word_definition(self):
         if self.activeDefinition == "":
             print "ERROR: Unable to lookup dictionary definition"
@@ -428,25 +508,33 @@ def init_app():
     # Switch audio output to 3.5 mm jack
     os.system("amixer -q cset numid=3 1")
 
+    # Suspend input from stdin
+    cinput.set_term_input(False)
+
 def exit_app():
     # Switch audio output back to auto
     os.system("amixer -q cset numid=3 0")
+
+    # Resume input from stdin
+    cinput.set_term_input(True)
 
     print "\n\nThank you for practicing for Spelling Bee.\n"
     exit()
 
 def display_help(runMode):
-    if runMode.lower() == "practice":
-        print "{0} Keyboard Menu: {1}".format(runMode.title(), SB_PRACTICE_KEYBOARD_MENU)
-    else:
+    if runMode == "test":
         print "{0} Keyboard Menu: {1}".format(runMode.title(), SB_TEST_KEYBOARD_MENU)
+    else:
+        print "{0} Keyboard Menu: {1}".format(runMode.title(), SB_PRACTICE_KEYBOARD_MENU)
+
 
 # todo: Implement goto feature to specify new start/stop words
-def run_practice(spellBee):
+def run_practice(spellBee, practiceMode):
 
+    userPracticeMode = practiceMode.strip().lower()
     spellBee.display_about()
-    display_help("practice")
-    userInput = cinput.get_keypress("\nReady to practice? Press any key when ready ... ")
+    display_help(userPracticeMode)
+    userInput = cinput.get_keypress("\nReady to {0}? Press any key when ready ... ".format(userPracticeMode))
 
     wordIndex = spellBee.activeRangeStart
 
@@ -456,7 +544,10 @@ def run_practice(spellBee):
 
         # Lookup word definition
         spellBee.lookup_dictionary_by_index(wordIndex)
-        spellBee.display_word_cue(SB_PRACTICE_WORD_DEFN_TITLE.format(INDEX=wordIndex + 1))
+        if userPracticeMode == "study":
+            spellBee.display_word_cue(SB_STUDY_WORD_DEFN_TITLE.format(INDEX=wordIndex + 1, WORD=spellBee.wordList[wordIndex]))
+        else:
+            spellBee.display_word_cue(SB_PRACTICE_WORD_DEFN_TITLE.format(INDEX=wordIndex + 1))
         userInput = cinput.get_keypress(SB_PROMPT_SYMBOL)
         
         while True:
@@ -470,7 +561,10 @@ def run_practice(spellBee):
                 break
             # [R]epeat current word
             elif userInput.lower() == "r":
-                spellBee.display_word_cue(SB_PRACTICE_WORD_DEFN_TITLE.format(INDEX=wordIndex + 1))
+                if userPracticeMode == "study":
+                    spellBee.display_word_cue(SB_STUDY_WORD_DEFN_TITLE.format(INDEX=wordIndex + 1, WORD=spellBee.wordList[wordIndex]))
+                else:
+                    spellBee.display_word_cue(SB_PRACTICE_WORD_DEFN_TITLE.format(INDEX=wordIndex + 1))
                 userInput = cinput.get_keypress(SB_PROMPT_SYMBOL)
             # Re[v]iew active word list
             elif userInput.lower() == "v":
@@ -479,12 +573,11 @@ def run_practice(spellBee):
                 userInput = cinput.get_keypress(SB_PROMPT_SYMBOL)
             # [S]how current word spelling
             elif userInput.lower() == "s":
-                print "\n\nWord #{0} is {1}".format(wordIndex, spellBee.wordList[wordIndex])
+                print "\n\nWord #{0} is {1}".format(wordIndex + 1, spellBee.wordList[wordIndex])
                 userInput = cinput.get_keypress(SB_PROMPT_SYMBOL)
             # [L]ookup word definition and pronunciation
             elif userInput.lower() == "l":
-                print "\n"
-                userLookupWord = raw_input("Enter word to be looked up: ").strip()
+                userLookupWord = cinput.get_input("\n\nEnter word to be looked up: ")
                 spellBee.lookup_dictionary_by_word(userLookupWord)
                 spellBee.display_word_cue(SB_LOOKUP_WORD_DEFN_TITLE.format(WORD=userLookupWord))
                 # Reset lookup to current word
@@ -494,18 +587,18 @@ def run_practice(spellBee):
             elif userInput.lower() == "h":
                 print "\n"
                 spellBee.display_about()
-                display_help("practice")
+                display_help(userPracticeMode)
                 userInput = cinput.get_keypress(SB_PROMPT_SYMBOL)
             # E[x]it application
             elif userInput.lower() == "x":
                 exit_app()
             else:
-                print "\nInvalid response.\n"
-                spellBee.display_about()
-                display_help("practice")
+                print "\n\nInvalid response."
+                display_help(userPracticeMode)
                 userInput = cinput.get_keypress(SB_PROMPT_SYMBOL)
 
 
+# todo: Implement random test feature
 def run_test(spellBee):
 
     spellBee.display_about()
@@ -529,7 +622,7 @@ def run_test(spellBee):
         # Lookup word definition
         spellBee.lookup_dictionary_by_index(wordIndex)
         spellBee.display_word_cue(SB_PRACTICE_WORD_DEFN_TITLE.format(INDEX=wordIndex + 1))
-        userResponse = raw_input("Enter spelling: ").strip()
+        userResponse = cinput.get_input("Enter spelling: ")
 
         # E[x]it test
         if userResponse.lower() == "x":
@@ -593,20 +686,20 @@ def run_error_scan(spellBee):
 
 # Process command line arguments
 argParser = argparse.ArgumentParser()
-argParser.add_argument("runMode", help="is practice, scan or test", type=str)
-argParser.add_argument("contestYear", help="is the year of the contest in YYYY format", type=str)
+argParser.add_argument("runMode", help="is study, practice, test or scan", type=str)
+argParser.add_argument("contestList", help="is the word list identifier for the contest in YYYY[-language][-challenge] format", type=str)
 argParser.add_argument("mode", help="is chapter, count or word", type=str)
 argParser.add_argument("selection", help="is the chapter number, word index range or word range", type=str)
 args = argParser.parse_args()
 
 # Setup Spelling Bee word list
-spellBee = SpellingBee(args.contestYear, args.mode, args.selection)
+spellBee = SpellingBee(args.contestList, args.mode, args.selection)
 
 init_app()
 
 # Run Spelling Bee assistant in practice, test or scan mode
-if args.runMode.lower() == "practice":
-    run_practice(spellBee)
+if args.runMode.lower() == "study" or args.runMode.lower() == "practice":
+    run_practice(spellBee, args.runMode.lower())
 elif args.runMode.lower() == "test":
     run_test(spellBee)
 elif args.runMode.lower() == "scan":
