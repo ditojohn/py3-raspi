@@ -77,6 +77,7 @@ def get_keypress(prompt):
     print prompt ,
     userKeypress = getch()
     set_term_input(False)
+    print ""
     return userKeypress
 
 def get_input(prompt):
