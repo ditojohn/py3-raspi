@@ -48,7 +48,9 @@ SB_DEFINITION_COUNT = 3
 SB_DEFINITION_HIDE_EXPLICIT = True                              # Set to True if definitions containing the word are to be hidden
 SB_REPEAT_COUNT = 1
 SB_REPEAT_DELAY = 1.5
+SB_COLUMN_COUNT = 5
 SB_TEST_MODE = "easy"                                           # Available test modes are: easy, medium and difficult
+SB_TEST_SAVE_RESULT = True
 SB_DATA_DIR = "/home/pi/projects/raspi/spelling-bee/data"
 
 # Spelling Bee Word Lists: Processing Tips
@@ -71,6 +73,8 @@ SB_DICT_OFFLINE_DIR = SB_DATA_DIR + '/dict'
 SB_DICT_WORD_FILE = "spelling_bee_{LISTID}.txt"
 SB_DICT_OFFLINE_ENTR = "sb_{WORD}.xml"
 SB_DICT_OFFLINE_CLIP = "sb_{WORD}.wav"
+
+SB_PRACTICE_WORD_FILE = "spelling_bee_{LISTID}-practice.txt"
 
 #Sample dictionary API URL - http://www.dictionaryapi.com/api/v1/references/collegiate/xml/test?key=cbbd4001-c94d-493a-ac94-7268a7e41f6f
 SB_DICT_MW_KEY="cbbd4001-c94d-493a-ac94-7268a7e41f6f"
@@ -176,7 +180,7 @@ class SpellingBee(object):
     def print_active_word_list(self):
         self.display_about()
         print ""
-        coutput.columnize(self.wordList[self.activeRangeStart : self.activeRangeEnd + 1], 5)
+        coutput.print_columnized_list(self.wordList[self.activeRangeStart : self.activeRangeEnd + 1], SB_COLUMN_COUNT)
 
     def get_word_index(self, searchWord):
         resultIndex = -1
@@ -661,24 +665,96 @@ class SpellingBee(object):
     def log_test_valuation(self, testValuation):
         self.activeTestValuations.append(testValuation)
 
-    def display_test_result(self):
-        print "Test Date [{0}] Score [{1}]".format(self.activeTestDate, self.activeTestScore)
+    def display_test_result(self, saveEnabled):
+        separator = unicode("\n", 'utf-8')
+
+        if saveEnabled:
+            testFileName = SB_DATA_DIR + "/" + SB_TEST_LOG
+            testFile = codecs.open(testFileName, mode='a', encoding='utf-8')
+
+            practiceFileName = SB_DATA_DIR + "/" + SB_PRACTICE_WORD_FILE
+            practiceFileName = practiceFileName.format(LISTID=self.contestList)
+
+            practiceFile = codecs.open(practiceFileName, mode='r', encoding='utf-8')
+            currentPracticeWordList = practiceFile.read().encode('utf-8').splitlines()                # Use of splitlines() avoids the newline character from being stored in the word list
+            practiceFile.close()
+
+            practiceFile = codecs.open(practiceFileName, mode='a', encoding='utf-8')
+
+        # Print test header
+        self.display_about()
+        print separator,
+
+        # Save test header to test log
+        if saveEnabled:
+            testHeader  = unicode("=============== Start of Test Log ===============", 'utf-8')
+            testFile.write(testHeader)
+            testFile.write(separator)
+
+            testHeader = unicode("Spelling Bee {0}".format(self.contestList), 'utf-8')
+            testFile.write(testHeader)
+            testFile.write(separator)
+            
+            testHeader = unicode("Word Count [{0}] Chapter [{1}/{2}] Words [{3}-{4}]".format(self.word_count(), self.activeChapter, self.chapter_count(), self.activeRangeStart + 1, self.activeRangeEnd + 1), 'utf-8')
+            testFile.write(testHeader)
+            testFile.write(separator)
+
+        testHeader = unicode("Test Date [{0}] Score [{1}]\n".format(self.activeTestDate, self.activeTestScore), 'utf-8')
+        print testHeader,
+
+        if saveEnabled:        
+            testFile.write(testHeader)
+            testFile.write(separator)
         
+        # Print test valuations
         # Color code valuations
-        coloredTestValuations = self.activeTestValuations
-        for index, valuation in enumerate(coloredTestValuations, start=0):
+        coloredTestValuations = []
+        for valuation in self.activeTestValuations:
             if re.match('^' + SB_RIGHT_SYMBOL + '.*', valuation):
                 textColor = coutput.get_term_color('green', 'normal', 'normal')
             else:
                 textColor = coutput.get_term_color('red', 'normal', 'normal')
-            coloredTestValuations[index] = textColor + valuation + coutput.get_term_color('normal', 'normal', 'normal')
-        
-        #coutput.columnize(self.activeTestValuations, 5)
-        coutput.columnize(coloredTestValuations, 5)
+            coloredTestValuations.append(textColor + valuation + coutput.get_term_color('normal', 'normal', 'normal'))
+        coutput.print_columnized_list(coloredTestValuations, SB_COLUMN_COUNT)
+
+        if saveEnabled:
+            # Save test valuations to test log
+            columnizedTestValuations = coutput.columnize(self.activeTestValuations, SB_COLUMN_COUNT)
+            for row in columnizedTestValuations:
+                for col in row:
+                    testFile.write(col)
+                testFile.write(separator)
 
         if len(self.activePracticeWords) > 0:
-            print "\nPractice Words:"
-            coutput.columnize(self.activePracticeWords, 5)
+            # Print practice words
+            testPracticeHeader = unicode("\nPractice Words:\n", 'utf-8')
+            print testPracticeHeader,
+            coutput.print_columnized_list(self.activePracticeWords, SB_COLUMN_COUNT)
+
+            if saveEnabled:
+                # Save practice words to test log
+                testFile.write(testPracticeHeader)
+                columnizedPracticeWords = coutput.columnize(self.activePracticeWords, SB_COLUMN_COUNT)
+                for row in columnizedPracticeWords:
+                    for col in row:
+                        testFile.write(col)
+                    testFile.write(separator)
+
+                # Save practice words to practice file, if not already saved
+                for word in self.activePracticeWords:
+                    if word not in currentPracticeWordList:
+                        practiceFile.write(word)
+                        practiceFile.write(separator)
+
+        if saveEnabled:
+            # Save test trailer to test log
+            testTrailer = unicode("================ End of Test Log ================", 'utf-8')
+            testFile.write(testTrailer)
+            testFile.write(separator)
+                        
+            practiceFile.close()
+            testFile.close()
+
 
 def init_app():
     # Clear screen
@@ -842,9 +918,7 @@ def run_test(spellBee):
     spellBee.log_test_result(testDate, str(testCorrectCount) + "/" + str(testTotalCount))
     print "\nYour test is complete. Displaying results...\n"
     
-    spellBee.display_about()
-    print ""
-    spellBee.display_test_result()
+    spellBee.display_test_result(SB_TEST_SAVE_RESULT)
 
 
 def run_error_scan(spellBee):
