@@ -665,49 +665,53 @@ class SpellingBee(object):
     def log_test_valuation(self, testValuation):
         self.activeTestValuations.append(testValuation)
 
-    def display_test_result(self, saveEnabled):
+    def save_practice_words(self, saveEnabled):
         separator = unicode("\n", 'utf-8')
+
+        if len(self.activePracticeWords) > 0:
+
+            if saveEnabled:
+                practiceFileName = SB_DATA_DIR + "/" + SB_PRACTICE_WORD_FILE
+                practiceFileName = practiceFileName.format(LISTID=self.contestList)
+
+                # Get previously saved practice words
+                if os.path.isfile(practiceFileName) and os.path.getsize(practiceFileName) > 0:
+                    practiceFile = codecs.open(practiceFileName, mode='r', encoding='utf-8')
+                    currentPracticeWordList = practiceFile.read().encode('utf-8').splitlines()                # Use of splitlines() avoids the newline character from being stored in the word list
+                    practiceFile.close()
+                else:
+                    currentPracticeWordList = []
+
+                # Save practice words to practice file, if not already saved
+                practiceFile = codecs.open(practiceFileName, mode='a', encoding='utf-8')
+                for word in self.activePracticeWords:
+                    if word not in currentPracticeWordList:
+                        practiceFile.write(word)
+                        practiceFile.write(separator)
+                practiceFile.close()
+
+
+    def display_test_result(self, saveEnabled):
+        testHeader  = unicode("=============== Start of Test Log ===============", 'utf-8')
+        testTrailer = unicode("================ End of Test Log ================", 'utf-8')
+        separator = unicode("\n", 'utf-8')
+
+        # Test header
+        displayText = separator + unicode("Spelling Bee {0}".format(self.contestList), 'utf-8')
+        displayText += separator + unicode("Word Count [{0}] Chapter [{1}/{2}] Words [{3}-{4}]".format(self.word_count(), self.activeChapter, self.chapter_count(), self.activeRangeStart + 1, self.activeRangeEnd + 1), 'utf-8')
+        displayText += separator
+        displayText += separator + unicode("Test Date [{0}] Score [{1}]".format(self.activeTestDate, self.activeTestScore), 'utf-8')
+
+        print displayText,
 
         if saveEnabled:
             testFileName = SB_DATA_DIR + "/" + SB_TEST_LOG
             testFile = codecs.open(testFileName, mode='a', encoding='utf-8')
-
-            practiceFileName = SB_DATA_DIR + "/" + SB_PRACTICE_WORD_FILE
-            practiceFileName = practiceFileName.format(LISTID=self.contestList)
-
-            practiceFile = codecs.open(practiceFileName, mode='r', encoding='utf-8')
-            currentPracticeWordList = practiceFile.read().encode('utf-8').splitlines()                # Use of splitlines() avoids the newline character from being stored in the word list
-            practiceFile.close()
-
-            practiceFile = codecs.open(practiceFileName, mode='a', encoding='utf-8')
-
-        # Print test header
-        self.display_about()
-        print separator,
-
-        # Save test header to test log
-        if saveEnabled:
-            testHeader  = unicode("=============== Start of Test Log ===============", 'utf-8')
             testFile.write(testHeader)
-            testFile.write(separator)
+            testFile.write(displayText)
 
-            testHeader = unicode("Spelling Bee {0}".format(self.contestList), 'utf-8')
-            testFile.write(testHeader)
-            testFile.write(separator)
-            
-            testHeader = unicode("Word Count [{0}] Chapter [{1}/{2}] Words [{3}-{4}]".format(self.word_count(), self.activeChapter, self.chapter_count(), self.activeRangeStart + 1, self.activeRangeEnd + 1), 'utf-8')
-            testFile.write(testHeader)
-            testFile.write(separator)
-
-        testHeader = unicode("Test Date [{0}] Score [{1}]\n".format(self.activeTestDate, self.activeTestScore), 'utf-8')
-        print testHeader,
-
-        if saveEnabled:        
-            testFile.write(testHeader)
-            testFile.write(separator)
-        
-        # Print test valuations
-        # Color code valuations
+        # Test valuations
+        # Print colorized test valuations
         coloredTestValuations = []
         for valuation in self.activeTestValuations:
             if re.match('^' + SB_RIGHT_SYMBOL + '.*', valuation):
@@ -715,44 +719,40 @@ class SpellingBee(object):
             else:
                 textColor = coutput.get_term_color('red', 'normal', 'normal')
             coloredTestValuations.append(textColor + valuation + coutput.get_term_color('normal', 'normal', 'normal'))
+
+        print separator,
         coutput.print_columnized_list(coloredTestValuations, SB_COLUMN_COUNT)
 
         if saveEnabled:
-            # Save test valuations to test log
             columnizedTestValuations = coutput.columnize(self.activeTestValuations, SB_COLUMN_COUNT)
             for row in columnizedTestValuations:
+                testFile.write(separator)
                 for col in row:
                     testFile.write(col)
-                testFile.write(separator)
 
+        # Test practice words
         if len(self.activePracticeWords) > 0:
-            # Print practice words
-            testPracticeHeader = unicode("\nPractice Words:\n", 'utf-8')
-            print testPracticeHeader,
-            coutput.print_columnized_list(self.activePracticeWords, SB_COLUMN_COUNT)
+            displayText = separator + unicode("Practice Words:", 'utf-8')
+            for row in coutput.columnize(self.activePracticeWords, SB_COLUMN_COUNT):
+                displayText += separator
+                for col in row:
+                    displayText += col
+                
+            print displayText,
 
             if saveEnabled:
-                # Save practice words to test log
-                testFile.write(testPracticeHeader)
-                columnizedPracticeWords = coutput.columnize(self.activePracticeWords, SB_COLUMN_COUNT)
-                for row in columnizedPracticeWords:
-                    for col in row:
-                        testFile.write(col)
-                    testFile.write(separator)
+                testFile.write(separator)
+                testFile.write(displayText)
 
-                # Save practice words to practice file, if not already saved
-                for word in self.activePracticeWords:
-                    if word not in currentPracticeWordList:
-                        practiceFile.write(word)
-                        practiceFile.write(separator)
+                # Save practice words
+                self.save_practice_words(saveEnabled)
 
+        # Test trailer
         if saveEnabled:
             # Save test trailer to test log
-            testTrailer = unicode("================ End of Test Log ================", 'utf-8')
+            testFile.write(separator)
             testFile.write(testTrailer)
             testFile.write(separator)
-                        
-            practiceFile.close()
             testFile.close()
 
 
