@@ -23,14 +23,14 @@ def columnize(list, numCols):
     columnizedList = []
 
     if len(list) > 0:
-        elementMaxLength = max([len(unicode(element, 'utf-8')) for element in list])
+        elementMaxLength = max([len(element) for element in list])
 
         for rowIndex in range(0, rowCount):
             row = []
             elementIndex = rowIndex
             for colIndex in range(0, colCount):
                 if elementIndex < elementCount:
-                    row.append(unicode(list[elementIndex], 'utf-8').ljust(elementMaxLength + elementMargin, ' '))
+                    row.append(list[elementIndex].ljust(elementMaxLength + elementMargin, ' '))
                     elementIndex += rowCount
             columnizedList.append(row)
 
@@ -43,6 +43,14 @@ def print_columnized_list(list, numCols):
         for col in row:
             print col,
         print ""
+
+def print_columnized_slice(list, sliceIndexList, numCols):
+    slicedList = []
+    for index in sliceIndexList:
+        slicedList.append(list[index])
+
+    print_columnized_list(slicedList, numCols)
+
 
 # Print to the terminal in color. References:
 # https://en.wikipedia.org/wiki/ANSI_escape_code#CSI_codes
