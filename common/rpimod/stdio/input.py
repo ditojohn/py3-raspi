@@ -7,7 +7,7 @@
 # Date        : 2015/12/03
 #--------------------------------------------------------------------------------------------------
 
-import sys, termios
+import sys, termios, time
 #--------------------------------------------------------------------------------------------------
 # Class       : _Getch
 # Function    : Gets a single character from standard input.  Does not echo to the screen.
@@ -73,6 +73,7 @@ def set_term_input(enabled):
         termios.tcflow(sys.stdin, termios.TCIOFF)        # Suspend input
 
 def get_keypress(prompt):
+    time.sleep(0.05)                                     # Sleep to allow pending I/O operations to complete
     set_term_input(True)
     print prompt ,
     userKeypress = getch()
@@ -81,6 +82,7 @@ def get_keypress(prompt):
     return userKeypress
 
 def get_input(prompt):
+    time.sleep(0.05)                                     # Sleep to allow pending I/O operations to complete    
     set_term_input(True)
     userInput = raw_input(prompt).strip()
     set_term_input(False)
