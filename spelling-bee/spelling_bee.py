@@ -51,7 +51,7 @@ SB_REPEAT_DELAY = 1.5
 SB_COLUMN_COUNT = 5
 SB_TEST_MODE = "easy"                                           # Available test modes are: easy, medium and difficult
 SB_TEST_SAVE_RESULT = True
-SB_DATA_DIR = "/home/pi/projects/raspi/spelling-bee/data"
+SB_DATA_DIR = "/home/pi/projects/raspi/spelling-bee/data/"
 
 # Spelling Bee Word Lists: Processing Tips
 # Obtain word lists from http://myspellit.com/
@@ -66,26 +66,29 @@ SB_DATA_DIR = "/home/pi/projects/raspi/spelling-bee/data"
 
 SB_ERR_DEBUG = False                                             # Set to True to turn debug messages on
 
-SB_ERR_LOG = "spelling_bee_errors.log"
-SB_TEST_LOG = "spelling_bee_tests.log"
+SB_ERR_LOG = unicode("spelling_bee_errors.log", 'utf-8')
+SB_TEST_LOG = unicode("spelling_bee_tests.log", 'utf-8')
 
-SB_DICT_OFFLINE_DIR = SB_DATA_DIR + '/dict'
-SB_DICT_WORD_FILE = "spelling_bee_{LISTID}.txt"
-SB_DICT_OFFLINE_ENTR = "sb_{WORD}.xml"
-SB_DICT_OFFLINE_CLIP = "sb_{WORD}.wav"
+SB_DICT_OFFLINE_DIR = unicode(SB_DATA_DIR + 'dict/', 'utf-8')
+SB_DICT_WORD_FILE = unicode("spelling_bee_{LISTID}.txt", 'utf-8')
+SB_DICT_OFFLINE_ENTR = unicode("sb_{WORD}.xml", 'utf-8')
+SB_DICT_OFFLINE_CLIP = unicode("sb_{WORD}.wav", 'utf-8')
 
-SB_PRACTICE_WORD_FILE = "spelling_bee_{LISTID}-practice.txt"
+SB_PRACTICE_WORD_FILE = unicode("spelling_bee_{LISTID}-practice.txt", 'utf-8')
 
-SB_LIST_BULLET = '•'
-SB_PROMPT_SYMBOL = "> "
-SB_RIGHT_SYMBOL = '√'
-SB_WRONG_SYMBOL = 'X'
-SB_PRACTICE_KEYBOARD_MENU = "[N]ext [P]revious [R]epeat Re[v]iew [S]how [L]ookup [H]elp E[x]it"
-SB_TEST_KEYBOARD_MENU = "[R]epeat E[x]it"
+SB_LIST_BULLET = unicode('• ', 'utf-8')
+SB_PROMPT_SYMBOL = unicode("> ", 'utf-8')
+SB_RIGHT_SYMBOL = unicode('√', 'utf-8')
+SB_WRONG_SYMBOL = unicode('X', 'utf-8')
+SB_PRACTICE_KEYBOARD_MENU = unicode("[N]ext [P]revious [R]epeat Re[v]iew [S]how [L]ookup [H]elp E[x]it", 'utf-8')
+SB_TEST_KEYBOARD_MENU = unicode("[R]epeat E[x]it", 'utf-8')
 
-SB_STUDY_WORD_DEFN_TITLE="\nDefinition of word #{INDEX} ({WORD}):"
-SB_PRACTICE_WORD_DEFN_TITLE="\nDefinition of word #{INDEX}:"
-SB_LOOKUP_WORD_DEFN_TITLE="\nDefinition of {WORD}:"
+SB_STUDY_WORD_DEFN_TITLE = unicode("\nDefinition of word #{INDEX} ({WORD}):", 'utf-8')
+SB_PRACTICE_WORD_DEFN_TITLE = unicode("\nDefinition of word #{INDEX}:", 'utf-8')
+SB_LOOKUP_WORD_DEFN_TITLE = unicode("\nDefinition of {WORD}:", 'utf-8')
+
+SB_NEWLINE = unicode("\n", 'utf-8')
+SB_EMPTY_STRING = unicode("", 'utf-8')
 
 
 class SpellingBee(object):
@@ -116,14 +119,14 @@ class SpellingBee(object):
 
         self.contestList = listID
 
-        wordFileName = SB_DATA_DIR + "/" + SB_DICT_WORD_FILE
+        wordFileName = SB_DATA_DIR + SB_DICT_WORD_FILE
         wordFileName = wordFileName.format(LISTID=listID)
         wordFile = codecs.open(wordFileName, mode='r', encoding='utf-8')
-        self.wordList = wordFile.read().encode('utf-8').splitlines()                # Use of splitlines() avoids the newline character from being stored in the word list
+        self.wordList = wordFile.read().splitlines()                # Use of splitlines() avoids the newline character from being stored in the word list
         wordFile.close()
 
         rangeSelection = selection.split("-")
-        self.activeChapter = "-"
+        self.activeChapter = "0"
 
         if mode.lower() == "chapter":
             self.activeChapter = int(rangeSelection[0])
@@ -167,16 +170,14 @@ class SpellingBee(object):
             if self.activeRangeEnd >= len(self.wordList):
                 self.activeRangeEnd = len(self.wordList) - 1
 
-        coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "activeWordIndexList :: {0}".format(self.activeWordIndexList))
-
-        self.activeWord = ""
-        self.activeEntry = ""
+        self.activeWord = SB_EMPTY_STRING
+        self.activeEntry = SB_EMPTY_STRING
         self.activeDefinition = []
-        self.activePronunciation = ""
-        self.activePronunciationWord = ""
+        self.activePronunciation = SB_EMPTY_STRING
+        self.activePronunciationWord = SB_EMPTY_STRING
         
-        self.activeTestDate = ""
-        self.activeTestScore = ""
+        self.activeTestDate = SB_EMPTY_STRING
+        self.activeTestScore = SB_EMPTY_STRING
         self.activeTestValuations = []
         self.activePracticeWords = []
 
@@ -187,16 +188,17 @@ class SpellingBee(object):
         return int(math.ceil(float(len(self.wordList))/float(SB_CHAPTER_SIZE)))
 
     def active_word_count(self):
-        return (self.activeRangeEnd - self.activeRangeStart + 1)
+        return len(self.activeWordIndexList)
 
     def display_about(self):
         print "Spelling Bee {0}".format(self.contestList)
         print "Word Count [{0}] Chapter [{1}/{2}] Words [{3}-{4}]".format(self.word_count(), self.activeChapter, self.chapter_count(), self.activeRangeStart + 1, self.activeRangeEnd + 1)
 
+    # todo: Update display function for random word lists
     def print_active_word_list(self):
         self.display_about()
-        print ""
-        coutput.print_columnized_list(self.wordList[self.activeRangeStart : self.activeRangeEnd + 1], SB_COLUMN_COUNT)
+        print SB_EMPTY_STRING
+        coutput.print_columnized_slice(self.wordList, self.activeWordIndexList, SB_COLUMN_COUNT)
 
     def get_word_index(self, searchWord):
         resultIndex = -1
@@ -208,25 +210,42 @@ class SpellingBee(object):
 
     def lookup_dictionary_by_word(self, word):
         _FUNC_NAME_ = "lookup_dictionary_by_word"
+
+        DEBUG_VAR="self.wordList[0]"
+        coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(self.wordList[0])))
+        coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
+
+        DEBUG_VAR="word"
+        coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(word)))
+        coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
+
         self.activeWord = word.strip()
         
         # Setup connection and error logging
         connectionPool = urllib3.PoolManager()
-        errorFileName = SB_DATA_DIR + "/" + SB_ERR_LOG
+        errorFileName = SB_DATA_DIR + SB_ERR_LOG
         errorFile = codecs.open(errorFileName, mode='a', encoding='utf-8')
 
         # Check offline for dictionary entry
-        self.activeEntry = ""
+        self.activeEntry = SB_EMPTY_STRING
         self.activeDefinition = []
-        offlineEntryFileName = SB_DICT_OFFLINE_DIR + "/" + SB_DICT_OFFLINE_ENTR.format(WORD=self.activeWord).replace(" ", "_")
+
+        offlineEntryFileName = SB_DICT_OFFLINE_DIR + SB_DICT_OFFLINE_ENTR.format(WORD=word).replace(" ", "_")
 
         if os.path.isfile(offlineEntryFileName) and os.path.getsize(offlineEntryFileName) > 100:
             coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "offlineEntryFile size :: {0}".format(os.path.getsize(offlineEntryFileName)))
 
             offlineEntryFile = codecs.open(offlineEntryFileName, mode='r', encoding='utf-8')
-            # Encode as utf-8 while reading XML file
+            # Handle XML parsing in ascii
             self.activeEntry = offlineEntryFile.read().encode('utf-8')
             offlineEntryFile.close()
+
+            DEBUG_VAR="self.activeWord"
+            coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(self.activeWord)))
+            coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
+            DEBUG_VAR="self.activeEntry"
+            coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(self.activeEntry)))
+            coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
 
             self.activeDefinition = cdict.parse_word_definition(self.activeWord, self.activeEntry)
         else:
@@ -243,13 +262,15 @@ class SpellingBee(object):
             # Retrieve word definition
             self.activeDefinition = cdict.parse_word_definition(self.activeWord, self.activeEntry)
             if len(self.activeDefinition) == 0:
-                errorFile.write("ERROR:Missing Definition:{0}\n".format(self.activeWord).decode('utf-8'))
+                errorText = unicode("ERROR:Missing Definition:{0}\n", 'utf-8')
+                errorText = errorText.format(self.activeWord)
+                errorFile.write(errorText)
 
 
         # Check offline for word pronunciation
-        self.activePronunciation = ""
-        self.activePronunciationWord = ""
-        offlineProncnFileName = SB_DICT_OFFLINE_DIR + "/" + SB_DICT_OFFLINE_CLIP.format(WORD=self.activeWord).replace(" ", "_")
+        self.activePronunciation = SB_EMPTY_STRING
+        self.activePronunciationWord = SB_EMPTY_STRING
+        offlineProncnFileName = SB_DICT_OFFLINE_DIR + SB_DICT_OFFLINE_CLIP.format(WORD=self.activeWord).replace(" ", "_")
 
         # Retrieve pronunciation audio clip word form and filename
         [wordClipForm, wordClipURL] = cdict.parse_word_clip(self.activeWord, self.activeEntry)
@@ -260,8 +281,10 @@ class SpellingBee(object):
             self.activePronunciationWord = wordClipForm
         else:
             # Save pronunciation offline
-            if wordClipURL == "":
-                errorFile.write("ERROR:Missing Audio:{0}\n".format(self.activeWord).decode('utf-8'))
+            if wordClipURL == SB_EMPTY_STRING:
+                errorText = unicode("ERROR:Missing Audio:{0}\n", 'utf-8')
+                errorText = errorText.format(self.activeWord)
+                errorFile.write(errorText)
             else:
                 # Download audio clip
                 wordClipAudio = cdict.get_dictionary_audio(connectionPool, wordClipURL)
@@ -281,30 +304,27 @@ class SpellingBee(object):
        
     def print_word_definition(self):
         if len(self.activeDefinition) == 0:
-            #print "ERROR: Unable to lookup dictionary definition"
             coutput.print_err("Unable to lookup dictionary definition")
         else:
             definitionIndex = 0
             for definition in self.activeDefinition:
                 if definitionIndex >= SB_DEFINITION_COUNT:
                     break
-                formattedDefinition = unicode(SB_LIST_BULLET + " ", 'utf-8') + definition
 
                 # Check for definitions that contain the word itself
                 if SB_DEFINITION_HIDE_EXPLICIT:
-                    if re.match('.*' + self.activeWord.lower() + '[ .$].*', definition.lower()) is None:
-                        print formattedDefinition
-                        definitionIndex += 1
-                else:
-                    print formattedDefinition
-                    definitionIndex += 1
+                    formattedDefinition = re.sub(self.activeWord, '*' * len(self.activeWord), definition, flags=re.IGNORECASE)
+
+                formattedDefinition = SB_LIST_BULLET + formattedDefinition
+                print formattedDefinition
+                definitionIndex += 1
 
     def pronounce_word(self):
-        if self.activePronunciation == "":
+        if self.activePronunciation == SB_EMPTY_STRING:
             coutput.print_err("Unable to lookup audio pronunciation")
         else:
-            wordToken = re.sub('[^a-zA-Z]', "", unicode(self.activeWord, 'utf-8').lower())
-            pronunciationToken = re.sub('[^a-zA-Z]', "", self.activePronunciationWord.lower())
+            wordToken = re.sub('[^a-zA-Z]', SB_EMPTY_STRING, self.activeWord.lower())
+            pronunciationToken = re.sub('[^a-zA-Z]', SB_EMPTY_STRING, self.activePronunciationWord.lower())
             if wordToken != pronunciationToken:
                 coutput.print_warn("A different form of the word is being pronounced")
                     
@@ -324,15 +344,15 @@ class SpellingBee(object):
             time.sleep(SB_REPEAT_DELAY)
 
     def reset_test_result(self):
-        self.activeTestDate = ""
-        self.activeTestScore = ""
+        self.activeTestDate = SB_EMPTY_STRING
+        self.activeTestScore = SB_EMPTY_STRING
         self.activeTestValuations = []
         self.activePracticeWords = []
 
     def valuate_test_response(self, testResponse, testWord, testMode):
         valuationMode = testMode.lower()
         valuationResponse = unicode(testResponse, 'utf-8').strip()
-        valuationWord = unicode(testWord, 'utf-8').strip()
+        valuationWord = testWord.strip()
 
         if testMode == "easy":
             testDifficultyLevel = 0
@@ -373,18 +393,18 @@ class SpellingBee(object):
         self.activeTestValuations.append(testValuation)
 
     def save_practice_words(self, saveEnabled):
-        separator = unicode("\n", 'utf-8')
+        _FUNC_NAME_ = "save_practice_words"
 
         if len(self.activePracticeWords) > 0:
 
             if saveEnabled:
-                practiceFileName = SB_DATA_DIR + "/" + SB_PRACTICE_WORD_FILE
+                practiceFileName = SB_DATA_DIR + SB_PRACTICE_WORD_FILE
                 practiceFileName = practiceFileName.format(LISTID=self.contestList)
 
                 # Get previously saved practice words
                 if os.path.isfile(practiceFileName) and os.path.getsize(practiceFileName) > 0:
                     practiceFile = codecs.open(practiceFileName, mode='r', encoding='utf-8')
-                    currentPracticeWordList = practiceFile.read().encode('utf-8').splitlines()                # Use of splitlines() avoids the newline character from being stored in the word list
+                    currentPracticeWordList = practiceFile.read().splitlines()                # Use of splitlines() avoids the newline character from being stored in the word list
                     practiceFile.close()
                 else:
                     currentPracticeWordList = []
@@ -392,27 +412,31 @@ class SpellingBee(object):
                 # Save practice words to practice file, if not already saved
                 practiceFile = codecs.open(practiceFileName, mode='a', encoding='utf-8')
                 for word in self.activePracticeWords:
+                    
+                    DEBUG_VAR="word"
+                    coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(word)))
+                    coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
+
                     if word not in currentPracticeWordList:
                         practiceFile.write(word)
-                        practiceFile.write(separator)
+                        practiceFile.write(SB_NEWLINE)
                 practiceFile.close()
 
 
     def display_test_result(self, saveEnabled):
         testHeader  = unicode("=============== Start of Test Log ===============", 'utf-8')
         testTrailer = unicode("================ End of Test Log ================", 'utf-8')
-        separator = unicode("\n", 'utf-8')
 
         # Test header
-        displayText = separator + unicode("Spelling Bee {0}".format(self.contestList), 'utf-8')
-        displayText += separator + unicode("Word Count [{0}] Chapter [{1}/{2}] Words [{3}-{4}]".format(self.word_count(), self.activeChapter, self.chapter_count(), self.activeRangeStart + 1, self.activeRangeEnd + 1), 'utf-8')
-        displayText += separator
-        displayText += separator + unicode("Test Date [{0}] Score [{1}]".format(self.activeTestDate, self.activeTestScore), 'utf-8')
+        displayText = SB_NEWLINE + unicode("Spelling Bee {0}".format(self.contestList), 'utf-8')
+        displayText += SB_NEWLINE + unicode("Word Count [{0}] Chapter [{1}/{2}] Words [{3}-{4}]".format(self.word_count(), self.activeChapter, self.chapter_count(), self.activeRangeStart + 1, self.activeRangeEnd + 1), 'utf-8')
+        displayText += SB_NEWLINE
+        displayText += SB_NEWLINE + unicode("Test Date [{0}] Score [{1}]".format(self.activeTestDate, self.activeTestScore), 'utf-8')
 
         print displayText,
 
         if saveEnabled:
-            testFileName = SB_DATA_DIR + "/" + SB_TEST_LOG
+            testFileName = SB_DATA_DIR + SB_TEST_LOG
             testFile = codecs.open(testFileName, mode='a', encoding='utf-8')
             testFile.write(testHeader)
             testFile.write(displayText)
@@ -427,28 +451,28 @@ class SpellingBee(object):
                 textColor = coutput.get_term_color('red', 'normal', 'normal')
             coloredTestValuations.append(textColor + valuation + coutput.get_term_color('normal', 'normal', 'normal'))
 
-        print separator,
+        print SB_NEWLINE,
         coutput.print_columnized_list(coloredTestValuations, SB_COLUMN_COUNT)
 
         if saveEnabled:
             columnizedTestValuations = coutput.columnize(self.activeTestValuations, SB_COLUMN_COUNT)
             for row in columnizedTestValuations:
-                testFile.write(separator)
+                testFile.write(SB_NEWLINE)
                 for col in row:
                     testFile.write(col)
 
         # Test practice words
         if len(self.activePracticeWords) > 0:
-            displayText = separator + unicode("Practice Words:", 'utf-8')
+            displayText = SB_NEWLINE + unicode("Practice Words:", 'utf-8')
             for row in coutput.columnize(self.activePracticeWords, SB_COLUMN_COUNT):
-                displayText += separator
+                displayText += SB_NEWLINE
                 for col in row:
                     displayText += col
                 
             print displayText,
 
             if saveEnabled:
-                testFile.write(separator)
+                testFile.write(SB_NEWLINE)
                 testFile.write(displayText)
 
                 # Save practice words
@@ -457,9 +481,9 @@ class SpellingBee(object):
         # Test trailer
         if saveEnabled:
             # Save test trailer to test log
-            testFile.write(separator)
+            testFile.write(SB_NEWLINE)
             testFile.write(testTrailer)
-            testFile.write(separator)
+            testFile.write(SB_NEWLINE)
             testFile.close()
 
 
@@ -532,7 +556,7 @@ def run_practice(spellBee, practiceMode):
                 userInput = cinput.get_keypress(SB_PROMPT_SYMBOL)
             # Re[v]iew active word list
             elif userInput.lower() == "v":
-                print ""
+                print SB_EMPTY_STRING
                 spellBee.print_active_word_list()
                 userInput = cinput.get_keypress(SB_PROMPT_SYMBOL)
             # [S]how current word spelling
@@ -549,7 +573,7 @@ def run_practice(spellBee, practiceMode):
                 userInput = cinput.get_keypress(SB_PROMPT_SYMBOL)
             # Display [h]elp and statistics
             elif userInput.lower() == "h":
-                print ""
+                print SB_EMPTY_STRING
                 spellBee.display_about()
                 display_help(userPracticeMode)
                 userInput = cinput.get_keypress(SB_PROMPT_SYMBOL)
@@ -562,7 +586,6 @@ def run_practice(spellBee, practiceMode):
                 userInput = cinput.get_keypress(SB_PROMPT_SYMBOL)
 
 
-# todo: Implement random test feature
 def run_test(spellBee):
     _FUNC_NAME_ = "run_test"
 
@@ -574,19 +597,21 @@ def run_test(spellBee):
     testTotalCount = spellBee.active_word_count()
     testCorrectCount = 0
 
-    userResponse = ""
-    testValuation = ""
+    userResponse = SB_EMPTY_STRING
+    testValuation = SB_EMPTY_STRING
 
     spellBee.reset_test_result()
 
     activeWordIndex = 0
 
     while True:
+        coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "activeWordIndexList :: {0}".format(spellBee.activeWordIndexList))
         coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "activeWordIndex :: {0}".format(activeWordIndex))
         if (activeWordIndex < 0) or (activeWordIndex >= len(spellBee.activeWordIndexList)):
             break
 
         wordIndex = spellBee.activeWordIndexList[activeWordIndex]
+        coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "wordIndex :: {0}".format(wordIndex))
 
         # Lookup word definition
         spellBee.lookup_dictionary_by_index(wordIndex)
@@ -602,6 +627,7 @@ def run_test(spellBee):
         else:
 
             correctResponse = False
+
             # Process correct response
             if spellBee.valuate_test_response(userResponse, spellBee.activeWord, SB_TEST_MODE):
                 correctResponse = True
@@ -617,16 +643,18 @@ def run_test(spellBee):
                 testValuation = testValuation + " (" + spellBee.activeWord + ")"
 
             # Display valuation
+            # Handle display text in ascii
+            asciiTestValuation = testValuation.encode('utf-8')
             if correctResponse:
-                coutput.print_color('green', " " * 50 + testValuation)
+                coutput.print_color('green', " " * 50 + asciiTestValuation)
             else:
-                coutput.print_color('red', " " * 50 + testValuation)
+                coutput.print_color('red', " " * 50 + asciiTestValuation)
             
             # Save valuation
             spellBee.log_test_valuation(testValuation)
 
-        # Move to next word
-        activeWordIndex += 1
+            # Move to next word
+            activeWordIndex += 1
     
     spellBee.log_test_result(testDate, str(testCorrectCount) + "/" + str(testTotalCount))
     print "\nYour test is complete. Displaying results..."
@@ -655,7 +683,7 @@ def run_error_scan(spellBee):
         # Move to next word
         activeWordIndex += 1
     
-    print "\nError scan is complete. All errors are logged to {0}/{1}.".format(SB_DATA_DIR, SB_ERR_LOG)
+    print "\nError scan is complete. All errors are logged to {0}{1}.".format(SB_DATA_DIR, SB_ERR_LOG)
     
 
 ################################################################
