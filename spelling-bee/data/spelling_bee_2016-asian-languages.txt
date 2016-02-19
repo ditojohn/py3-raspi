@@ -6,6 +6,7 @@ jungle
 oolong
 nirvana
 bangle
+patel
 cummerbund
 juggernaut
 pangolin
@@ -31,4 +32,3 @@ kavya
 jiva
 pandit
 chintz
-patel
