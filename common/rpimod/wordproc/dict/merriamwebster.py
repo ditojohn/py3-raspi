@@ -22,9 +22,12 @@ ERR_DEBUG = False                                             # Set to True to t
 ################################################################
 
 # Sample dictionary API URL - http://www.dictionaryapi.com/api/v1/references/collegiate/xml/test?key=cbbd4001-c94d-493a-ac94-7268a7e41f6f
-DICT_ENTRY_URL="http://www.dictionaryapi.com/api/v1/references/collegiate/xml/{WORD}?key={KEY}"
-DICT_AUDIO_URL="http://media.merriam-webster.com/soundc11/{FOLDER}/{CLIP}"
-DICT_KEY="cbbd4001-c94d-493a-ac94-7268a7e41f6f"
+DICT_ENTRY_URL = unicode("http://www.dictionaryapi.com/api/v1/references/collegiate/xml/{WORD}?key={KEY}", 'utf-8')
+DICT_AUDIO_URL = unicode("http://media.merriam-webster.com/soundc11/{FOLDER}/{CLIP}", 'utf-8')
+DICT_KEY = unicode("cbbd4001-c94d-493a-ac94-7268a7e41f6f", 'utf-8')
+
+DICT_ASCII_EMPTY_STR = ""
+DICT_UNICODE_EMPTY_STR = unicode("", 'utf-8')
 
 
 def get_dictionary_entry(connectionPool, word):
@@ -32,8 +35,18 @@ def get_dictionary_entry(connectionPool, word):
 
     # Download dictionary entry
     dictEntryURL = DICT_ENTRY_URL.format(WORD=word, KEY=DICT_KEY).replace(" ", "%20")
+    dictEntryURL = dictEntryURL.encode('utf-8')             # Handle URL strings in ascii
+
+    DEBUG_VAR="dictEntryURL"
+    coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(dictEntryURL)))
+    coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
+
     dictEntryResponse = connectionPool.request('GET', dictEntryURL)
-    # todo: check return for str/unicode
+
+    DEBUG_VAR="dictEntryResponse.data"
+    coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(dictEntryResponse.data)))
+    coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
+
     return dictEntryResponse.data
 
 
@@ -47,26 +60,52 @@ def get_dictionary_audio(connectionPool, audioClipURL):
 
 def cleanse_dictionary_entry(entryXML):
     _FUNC_NAME_ = "cleanse_dictionary_entry"
-    # todo: Cleanse XML of formatting tags
+
+    DEBUG_VAR="entryXML"
+    coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(entryXML)))
+
+    # Handle XML cleansing in ascii
     cleansedXML = entryXML
 
-    cleanseTagList = ['d_link', 'fw', 'it', 'un']
+    DEBUG_VAR="cleansedXML"
+    coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(cleansedXML)))
+
+    cleanseTagList = []
+    for tag in ['d_link', 'fw', 'it', 'un']:
+        cleanseTagList.append(tag)
+    
     cleanseElementList = []
 
     for tag in cleanseTagList:
-        cleansedXML = cleansedXML.replace("<{0}>".format(tag), "").replace("</{0}>".format(tag), "")
+
+        DEBUG_VAR="tag"
+        coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(tag)))
+        coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
+
+        cleansedXML = cleansedXML.replace("<{0}>".format(tag), DICT_ASCII_EMPTY_STR).replace("</{0}>".format(tag), DICT_ASCII_EMPTY_STR)
 
     return cleansedXML
 
 
 def parse_word_definition(word, entryXML):
     _FUNC_NAME_ = "parse_word_definition"
-    searchWord = unicode(word, 'utf-8')
+    searchWord = word
+
+    DEBUG_VAR="entryXML"
+    coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(entryXML)))
     
+    # Handle XML parsing in ascii
     sourceXML = entryXML
     sourceXML = cleanse_dictionary_entry(sourceXML)
+
+    DEBUG_VAR="sourceXML"
+    coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(sourceXML)))
+
     dictEntryXML = minidom.parseString(sourceXML)
     wordDefinition = []
+
+    DEBUG_VAR="dictEntryXML"
+    coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(dictEntryXML)))
 
     # Process <entry> elements to locate match
     entryElements = dictEntryXML.getElementsByTagName('entry')
@@ -77,7 +116,7 @@ def parse_word_definition(word, entryXML):
         hwElements = entryElement.getElementsByTagName('hw')
         for hwElement in hwElements:
             if hwElement.firstChild.nodeType == hwElements[0].firstChild.TEXT_NODE:
-                hwText = hwElement.firstChild.data.replace("*", "")
+                hwText = hwElement.firstChild.data.replace("*", DICT_ASCII_EMPTY_STR)
                 if hwText.lower() == searchWord.lower():
                     wordFound = True
                     break
@@ -86,7 +125,7 @@ def parse_word_definition(word, entryXML):
         ureElements = entryElement.getElementsByTagName('ure')
         for ureElement in ureElements:
             if ureElement.firstChild.nodeType == ureElements[0].firstChild.TEXT_NODE:
-                ureText = ureElement.firstChild.data.replace("*", "")
+                ureText = ureElement.firstChild.data.replace("*", DICT_ASCII_EMPTY_STR)
                 if ureText.lower() == searchWord.lower():
                     wordFound = True
                     break
@@ -95,7 +134,7 @@ def parse_word_definition(word, entryXML):
         ifElements = entryElement.getElementsByTagName('if')
         for ifElement in ifElements:
             if ifElement.firstChild.nodeType == ifElements[0].firstChild.TEXT_NODE:
-                ifText = ifElement.firstChild.data.replace("*", "")
+                ifText = ifElement.firstChild.data.replace("*", DICT_ASCII_EMPTY_STR)
                 if ifText.lower() == searchWord.lower():
                     wordFound = True
                     break
@@ -105,25 +144,25 @@ def parse_word_definition(word, entryXML):
             dtElements = entryElement.getElementsByTagName('dt')
             for dtIndex, dtElement in enumerate(dtElements, start=0):
                 if dtElement.firstChild.nodeType == dtElement.firstChild.TEXT_NODE:
-                    dtText = re.sub("^[^:]*:", "", dtElement.firstChild.data)
-                    dtText = re.sub(":[^:]*$", "", dtText)
-                    if dtText != "":
-                        wordDefinition.append(dtText)
+                    dtText = re.sub("^[^:]*:", DICT_ASCII_EMPTY_STR, dtElement.firstChild.data)
+                    dtText = re.sub(":[^:]*$", DICT_ASCII_EMPTY_STR, dtText)
+                    if dtText != DICT_ASCII_EMPTY_STR:
+                        wordDefinition.append(dtText.decode('utf-8'))
                 
                 # Process <sx> elements
                 sxElements = dtElement.getElementsByTagName('sx')
-                sxCombinedText = ""
+                sxCombinedText = DICT_ASCII_EMPTY_STR
                 for sxIndex, sxElement in enumerate(sxElements, start=0):
                     if sxElement.firstChild.nodeType == dtElement.firstChild.TEXT_NODE:
-                        sxText = re.sub("^[^:]*:", "", sxElement.firstChild.data)
-                        sxText = re.sub(":[^:]*$", "", sxText)
-                        if sxText != "":
+                        sxText = re.sub("^[^:]*:", DICT_ASCII_EMPTY_STR, sxElement.firstChild.data)
+                        sxText = re.sub(":[^:]*$", DICT_ASCII_EMPTY_STR, sxText)
+                        if sxText != DICT_ASCII_EMPTY_STR:
                             if sxIndex < len(sxElements) - 1:
                                 sxCombinedText = sxCombinedText + sxText + ", "
                             else:
                                 sxCombinedText = sxCombinedText + sxText
-                if sxCombinedText != "":
-                    wordDefinition.append(sxCombinedText)
+                if sxCombinedText != DICT_ASCII_EMPTY_STR:
+                    wordDefinition.append(sxCombinedText.decode('utf-8'))
 
     # Scan all entries without matching, if no definitions were retrieved
     if len(wordDefinition) == 0:
@@ -134,43 +173,55 @@ def parse_word_definition(word, entryXML):
             dtElements = entryElement.getElementsByTagName('dt')
             for dtIndex, dtElement in enumerate(dtElements, start=0):
                 if dtElement.firstChild.nodeType == dtElement.firstChild.TEXT_NODE:
-                    dtText = re.sub("^[^:]*:", "", dtElement.firstChild.data)
-                    dtText = re.sub(":[^:]*$", "", dtText)
-                    if dtText != "":
-                        wordDefinition.append(dtText)
+                    dtText = re.sub("^[^:]*:", DICT_ASCII_EMPTY_STR, dtElement.firstChild.data)
+                    dtText = re.sub(":[^:]*$", DICT_ASCII_EMPTY_STR, dtText)
+                    if dtText != DICT_ASCII_EMPTY_STR:
+                        wordDefinition.append(dtText.decode('utf-8'))
                 
                 # Process <sx> elements
                 sxElements = dtElement.getElementsByTagName('sx')
-                sxCombinedText = ""
+                sxCombinedText = DICT_ASCII_EMPTY_STR
                 for sxIndex, sxElement in enumerate(sxElements, start=0):
                     if sxElement.firstChild.nodeType == dtElement.firstChild.TEXT_NODE:
-                        sxText = re.sub("^[^:]*:", "", sxElement.firstChild.data)
-                        sxText = re.sub(":[^:]*$", "", sxText)
-                        if sxText != "":
+                        sxText = re.sub("^[^:]*:", DICT_ASCII_EMPTY_STR, sxElement.firstChild.data)
+                        sxText = re.sub(":[^:]*$", DICT_ASCII_EMPTY_STR, sxText)
+                        if sxText != DICT_ASCII_EMPTY_STR:
                             if sxIndex < len(sxElements) - 1:
                                 sxCombinedText = sxCombinedText + sxText + ", "
                             else:
                                 sxCombinedText = sxCombinedText + sxText
-                if sxCombinedText != "":
-                    wordDefinition.append(sxCombinedText)
+                if sxCombinedText != DICT_ASCII_EMPTY_STR:
+                    wordDefinition.append(sxCombinedText.decode('utf-8'))
     
+    # Handle word definitions in unicode
     return wordDefinition
 
 
 # todo: Improve lookup/pronunciation with root word match e.g. idiosyncratic <uor>
 def parse_word_clip(word, entryXML):
     _FUNC_NAME_ = "parse_word_clip"
-    searchWord = unicode(word, 'utf-8')
+    searchWord = word
 
+    DEBUG_VAR="entryXML"
+    coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(entryXML)))
+
+    # Handle XML parsing in ascii
     sourceXML = entryXML
     sourceXML = cleanse_dictionary_entry(sourceXML)
+
+    DEBUG_VAR="sourceXML"
+    coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(sourceXML)))
+
     dictEntryXML = minidom.parseString(sourceXML)
+
+    DEBUG_VAR="dictEntryXML"
+    coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(dictEntryXML)))
 
     # Pass #1: Process <uro> tag to locate matching entry
     wordFound = False
     audioClipFound = False
-    audioClip = ""
-    audioClipWord = ""
+    audioClip = DICT_UNICODE_EMPTY_STR
+    audioClipWord = DICT_UNICODE_EMPTY_STR
 
     # Process <entry> elements
     entryElements = dictEntryXML.getElementsByTagName('entry')
@@ -182,8 +233,8 @@ def parse_word_clip(word, entryXML):
             ureElements = uroElement.getElementsByTagName('ure')
             for ureElement in ureElements:
                 if ureElement.firstChild.nodeType == ureElement.firstChild.TEXT_NODE:
-                    audioClipWord = ureElement.firstChild.data.replace("*", "").strip()
-                    if audioClipWord != "":
+                    audioClipWord = ureElement.firstChild.data.replace("*", DICT_UNICODE_EMPTY_STR).strip()
+                    if audioClipWord != DICT_UNICODE_EMPTY_STR:
                         break
 
             # Process first populated <wav> element to get audio clip
@@ -191,12 +242,12 @@ def parse_word_clip(word, entryXML):
             for wavElement in wavElements:
                 if wavElement.firstChild.nodeType == wavElement.firstChild.TEXT_NODE:
                     audioClip = wavElement.firstChild.data.strip()
-                    if audioClip != "":
+                    if audioClip != DICT_UNICODE_EMPTY_STR:
                         break
 
             if audioClipWord == searchWord:
                 wordFound = True
-                if audioClip != "":
+                if audioClip != DICT_UNICODE_EMPTY_STR:
                     audioClipFound = True
 
             if wordFound:
@@ -209,8 +260,8 @@ def parse_word_clip(word, entryXML):
     if audioClipFound == False:
         wordFound = False
         audioClipFound = False
-        audioClip = ""
-        audioClipWord = ""
+        audioClip = DICT_UNICODE_EMPTY_STR
+        audioClipWord = DICT_UNICODE_EMPTY_STR
 
         # Process <entry> elements
         entryElements = dictEntryXML.getElementsByTagName('entry')
@@ -223,8 +274,8 @@ def parse_word_clip(word, entryXML):
                 ifElements = inElement.getElementsByTagName('if')
                 for ifElement in ifElements:
                     if ifElement.firstChild.nodeType == ifElement.firstChild.TEXT_NODE:
-                        audioClipWord = ifElement.firstChild.data.replace("*", "").strip()
-                        if audioClipWord != "":
+                        audioClipWord = ifElement.firstChild.data.replace("*", DICT_UNICODE_EMPTY_STR).strip()
+                        if audioClipWord != DICT_UNICODE_EMPTY_STR:
                             break
 
                 # Process first populated <wav> element to get audio clip
@@ -232,12 +283,12 @@ def parse_word_clip(word, entryXML):
                 for wavElement in wavElements:
                     if wavElement.firstChild.nodeType == wavElement.firstChild.TEXT_NODE:
                         audioClip = wavElement.firstChild.data.strip()
-                        if audioClip != "":
+                        if audioClip != DICT_UNICODE_EMPTY_STR:
                             break
 
                 if audioClipWord == searchWord:
                     wordFound = True
-                    if audioClip != "":
+                    if audioClip != DICT_UNICODE_EMPTY_STR:
                         audioClipFound = True
 
                 if wordFound:
@@ -251,8 +302,8 @@ def parse_word_clip(word, entryXML):
 
         wordFound = False
         audioClipFound = False
-        audioClip = ""
-        audioClipWord = ""
+        audioClip = DICT_UNICODE_EMPTY_STR
+        audioClipWord = DICT_UNICODE_EMPTY_STR
 
         # Process <entry> elements
         entryElements = dictEntryXML.getElementsByTagName('entry')
@@ -261,7 +312,7 @@ def parse_word_clip(word, entryXML):
             for hwElement in hwElements:
 
                 if hwElement.firstChild.nodeType == hwElement.firstChild.TEXT_NODE:
-                    audioClipWord = hwElement.firstChild.data.replace("*", "").strip()
+                    audioClipWord = hwElement.firstChild.data.replace("*", DICT_UNICODE_EMPTY_STR).strip()
 
                     if audioClipWord == searchWord:
                         wordFound = True
@@ -272,7 +323,7 @@ def parse_word_clip(word, entryXML):
                             if wavElement.firstChild.nodeType == wavElement.firstChild.TEXT_NODE:
                                 audioClip = wavElement.firstChild.data.strip()
 
-                                if audioClip != "":
+                                if audioClip != DICT_UNICODE_EMPTY_STR:
                                     audioClipFound = True
                                     break
 
@@ -287,8 +338,8 @@ def parse_word_clip(word, entryXML):
 
         wordFound = False
         audioClipFound = False
-        audioClip = ""
-        audioClipWord = ""
+        audioClip = DICT_UNICODE_EMPTY_STR
+        audioClipWord = DICT_UNICODE_EMPTY_STR
 
         # Process <entry> elements
         entryElements = dictEntryXML.getElementsByTagName('entry')
@@ -299,7 +350,7 @@ def parse_word_clip(word, entryXML):
                 if wavElement.firstChild.nodeType == wavElement.firstChild.TEXT_NODE:
                     audioClip = wavElement.firstChild.data.strip()
 
-                if audioClip != "":
+                if audioClip != DICT_UNICODE_EMPTY_STR:
                     audioClipFound = True
 
                     # Process <hw> elements to get root word
@@ -307,9 +358,9 @@ def parse_word_clip(word, entryXML):
                     for hwElement in hwElements:
 
                         if hwElement.firstChild.nodeType == hwElement.firstChild.TEXT_NODE:
-                            audioClipWord = hwElement.firstChild.data.replace("*", "").strip()
+                            audioClipWord = hwElement.firstChild.data.replace("*", DICT_UNICODE_EMPTY_STR).strip()
 
-                            if audioClipWord != "":
+                            if audioClipWord != DICT_UNICODE_EMPTY_STR:
                                 wordFound == True
                                 break
 
@@ -347,4 +398,4 @@ def parse_word_clip(word, entryXML):
 
         return [audioClipWord, audioClipURL]
     else:
-        return ["", ""]
+        return [DICT_UNICODE_EMPTY_STR, DICT_UNICODE_EMPTY_STR]
