@@ -15,31 +15,40 @@
 # Reboot
 
 echo "Setting up Raspberry Pi 2 ..."
-SETUP_TS=$(date +"%Y-%m-%d-%T")
+SETUP_TS=$(date +"%Y%m%d%H%M%S")
 SETUP_DIR=~/projects/raspi/config
 
+
+echo "---------------------------------------------------------"
 echo "WiFi configuration - Setting up ..."
-cd ~
-sudo apt-get install wpagui
+echo "Configure WiFi association from the desktop system tray."
 
-SETUP_CFG_DIR=/etc/network
-SETUP_CFG_FIL=interfaces
-sudo cp -p ${SETUP_CFG_DIR}/${SETUP_CFG_FIL} ${SETUP_CFG_DIR}/${SETUP_CFG_FIL}.${SETUP_TS}.bak
-sudo cat ${SETUP_DIR}/${SETUP_CFG_FIL} | sudo tee ${SETUP_CFG_DIR}/${SETUP_CFG_FIL}
+# WiFi configuration is included from NOOBS 1.7.0 upwards.
+# For previous versions, use steps provided below.
 
-SETUP_CFG_DIR=/etc/wpa_supplicant
-SETUP_CFG_FIL=wpa_supplicant.conf
-sudo cp -p ${SETUP_CFG_DIR}/${SETUP_CFG_FIL} ${SETUP_CFG_DIR}/${SETUP_CFG_FIL}.${SETUP_TS}.bak
-sudo cat ${SETUP_DIR}/${SETUP_CFG_FIL} | sudo tee ${SETUP_CFG_DIR}/${SETUP_CFG_FIL}
-sudo chmod 600 ${SETUP_CFG_DIR}/${SETUP_CFG_FIL}
-sudo adduser pi netdev
+#cd ~
+#sudo apt-get install wpagui#
 
-echo "WiFi configuration - Manual SSID and Password update"
-echo "Use 'sudo vi /etc/network/interfaces' to update WiFi SSID and password manually."
+#SETUP_CFG_DIR=/etc/network
+#SETUP_CFG_FIL=interfaces
+#sudo cp -p ${SETUP_CFG_DIR}/${SETUP_CFG_FIL} ${SETUP_CFG_DIR}/${SETUP_CFG_FIL}.${SETUP_TS}.bak
+#sudo cat ${SETUP_DIR}/${SETUP_CFG_FIL} | sudo tee ${SETUP_CFG_DIR}/${SETUP_CFG_FIL}#
+
+#SETUP_CFG_DIR=/etc/wpa_supplicant
+#SETUP_CFG_FIL=wpa_supplicant.conf
+#sudo cp -p ${SETUP_CFG_DIR}/${SETUP_CFG_FIL} ${SETUP_CFG_DIR}/${SETUP_CFG_FIL}.${SETUP_TS}.bak
+#sudo cat ${SETUP_DIR}/${SETUP_CFG_FIL} | sudo tee ${SETUP_CFG_DIR}/${SETUP_CFG_FIL}
+#sudo chmod 600 ${SETUP_CFG_DIR}/${SETUP_CFG_FIL}
+#sudo adduser pi netdev#
+
+#echo "WiFi configuration - Manual SSID and Password update"
+#echo "Use 'sudo vi /etc/network/interfaces' to update WiFi SSID and password manually."
+
 read -p "Press any key when ready ..." -n1 -s; echo ""
 echo "WiFi configuration - Setup complete"
+echo "---------------------------------------------------------"
 
-
+echo "---------------------------------------------------------"
 echo "VNC configuration - Setting up ..."
 cd ~
 sudo apt-get install x11vnc
@@ -62,13 +71,17 @@ echo "VNC configuration - Manual 'Desktop Autologin' update"
 echo "Use 'sudo raspi-config' to select '3 Boot Options > B4 Desktop Autologin' option manually."
 read -p "Press any key when ready ..." -n1 -s; echo ""
 echo "VNC configuration - Setup complete"
+echo "---------------------------------------------------------"
 
 
+echo "---------------------------------------------------------"
 echo "Custom packages - Setting up ..."
 sudo apt-get install ksh
 echo "Custom packages - Setup complete"
+echo "---------------------------------------------------------"
 
 
+echo "---------------------------------------------------------"
 echo "bashrc - Setting up ..."
 cd ~
 
@@ -77,6 +90,7 @@ SETUP_CFG_FIL=.bashrc
 cp -p ${SETUP_CFG_DIR}/${SETUP_CFG_FIL} ${SETUP_CFG_DIR}/${SETUP_CFG_FIL}.${SETUP_TS}.bak
 cat ${SETUP_DIR}/bashrc_addendum.txt >> ${SETUP_CFG_DIR}/${SETUP_CFG_FIL}
 echo "bashrc - Setup complete"
+echo "---------------------------------------------------------"
 
 # Manual post-installation steps required to be completed:
 #
