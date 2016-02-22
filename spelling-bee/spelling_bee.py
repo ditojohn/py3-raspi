@@ -64,7 +64,8 @@ SB_DATA_DIR = "/home/pi/projects/raspi/spelling-bee/data/"
 # Internal variables
 ################################################################
 
-SB_ERR_DEBUG = False                                             # Set to True to turn debug messages on
+# Set to True to turn debug messages on
+SB_ERR_DEBUG = False
 
 SB_ERR_LOG = unicode("spelling_bee_errors.log", 'utf-8')
 SB_TEST_LOG = unicode("spelling_bee_tests.log", 'utf-8')
@@ -220,6 +221,10 @@ class SpellingBee(object):
         coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
 
         self.activeWord = word.strip()
+
+        DEBUG_VAR="self.activeWord"
+        coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(self.activeWord)))
+        coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
         
         # Setup connection and error logging
         connectionPool = urllib3.PoolManager()
@@ -236,13 +241,9 @@ class SpellingBee(object):
             coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "offlineEntryFile size :: {0}".format(os.path.getsize(offlineEntryFileName)))
 
             offlineEntryFile = codecs.open(offlineEntryFileName, mode='r', encoding='utf-8')
-            # Handle XML parsing in ascii
-            self.activeEntry = offlineEntryFile.read().encode('utf-8')
+            self.activeEntry = offlineEntryFile.read()
             offlineEntryFile.close()
 
-            DEBUG_VAR="self.activeWord"
-            coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(self.activeWord)))
-            coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
             DEBUG_VAR="self.activeEntry"
             coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(self.activeEntry)))
             coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
@@ -252,11 +253,15 @@ class SpellingBee(object):
             # Download dictionary entry
             self.activeEntry = cdict.get_dictionary_entry(connectionPool, self.activeWord)
 
+            DEBUG_VAR="self.activeEntry"
+            coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(self.activeEntry)))
+            coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
+
             # Save dictionary entry offline
             offlineEntryFile = codecs.open(offlineEntryFileName, mode='w', encoding='utf-8')
             # Decode as utf-8 while writing XML file
             # todo: Implement file read/write operations as a library
-            offlineEntryFile.write(self.activeEntry.decode('utf-8'))
+            offlineEntryFile.write(self.activeEntry)
             offlineEntryFile.close()
 
             # Retrieve word definition

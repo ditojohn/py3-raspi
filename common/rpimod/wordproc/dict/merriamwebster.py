@@ -15,7 +15,8 @@ from xml.dom import minidom
 sys.path.insert(0, "/home/pi/projects/raspi")
 import common.rpimod.stdio.output as coutput
 
-ERR_DEBUG = False                                             # Set to True to turn debug messages on
+# Set to True to turn debug messages on
+ERR_DEBUG = False
 
 ################################################################
 # Dictionary Configuration Variables
@@ -47,7 +48,13 @@ def get_dictionary_entry(connectionPool, word):
     coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(dictEntryResponse.data)))
     coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
 
-    return dictEntryResponse.data
+    # Convert XML to unicode
+    if isinstance(dictEntryResponse.data, str):
+        outputXML = unicode(dictEntryResponse.data, 'utf-8')
+    else:
+        outputXML = dictEntryResponse.data
+
+    return outputXML
 
 
 def get_dictionary_audio(connectionPool, audioClipURL):
@@ -65,7 +72,10 @@ def cleanse_dictionary_entry(entryXML):
     coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(entryXML)))
 
     # Handle XML cleansing in ascii
-    cleansedXML = entryXML
+    if isinstance(entryXML, str):
+        cleansedXML = entryXML
+    else:
+        cleansedXML = entryXML.encode('utf-8')
 
     DEBUG_VAR="cleansedXML"
     coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(cleansedXML)))
@@ -84,7 +94,13 @@ def cleanse_dictionary_entry(entryXML):
 
         cleansedXML = cleansedXML.replace("<{0}>".format(tag), DICT_ASCII_EMPTY_STR).replace("</{0}>".format(tag), DICT_ASCII_EMPTY_STR)
 
-    return cleansedXML
+    # Convert XML to unicode
+    if isinstance(cleansedXML, str):
+        outputXML = unicode(cleansedXML, 'utf-8')
+    else:
+        outputXML = cleansedXML
+
+    return outputXML
 
 
 def parse_word_definition(word, entryXML):
@@ -93,10 +109,12 @@ def parse_word_definition(word, entryXML):
 
     DEBUG_VAR="entryXML"
     coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(entryXML)))
-    
-    # Handle XML parsing in ascii
-    sourceXML = entryXML
-    sourceXML = cleanse_dictionary_entry(sourceXML)
+
+    sourceXML = cleanse_dictionary_entry(entryXML)
+
+    # Handle XML cleansing in ascii
+    if isinstance(sourceXML, unicode):
+        sourceXML = sourceXML.encode('utf-8')
 
     DEBUG_VAR="sourceXML"
     coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(sourceXML)))
@@ -147,7 +165,16 @@ def parse_word_definition(word, entryXML):
                     dtText = re.sub("^[^:]*:", DICT_ASCII_EMPTY_STR, dtElement.firstChild.data)
                     dtText = re.sub(":[^:]*$", DICT_ASCII_EMPTY_STR, dtText)
                     if dtText != DICT_ASCII_EMPTY_STR:
-                        wordDefinition.append(dtText.decode('utf-8'))
+
+                        DEBUG_VAR="dtText"
+                        coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(dtText)))
+                        coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
+
+                        if isinstance(dtText, str):
+                            wordDefinition.append(unicode(dtText, 'utf-8'))
+                        else:
+                            wordDefinition.append(dtText)
+                        
                 
                 # Process <sx> elements
                 sxElements = dtElement.getElementsByTagName('sx')
@@ -162,7 +189,11 @@ def parse_word_definition(word, entryXML):
                             else:
                                 sxCombinedText = sxCombinedText + sxText
                 if sxCombinedText != DICT_ASCII_EMPTY_STR:
-                    wordDefinition.append(sxCombinedText.decode('utf-8'))
+                    if isinstance(sxCombinedText, str):
+                        wordDefinition.append(unicode(sxCombinedText, 'utf-8'))
+                    else:
+                        wordDefinition.append(sxCombinedText)
+
 
     # Scan all entries without matching, if no definitions were retrieved
     if len(wordDefinition) == 0:
@@ -176,7 +207,10 @@ def parse_word_definition(word, entryXML):
                     dtText = re.sub("^[^:]*:", DICT_ASCII_EMPTY_STR, dtElement.firstChild.data)
                     dtText = re.sub(":[^:]*$", DICT_ASCII_EMPTY_STR, dtText)
                     if dtText != DICT_ASCII_EMPTY_STR:
-                        wordDefinition.append(dtText.decode('utf-8'))
+                        if isinstance(dtText, str):
+                            wordDefinition.append(unicode(dtText, 'utf-8'))
+                        else:
+                            wordDefinition.append(dtText)
                 
                 # Process <sx> elements
                 sxElements = dtElement.getElementsByTagName('sx')
@@ -191,7 +225,10 @@ def parse_word_definition(word, entryXML):
                             else:
                                 sxCombinedText = sxCombinedText + sxText
                 if sxCombinedText != DICT_ASCII_EMPTY_STR:
-                    wordDefinition.append(sxCombinedText.decode('utf-8'))
+                    if isinstance(sxCombinedText, str):
+                        wordDefinition.append(unicode(sxCombinedText, 'utf-8'))
+                    else:
+                        wordDefinition.append(sxCombinedText)
     
     # Handle word definitions in unicode
     return wordDefinition
@@ -205,9 +242,11 @@ def parse_word_clip(word, entryXML):
     DEBUG_VAR="entryXML"
     coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(entryXML)))
 
-    # Handle XML parsing in ascii
-    sourceXML = entryXML
-    sourceXML = cleanse_dictionary_entry(sourceXML)
+    sourceXML = cleanse_dictionary_entry(entryXML)
+
+    # Handle XML cleansing in ascii
+    if isinstance(sourceXML, unicode):
+        sourceXML = sourceXML.encode('utf-8')
 
     DEBUG_VAR="sourceXML"
     coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(sourceXML)))
