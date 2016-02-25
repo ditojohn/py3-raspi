@@ -77,6 +77,7 @@ echo "---------------------------------------------------------"
 echo "---------------------------------------------------------"
 echo "Custom packages - Setting up ..."
 sudo apt-get install ksh
+sudo apt-get install python-bs4
 echo "Custom packages - Setup complete"
 echo "---------------------------------------------------------"
 
