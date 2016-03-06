@@ -30,6 +30,10 @@
 # Sample Search URL: http://www.collinsdictionary.com/dictionary/american/test
 # Sample Pronunciation URL: http://www.collinsdictionary.com/sounds/e/en_/en_us/en_us_test.mp3
 #
+# Tertiary Source: Oxford Advanced Laerner's Dictionary
+# Sample Search URL: http://www.oxfordlearnersdictionaries.com/us/definition/english/test_1?q=test
+# Sample Pronunciation URL: http://www.oxfordlearnersdictionaries.com/us/media/english/us_pron/t/tes/test_/test__us_1.mp3
+#
 # Alternate Source: Google
 # Sample Search URL: http://www.google.com/search?q=define%3A+test
 # Sample Pronunciation URL: http://ssl.gstatic.com/dictionary/static/sounds/de/0/test.mp3
