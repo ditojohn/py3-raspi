@@ -19,32 +19,6 @@
 #             sudo python spelling_bee.py test 2016 random 30
 ################################################################
 
-################################################################
-# Dictionary Lookup Reference
-#
-# Primary Source: Merriam Webster Dictionary
-# Sample Search URL: http://www.merriam-webster.com/dictionary/test
-# Sample Pronunciation URL: http://media.merriam-webster.com/soundc11/t/test0001.wav
-#
-# Secondary Source: Collins Dictionary
-# Sample Search URL: http://www.collinsdictionary.com/dictionary/american/test
-# Sample Pronunciation URL: http://www.collinsdictionary.com/sounds/e/en_/en_us/en_us_test.mp3
-#
-# Alternate Source: Google
-# Sample Search URL: http://www.google.com/search?q=define%3A+test
-# Sample Pronunciation URL: http://ssl.gstatic.com/dictionary/static/sounds/de/0/test.mp3
-#
-# Alternate Source: Dictionary.com based on the Random House Unabridged Dictionary and
-#                   supplemented with sources including American Heritage and Harper Collins
-# Sample Search URL: http://dictionary.reference.com/browse/test?s=t
-# Sample Pronunciation URL: http://static.sfdict.com/staticrep/dictaudio/T01/T0170800.mp3
-#
-# Alternate Source: The Free Dictionary by Farlex
-# Sample Search URL: http://www.thefreedictionary.com/test
-# Sample Pronunciation URL: http://img.tfd.com/hm/mp3/T0124800.mp3
-#
-################################################################
-
 # todo: Reduce import execution time
 # todo: convert all data handling to unicode
 
@@ -77,7 +51,6 @@ SB_REPEAT_DELAY = 1.5
 SB_COLUMN_COUNT = 5
 SB_TEST_MODE = "easy"                                           # Available test modes are: easy, medium and difficult
 SB_TEST_SAVE_RESULT = True
-SB_TEST_SAVE_PRACTICE = True
 SB_DATA_DIR = "/home/pi/projects/raspi/spelling-bee/data/"
 
 # Spelling Bee Word Lists: Processing Tips
@@ -97,16 +70,12 @@ SB_ERR_DEBUG = False
 SB_ERR_LOG = unicode("spelling_bee_errors.log", 'utf-8')
 SB_TEST_LOG = unicode("spelling_bee_tests.log", 'utf-8')
 
-SB_DICT_WORD_FILE = unicode("spelling_bee_{LISTID}.txt", 'utf-8')
-SB_PRACTICE_WORD_FILE = unicode("spelling_bee_{LISTID}-practice.txt", 'utf-8')
-
 SB_DICT_OFFLINE_DIR = unicode(SB_DATA_DIR + 'dict/', 'utf-8')
+SB_DICT_WORD_FILE = unicode("spelling_bee_{LISTID}.txt", 'utf-8')
 SB_DICT_OFFLINE_ENTR = unicode("sb_{WORD}.xml", 'utf-8')
 SB_DICT_OFFLINE_CLIP = unicode("sb_{WORD}.wav", 'utf-8')
 
-SB_DICT_OVERRIDE_DIR = unicode(SB_DATA_DIR + 'dict/override/', 'utf-8')
-SB_DICT_OVERRIDE_DEFN = unicode("sb_{WORD}.dat", 'utf-8')
-SB_DICT_OVERRIDE_CLIP = unicode("sb_{WORD}.mp3", 'utf-8')
+SB_PRACTICE_WORD_FILE = unicode("spelling_bee_{LISTID}-practice.txt", 'utf-8')
 
 SB_LIST_BULLET = unicode('• ', 'utf-8')
 SB_PROMPT_SYMBOL = unicode("> ", 'utf-8')
@@ -266,34 +235,20 @@ class SpellingBee(object):
         self.activeEntry = SB_EMPTY_STRING
         self.activeDefinition = []
 
-        overrideDefnFileName = SB_DICT_OVERRIDE_DIR + SB_DICT_OVERRIDE_DEFN.format(WORD=word).replace(" ", "_")
         offlineEntryFileName = SB_DICT_OFFLINE_DIR + SB_DICT_OFFLINE_ENTR.format(WORD=word).replace(" ", "_")
 
-        # Check for dictionary definition override
-        if os.path.isfile(overrideDefnFileName) and os.path.getsize(overrideDefnFileName) > 0:
-
-            offlineDefnFile = codecs.open(overrideDefnFileName, mode='r', encoding='utf-8')
-            self.activeEntry = unicode("[Dictionary Definition Override]", 'utf-8')
-            self.activeDefinition = offlineDefnFile.read().splitlines()
-            offlineDefnFile.close()
-
-            DEBUG_VAR="self.activeEntry"
-            coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(self.activeEntry)))
-            coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
-
-        # Check primary source for dictionary entry
-        elif os.path.isfile(offlineEntryFileName) and os.path.getsize(offlineEntryFileName) > 100:
+        if os.path.isfile(offlineEntryFileName) and os.path.getsize(offlineEntryFileName) > 100:
             coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "offlineEntryFile size :: {0}".format(os.path.getsize(offlineEntryFileName)))
 
             offlineEntryFile = codecs.open(offlineEntryFileName, mode='r', encoding='utf-8')
             self.activeEntry = offlineEntryFile.read()
-            self.activeDefinition = cdict.parse_word_definition(self.activeWord, self.activeEntry)
             offlineEntryFile.close()
 
             DEBUG_VAR="self.activeEntry"
             coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(self.activeEntry)))
             coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
 
+            self.activeDefinition = cdict.parse_word_definition(self.activeWord, self.activeEntry)
         else:
             # Download dictionary entry
             self.activeEntry = cdict.get_dictionary_entry(connectionPool, self.activeWord)
@@ -320,29 +275,16 @@ class SpellingBee(object):
         # Check offline for word pronunciation
         self.activePronunciation = SB_EMPTY_STRING
         self.activePronunciationWord = SB_EMPTY_STRING
-
-        overrideProncnFileName = SB_DICT_OVERRIDE_DIR + SB_DICT_OVERRIDE_CLIP.format(WORD=self.activeWord).replace(" ", "_")
         offlineProncnFileName = SB_DICT_OFFLINE_DIR + SB_DICT_OFFLINE_CLIP.format(WORD=self.activeWord).replace(" ", "_")
 
-        # Check for dictionary pronunciation override
-        if os.path.isfile(overrideProncnFileName) and os.path.getsize(overrideProncnFileName) > 0:
-            self.activePronunciation = overrideProncnFileName
-            self.activePronunciationWord = self.activeWord
+        # Retrieve pronunciation audio clip word form and filename
+        [wordClipForm, wordClipURL] = cdict.parse_word_clip(self.activeWord, self.activeEntry)
 
-        # Check primary source for dictionary entry and pronunciation
-        elif os.path.isfile(offlineEntryFileName) and os.path.getsize(offlineEntryFileName) > 100 and os.path.isfile(offlineProncnFileName) and os.path.getsize(offlineProncnFileName) > 1000:
+        if os.path.isfile(offlineProncnFileName) and os.path.getsize(offlineProncnFileName) > 1000:
             coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "offlineProncnFile size :: {0}".format(os.path.getsize(offlineProncnFileName)))
-
             self.activePronunciation = offlineProncnFileName
-
-            # Retrieve pronunciation audio clip word form and filename
-            [wordClipForm, wordClipURL] = cdict.parse_word_clip(self.activeWord, self.activeEntry)
             self.activePronunciationWord = wordClipForm
-
         else:
-            # Retrieve pronunciation audio clip word form and filename
-            [wordClipForm, wordClipURL] = cdict.parse_word_clip(self.activeWord, self.activeEntry)
-
             # Save pronunciation offline
             if wordClipURL == SB_EMPTY_STRING:
                 errorText = unicode("ERROR:Missing Audio:{0}\n", 'utf-8')
@@ -486,7 +428,7 @@ class SpellingBee(object):
                 practiceFile.close()
 
 
-    def display_test_result(self, saveResultEnabled, savePracticeEnabled):
+    def display_test_result(self, saveEnabled):
         testHeader  = unicode("=============== Start of Test Log ===============", 'utf-8')
         testTrailer = unicode("================ End of Test Log ================", 'utf-8')
 
@@ -498,7 +440,7 @@ class SpellingBee(object):
 
         print displayText,
 
-        if saveResultEnabled:
+        if saveEnabled:
             testFileName = SB_DATA_DIR + SB_TEST_LOG
             testFile = codecs.open(testFileName, mode='a', encoding='utf-8')
             testFile.write(testHeader)
@@ -517,7 +459,7 @@ class SpellingBee(object):
         print SB_NEWLINE,
         coutput.print_columnized_list(coloredTestValuations, SB_COLUMN_COUNT)
 
-        if saveResultEnabled:
+        if saveEnabled:
             columnizedTestValuations = coutput.columnize(self.activeTestValuations, SB_COLUMN_COUNT)
             for row in columnizedTestValuations:
                 testFile.write(SB_NEWLINE)
@@ -534,15 +476,15 @@ class SpellingBee(object):
                 
             print displayText,
 
-            if saveResultEnabled:
+            if saveEnabled:
                 testFile.write(SB_NEWLINE)
                 testFile.write(displayText)
 
                 # Save practice words
-                self.save_practice_words(savePracticeEnabled)
+                self.save_practice_words(saveEnabled)
 
         # Test trailer
-        if saveResultEnabled:
+        if saveEnabled:
             # Save test trailer to test log
             testFile.write(SB_NEWLINE)
             testFile.write(testTrailer)
@@ -665,12 +607,6 @@ def run_test(spellBee):
 
     spellBee.reset_test_result()
 
-    savePracticeWordsEnabled = SB_TEST_SAVE_PRACTICE
-    if SB_TEST_SAVE_RESULT == False or re.match('^.*practice', spellBee.contestList.lower()):
-        savePracticeWordsEnabled = False
-    coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "SB_TEST_SAVE_PRACTICE :: {0}".format(SB_TEST_SAVE_PRACTICE))
-    coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "savePracticeWordsEnabled :: {0}".format(savePracticeWordsEnabled))
-
     activeWordIndex = 0
 
     while True:
@@ -728,7 +664,7 @@ def run_test(spellBee):
     spellBee.log_test_result(testDate, str(testCorrectCount) + "/" + str(testTotalCount))
     print "\nYour test is complete. Displaying results..."
     
-    spellBee.display_test_result(SB_TEST_SAVE_RESULT, savePracticeWordsEnabled)
+    spellBee.display_test_result(SB_TEST_SAVE_RESULT)
 
 
 def run_error_scan(spellBee):
