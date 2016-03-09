@@ -3,7 +3,7 @@
 
 ################################################################
 # Syntax :   sudo python spelling_bee.py runMode contestList mode selection
-# where      runMode is study, practice, scan or test.
+# where      runMode is study, practice, revise, scan or test.
 #            contestList is the word list identifier for the contest in YYYY[-language][-challenge] format
 #            mode is chapter, count, word, random.
 #                In chapter mode, selection is the chapter number of the word list to be practiced.
@@ -17,6 +17,7 @@
 #             sudo python spelling_bee.py practice 2016 word lary-frees
 #             sudo python spelling_bee.py scan 2016 count 10-15
 #             sudo python spelling_bee.py test 2016 random 30
+#             sudo python spelling_bee.py revise 2016 random 10
 ################################################################
 
 ################################################################
@@ -102,10 +103,12 @@ SB_ERR_DEBUG = False
 
 SB_ERR_LOG = unicode("spelling_bee_errors.log", 'utf-8')
 SB_TEST_LOG = unicode("spelling_bee_tests.log", 'utf-8')
+SB_REVISION_LOG = unicode("spelling_bee_revision.log", 'utf-8')
 
 SB_GLOB_WORD_FILES = unicode(SB_GLOB_DATA_DIR + "spelling_bee_{WORD_FILE_PATTERN}.txt", 'utf-8')
 SB_DICT_WORD_FILE = unicode("spelling_bee_{LISTID}.txt", 'utf-8')
 SB_PRACTICE_WORD_FILE = unicode("spelling_bee_practice_{LISTID}.txt", 'utf-8')
+SB_REVISION_WORD_FILE = unicode("spelling_bee_revision_2016.txt", 'utf-8')
 
 SB_DICT_OFFLINE_DIR = unicode(SB_DATA_DIR + 'dict/', 'utf-8')
 SB_DICT_OFFLINE_ENTR = unicode("sb_{WORD}.xml", 'utf-8')
@@ -121,6 +124,7 @@ SB_RIGHT_SYMBOL = unicode('√', 'utf-8')
 SB_WRONG_SYMBOL = unicode('X', 'utf-8')
 SB_PRACTICE_KEYBOARD_MENU = unicode("[N]ext [P]revious [R]epeat Re[v]iew [S]how [L]ookup [H]elp E[x]it", 'utf-8')
 SB_TEST_KEYBOARD_MENU = unicode("[R]epeat E[x]it", 'utf-8')
+SB_REVISE_KEYBOARD_MENU = unicode("[Y]es [N]o [R]epeat E[x]it", 'utf-8')
 
 SB_STUDY_WORD_DEFN_TITLE = unicode("\nDefinition of word #{INDEX} ({WORD}):", 'utf-8')
 SB_PRACTICE_WORD_DEFN_TITLE = unicode("\nDefinition of word #{INDEX}:", 'utf-8')
@@ -495,6 +499,36 @@ class SpellingBee(object):
                 practiceFile.close()
 
 
+    def save_revision_words(self):
+        _FUNC_NAME_ = "save_revision_words"
+
+        if len(self.activePracticeWords) > 0:
+
+            practiceFileName = SB_DATA_DIR + SB_REVISION_WORD_FILE
+
+            # Get previously saved practice words
+            if os.path.isfile(practiceFileName) and os.path.getsize(practiceFileName) > 0:
+                practiceFile = codecs.open(practiceFileName, mode='r', encoding='utf-8')
+                currentPracticeWordList = practiceFile.read().splitlines()                # Use of splitlines() avoids the newline character from being stored in the word list
+                practiceFile.close()
+            else:
+                currentPracticeWordList = []
+
+            # Save practice words to practice file, if not already saved
+            practiceFile = codecs.open(practiceFileName, mode='a', encoding='utf-8')
+            for word in self.activePracticeWords:
+                
+                DEBUG_VAR="word"
+                coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(word)))
+                coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
+
+                if word not in currentPracticeWordList:
+                    practiceFile.write(word)
+                    practiceFile.write(SB_NEWLINE)
+
+            practiceFile.close()
+
+
     def display_test_result(self, saveResultEnabled, savePracticeEnabled):
         testHeader  = unicode("=============== Start of Test Log ===============", 'utf-8')
         testTrailer = unicode("================ End of Test Log ================", 'utf-8')
@@ -559,6 +593,65 @@ class SpellingBee(object):
             testFile.close()
 
 
+    def display_revision_result(self):
+        testHeader  = unicode("=============== Start of Revision Log ===============", 'utf-8')
+        testTrailer = unicode("================ End of Revision Log ================", 'utf-8')
+
+        # Revision header
+        displayText = SB_NEWLINE + unicode("Spelling Bee {0}".format(self.contestList), 'utf-8')
+        displayText += SB_NEWLINE + unicode("Word Count [{0}] Chapter [{1}/{2}] Words [{3}-{4}]".format(self.word_count(), self.activeChapter, self.chapter_count(), self.activeRangeStart + 1, self.activeRangeEnd + 1), 'utf-8')
+        displayText += SB_NEWLINE
+        displayText += SB_NEWLINE + unicode("Revision Date [{0}] Score [{1}]".format(self.activeTestDate, self.activeTestScore), 'utf-8')
+
+        print displayText,
+
+        testFileName = SB_DATA_DIR + SB_REVISION_LOG
+        testFile = codecs.open(testFileName, mode='a', encoding='utf-8')
+        testFile.write(testHeader)
+        testFile.write(displayText)
+
+        # Revision valuations
+        # Print colorized test valuations
+        coloredTestValuations = []
+        for valuation in self.activeTestValuations:
+            if re.match('^' + SB_RIGHT_SYMBOL + '.*', valuation):
+                textColor = coutput.get_term_color('green', 'normal', 'normal')
+            else:
+                textColor = coutput.get_term_color('red', 'normal', 'normal')
+            coloredTestValuations.append(textColor + valuation + coutput.get_term_color('normal', 'normal', 'normal'))
+
+        print SB_NEWLINE,
+        coutput.print_columnized_list(coloredTestValuations, SB_COLUMN_COUNT)
+
+        columnizedTestValuations = coutput.columnize(self.activeTestValuations, SB_COLUMN_COUNT)
+        for row in columnizedTestValuations:
+            testFile.write(SB_NEWLINE)
+            for col in row:
+                testFile.write(col)
+
+        # Revision practice words
+        if len(self.activePracticeWords) > 0:
+            displayText = SB_NEWLINE + unicode("Practice Words:", 'utf-8')
+            for row in coutput.columnize(self.activePracticeWords, SB_COLUMN_COUNT):
+                displayText += SB_NEWLINE
+                for col in row:
+                    displayText += col
+                
+            print displayText,
+
+            testFile.write(SB_NEWLINE)
+            testFile.write(displayText)
+
+            # Save practice words
+            self.save_revision_words()
+
+        # Revision trailer
+        testFile.write(SB_NEWLINE)
+        testFile.write(testTrailer)
+        testFile.write(SB_NEWLINE)
+        testFile.close()
+
+
 def init_app():
     # Clear screen
     os.system("clear")
@@ -582,6 +675,8 @@ def exit_app():
 def display_help(runMode):
     if runMode == "test":
         print "{0} Keyboard Menu: {1}".format(runMode.title(), SB_TEST_KEYBOARD_MENU)
+    if runMode == "revise":
+        print "{0} Keyboard Menu: {1}".format(runMode.title(), SB_REVISE_KEYBOARD_MENU)
     else:
         print "{0} Keyboard Menu: {1}".format(runMode.title(), SB_PRACTICE_KEYBOARD_MENU)
 
@@ -677,9 +772,9 @@ def run_test(spellBee):
     
     # Disable saving practice words if :
     # saving is disabled for test results, or
-    # the test is based on practice lists or wild card lists
+    # the test is based on practice, revision or wild card lists
     savePracticeWordsEnabled = SB_TEST_SAVE_PRACTICE
-    if SB_TEST_SAVE_RESULT == False or 'practice' in spellBee.contestList.lower() or '*' in spellBee.contestList:
+    if SB_TEST_SAVE_RESULT == False or 'practice' in spellBee.contestList.lower() or 'revision' in spellBee.contestList.lower() or '*' in spellBee.contestList:
         savePracticeWordsEnabled = False
     coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "SB_TEST_SAVE_PRACTICE :: {0}".format(SB_TEST_SAVE_PRACTICE))
     coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "savePracticeWordsEnabled :: {0}".format(savePracticeWordsEnabled))
@@ -744,6 +839,86 @@ def run_test(spellBee):
     spellBee.display_test_result(SB_TEST_SAVE_RESULT, savePracticeWordsEnabled)
 
 
+def run_revision(spellBee):
+    _FUNC_NAME_ = "run_revision"
+
+    spellBee.display_about()
+    display_help("revise")
+    userInput = cinput.get_keypress("\nReady to revise? Press any key when ready ... ")
+
+    testDate = time.strftime('%a %d-%b-%Y %H:%M:%S')
+    testTotalCount = spellBee.active_word_count()
+    testCorrectCount = 0
+
+    userResponse = SB_EMPTY_STRING
+    testValuation = SB_EMPTY_STRING
+
+    spellBee.reset_test_result()
+  
+    activeWordIndex = 0
+
+    while True:
+        coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "activeWordIndexList :: {0}".format(spellBee.activeWordIndexList))
+        coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "activeWordIndex :: {0}".format(activeWordIndex))
+        if (activeWordIndex < 0) or (activeWordIndex >= len(spellBee.activeWordIndexList)):
+            break
+
+        wordIndex = spellBee.activeWordIndexList[activeWordIndex]
+        coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "wordIndex :: {0}".format(wordIndex))
+
+        # Lookup word definition
+        spellBee.lookup_dictionary_by_index(wordIndex)
+        spellBee.display_word_cue(SB_PRACTICE_WORD_DEFN_TITLE.format(INDEX=wordIndex + 1))
+        userResponse = cinput.get_keypress("Enter response: ")
+
+        # E[x]it test
+        if userResponse.lower() == "x":
+            break
+
+        # Process correct response
+        elif userResponse.lower() == "y":
+            correctResponse = True
+            testValuation = SB_RIGHT_SYMBOL + " " + spellBee.activeWord
+            testCorrectCount += 1
+
+            # Display valuation
+            # Handle display text in ascii
+            asciiTestValuation = testValuation.encode('utf-8')
+            coutput.print_color('green', " " * 50 + asciiTestValuation)
+
+            # Save valuation
+            spellBee.log_test_valuation(testValuation)
+
+            # Move to next word
+            activeWordIndex += 1
+
+        # Process incorrect response
+        elif userResponse.lower() == "n":
+            correctResponse = False
+            testValuation = SB_WRONG_SYMBOL + " " + spellBee.activeWord
+            spellBee.log_practice_word(spellBee.activeWord)
+
+            # Display valuation
+            # Handle display text in ascii
+            asciiTestValuation = testValuation.encode('utf-8')
+            coutput.print_color('red', " " * 50 + asciiTestValuation)
+
+            # Save valuation
+            spellBee.log_test_valuation(testValuation)
+
+            # Move to next word
+            activeWordIndex += 1
+
+        # [R]epeat question as default action
+        else:
+            continue
+    
+    spellBee.log_test_result(testDate, str(testCorrectCount) + "/" + str(testTotalCount))
+    print "\nYour revision is complete. Displaying results..."
+    
+    spellBee.display_revision_result()
+
+
 def run_error_scan(spellBee):
 
     spellBee.display_about()
@@ -774,7 +949,7 @@ def run_error_scan(spellBee):
 
 # Process command line arguments
 argParser = argparse.ArgumentParser()
-argParser.add_argument("runMode", type=str, choices=['study', 'practice', 'test', 'scan'], help="is study, practice, test or scan")
+argParser.add_argument("runMode", type=str, choices=['study', 'practice', 'test', 'revise', 'scan'], help="is study, practice, test, revise or scan")
 argParser.add_argument("contestList", type=str, help="is the word list identifier for the contest in YYYY[-language][-challenge] format")
 argParser.add_argument("mode", type=str, choices=['chapter', 'count', 'word', 'random'], nargs='?', default='count', help="is chapter, count, word or random")
 argParser.add_argument("selection", type=str, nargs='?', default='1', help="is the chapter number, word index range, word range or random sample size")
@@ -790,6 +965,8 @@ if args.runMode.lower() == "study" or args.runMode.lower() == "practice":
     run_practice(spellBee, args.runMode.lower())
 elif args.runMode.lower() == "test":
     run_test(spellBee)
+elif args.runMode.lower() == "revise":
+    run_revision(spellBee)
 elif args.runMode.lower() == "scan":
     run_error_scan(spellBee)
 
