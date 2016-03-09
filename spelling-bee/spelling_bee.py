@@ -98,14 +98,14 @@ SB_GLOB_DATA_DIR = "data/"
 ################################################################
 
 # Set to True to turn debug messages on
-SB_ERR_DEBUG = True
+SB_ERR_DEBUG = False
 
 SB_ERR_LOG = unicode("spelling_bee_errors.log", 'utf-8')
 SB_TEST_LOG = unicode("spelling_bee_tests.log", 'utf-8')
 
 SB_GLOB_WORD_FILES = unicode(SB_GLOB_DATA_DIR + "spelling_bee_{WORD_FILE_PATTERN}.txt", 'utf-8')
 SB_DICT_WORD_FILE = unicode("spelling_bee_{LISTID}.txt", 'utf-8')
-SB_PRACTICE_WORD_FILE = unicode("spelling_bee_practice_{LISTID}", 'utf-8')
+SB_PRACTICE_WORD_FILE = unicode("spelling_bee_practice_{LISTID}.txt", 'utf-8')
 
 SB_DICT_OFFLINE_DIR = unicode(SB_DATA_DIR + 'dict/', 'utf-8')
 SB_DICT_OFFLINE_ENTR = unicode("sb_{WORD}.xml", 'utf-8')
@@ -160,13 +160,11 @@ class SpellingBee(object):
         self.wordList = []
 
         wordFileDir = SB_GLOB_WORD_FILES.format(WORD_FILE_PATTERN=listID)
-        for wordFileName in glob.glob(wordFileDir):
+        for wordFileName in sorted(glob.glob(wordFileDir)):
             coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "wordFileName :: {0}".format(wordFileName))
             wordFile = codecs.open(wordFileName, mode='r', encoding='utf-8')
             self.wordList = self.wordList + wordFile.read().splitlines()                # Use of splitlines() avoids the newline character from being stored in the word list
             wordFile.close()
-
-        cinput.get_keypress("\nReady for the test? Press any key when ready ... ")
 
         rangeSelection = selection.split("-")
         self.activeChapter = "0"
@@ -678,11 +676,10 @@ def run_test(spellBee):
 
     
     # Disable saving practice words if :
-    # saving is disabled for test results or
-    # the test is based on practice lists or
-    # the test is based on wild card lists
+    # saving is disabled for test results, or
+    # the test is based on practice lists or wild card lists
     savePracticeWordsEnabled = SB_TEST_SAVE_PRACTICE
-    if SB_TEST_SAVE_RESULT == False or re.match('practice', spellBee.contestList.lower()) or re.match('\*', spellBee.contestList.lower()):
+    if SB_TEST_SAVE_RESULT == False or 'practice' in spellBee.contestList.lower() or '*' in spellBee.contestList:
         savePracticeWordsEnabled = False
     coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "SB_TEST_SAVE_PRACTICE :: {0}".format(SB_TEST_SAVE_PRACTICE))
     coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "savePracticeWordsEnabled :: {0}".format(savePracticeWordsEnabled))
