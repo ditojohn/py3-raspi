@@ -26,13 +26,13 @@
 # Sample Search URL: http://www.merriam-webster.com/dictionary/test
 # Sample Pronunciation URL: http://media.merriam-webster.com/soundc11/t/test0001.wav
 #
-# Secondary Source: Collins Dictionary
-# Sample Search URL: http://www.collinsdictionary.com/dictionary/american/test
-# Sample Pronunciation URL: http://www.collinsdictionary.com/sounds/e/en_/en_us/en_us_test.mp3
-#
-# Tertiary Source: Oxford Advanced Laerner's Dictionary
+# Secondary Source: Oxford Advanced Learner's Dictionary
 # Sample Search URL: http://www.oxfordlearnersdictionaries.com/us/definition/english/test_1?q=test
 # Sample Pronunciation URL: http://www.oxfordlearnersdictionaries.com/us/media/english/us_pron/t/tes/test_/test__us_1.mp3
+#
+# Tertiary Source: Collins Dictionary
+# Sample Search URL: http://www.collinsdictionary.com/dictionary/american/test
+# Sample Pronunciation URL: http://www.collinsdictionary.com/sounds/e/en_/en_us/en_us_test.mp3
 #
 # Alternate Source: Google
 # Sample Search URL: http://www.google.com/search?q=define%3A+test
@@ -63,6 +63,7 @@ import codecs
 import unicodedata
 import pygame
 import random
+import glob
 
 sys.path.insert(0, "/home/pi/projects/raspi")
 import common.rpimod.stdio.input as cinput
@@ -83,6 +84,7 @@ SB_TEST_MODE = "easy"                                           # Available test
 SB_TEST_SAVE_RESULT = True
 SB_TEST_SAVE_PRACTICE = True
 SB_DATA_DIR = "/home/pi/projects/raspi/spelling-bee/data/"
+SB_GLOB_DATA_DIR = "data/"
 
 # Spelling Bee Word Lists: Processing Tips
 # Obtain word lists from http://myspellit.com/
@@ -96,13 +98,14 @@ SB_DATA_DIR = "/home/pi/projects/raspi/spelling-bee/data/"
 ################################################################
 
 # Set to True to turn debug messages on
-SB_ERR_DEBUG = False
+SB_ERR_DEBUG = True
 
 SB_ERR_LOG = unicode("spelling_bee_errors.log", 'utf-8')
 SB_TEST_LOG = unicode("spelling_bee_tests.log", 'utf-8')
 
+SB_GLOB_WORD_FILES = unicode(SB_GLOB_DATA_DIR + "spelling_bee_{WORD_FILE_PATTERN}.txt", 'utf-8')
 SB_DICT_WORD_FILE = unicode("spelling_bee_{LISTID}.txt", 'utf-8')
-SB_PRACTICE_WORD_FILE = unicode("spelling_bee_{LISTID}-practice.txt", 'utf-8')
+SB_PRACTICE_WORD_FILE = unicode("spelling_bee_practice_{LISTID}", 'utf-8')
 
 SB_DICT_OFFLINE_DIR = unicode(SB_DATA_DIR + 'dict/', 'utf-8')
 SB_DICT_OFFLINE_ENTR = unicode("sb_{WORD}.xml", 'utf-8')
@@ -154,12 +157,16 @@ class SpellingBee(object):
         _FUNC_NAME_ = "__init__"
 
         self.contestList = listID
+        self.wordList = []
 
-        wordFileName = SB_DATA_DIR + SB_DICT_WORD_FILE
-        wordFileName = wordFileName.format(LISTID=listID)
-        wordFile = codecs.open(wordFileName, mode='r', encoding='utf-8')
-        self.wordList = wordFile.read().splitlines()                # Use of splitlines() avoids the newline character from being stored in the word list
-        wordFile.close()
+        wordFileDir = SB_GLOB_WORD_FILES.format(WORD_FILE_PATTERN=listID)
+        for wordFileName in glob.glob(wordFileDir):
+            coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "wordFileName :: {0}".format(wordFileName))
+            wordFile = codecs.open(wordFileName, mode='r', encoding='utf-8')
+            self.wordList = self.wordList + wordFile.read().splitlines()                # Use of splitlines() avoids the newline character from being stored in the word list
+            wordFile.close()
+
+        cinput.get_keypress("\nReady for the test? Press any key when ready ... ")
 
         rangeSelection = selection.split("-")
         self.activeChapter = "0"
@@ -669,8 +676,13 @@ def run_test(spellBee):
 
     spellBee.reset_test_result()
 
+    
+    # Disable saving practice words if :
+    # saving is disabled for test results or
+    # the test is based on practice lists or
+    # the test is based on wild card lists
     savePracticeWordsEnabled = SB_TEST_SAVE_PRACTICE
-    if SB_TEST_SAVE_RESULT == False or re.match('^.*practice', spellBee.contestList.lower()):
+    if SB_TEST_SAVE_RESULT == False or re.match('practice', spellBee.contestList.lower()) or re.match('\*', spellBee.contestList.lower()):
         savePracticeWordsEnabled = False
     coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "SB_TEST_SAVE_PRACTICE :: {0}".format(SB_TEST_SAVE_PRACTICE))
     coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "savePracticeWordsEnabled :: {0}".format(savePracticeWordsEnabled))
