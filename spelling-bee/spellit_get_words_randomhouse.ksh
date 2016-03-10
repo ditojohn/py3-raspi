@@ -1,7 +1,7 @@
 #!/usr/bin/ksh
 . ./project_setup.cfg
 
-wordlist=$PROJ/spellit_get_words_list.dat
+wordlist=$DATA/spellit_get_words_list.dat
 
 sourceURL="http://dictionary.reference.com/browse/@word@"
 
