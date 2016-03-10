@@ -123,8 +123,8 @@ SB_PROMPT_SYMBOL = unicode("> ", 'utf-8')
 SB_RIGHT_SYMBOL = unicode('√', 'utf-8')
 SB_WRONG_SYMBOL = unicode('X', 'utf-8')
 SB_PRACTICE_KEYBOARD_MENU = unicode("[N]ext [P]revious [R]epeat Re[v]iew [S]how [L]ookup [H]elp E[x]it", 'utf-8')
-SB_TEST_KEYBOARD_MENU = unicode("[R]epeat E[x]it", 'utf-8')
-SB_REVISE_KEYBOARD_MENU = unicode("[Y]es [N]o [R]epeat E[x]it", 'utf-8')
+SB_TEST_KEYBOARD_MENU = unicode("[R]epeat [H]elp E[x]it", 'utf-8')
+SB_REVISE_KEYBOARD_MENU = unicode("[Y]es [N]o [R]epeat Re[v]iew [H]elp E[x]it", 'utf-8')
 
 SB_STUDY_WORD_DEFN_TITLE = unicode("\nDefinition of word #{INDEX} ({WORD}):", 'utf-8')
 SB_PRACTICE_WORD_DEFN_TITLE = unicode("\nDefinition of word #{INDEX}:", 'utf-8')
@@ -673,9 +673,9 @@ def exit_app():
     exit()
 
 def display_help(runMode):
-    if runMode == "test":
+    if runMode.lower() == "test":
         print "{0} Keyboard Menu: {1}".format(runMode.title(), SB_TEST_KEYBOARD_MENU)
-    if runMode == "revise":
+    elif runMode.lower() == "revise":
         print "{0} Keyboard Menu: {1}".format(runMode.title(), SB_REVISE_KEYBOARD_MENU)
     else:
         print "{0} Keyboard Menu: {1}".format(runMode.title(), SB_PRACTICE_KEYBOARD_MENU)
@@ -798,11 +798,19 @@ def run_test(spellBee):
         # E[x]it test
         if userResponse.lower() == "x":
             break
+
         # [R]epeat question
         elif userResponse.lower() == "r":
             continue
-        else:
 
+        # Display [h]elp and statistics
+        elif userResponse.lower() == "h":
+            print SB_EMPTY_STRING
+            spellBee.display_about()
+            display_help("test")
+            continue
+
+        else:
             correctResponse = False
 
             # Process correct response
@@ -868,12 +876,25 @@ def run_revision(spellBee):
 
         # Lookup word definition
         spellBee.lookup_dictionary_by_index(wordIndex)
-        spellBee.display_word_cue(SB_PRACTICE_WORD_DEFN_TITLE.format(INDEX=wordIndex + 1))
+        spellBee.display_word_cue(SB_STUDY_WORD_DEFN_TITLE.format(INDEX=wordIndex + 1, WORD=spellBee.activeWord))
         userResponse = cinput.get_keypress("Enter response: ")
 
         # E[x]it test
         if userResponse.lower() == "x":
             break
+
+        # Re[v]iew active word list
+        elif userResponse.lower() == "v":
+            print SB_EMPTY_STRING
+            spellBee.print_active_word_list()
+            continue
+
+        # Display [h]elp and statistics
+        elif userResponse.lower() == "h":
+            print SB_EMPTY_STRING
+            spellBee.display_about()
+            display_help("revise")
+            continue
 
         # Process correct response
         elif userResponse.lower() == "y":
