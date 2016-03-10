@@ -13,8 +13,11 @@ defnErrors=$(cat $DATA/spelling_bee_errors.log | grep "Missing Definition" | cut
 # Check for missing audio
 audioErrors=$(cat $DATA/spelling_bee_errors.log | grep "Missing Audio" | cut -d ':' -f 3 | egrep -v "^$" | sort -u)
 
+# Check for audio mismatch
+audioMatchErrors=$(cat $DATA/spelling_bee_errors.log | grep "Audio Mismatch" | cut -d ':' -f 3 | egrep -v "^$" | sort -u)
+
 # Consolidate all errors (A)
-allErrors=$(echo "${xmlErrors}"; echo "${defnErrors}"; echo "${audioErrors}")
+allErrors=$(echo "${xmlErrors}"; echo "${defnErrors}"; echo "${audioErrors}"; echo "${audioMatchErrors}")
 allErrors=$(echo "${allErrors}" | egrep -v "^$" | sort -u)
 echo "$allErrors" > $DATA/sb_allErrors.tmp
 
@@ -30,7 +33,7 @@ echo "$resolvedErrors" > $DATA/sb_resolvedErrors.tmp
 comm -23 $DATA/sb_allErrors.tmp $DATA/sb_resolvedErrors.tmp > $DATA/sb_unresolvedErrors.tmp
 
 # Retrieve complete word list (D)
-cat $DATA/*complete*.txt | sort -u > $DATA/sb_allWords.tmp
+cat $DATA/spelling_bee_2016-0*basic.txt | sort -u > $DATA/sb_allWords.tmp
 
 # Exclude words not in the complete word list (E=C ∩ D)
 comm -12 $DATA/sb_unresolvedErrors.tmp $DATA/sb_allWords.tmp > $DATA/sb_criticalErrors.tmp

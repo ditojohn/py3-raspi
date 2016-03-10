@@ -325,6 +325,7 @@ class SpellingBee(object):
             # Retrieve word definition
             self.activeDefinition = cdict.parse_word_definition(self.activeWord, self.activeEntry)
             if len(self.activeDefinition) == 0:
+                # Log missing definition error
                 errorText = unicode("ERROR:Missing Definition:{0}\n", 'utf-8')
                 errorText = errorText.format(self.activeWord)
                 errorFile.write(errorText)
@@ -358,6 +359,7 @@ class SpellingBee(object):
 
             # Save pronunciation offline
             if wordClipURL == SB_EMPTY_STRING:
+                # Log missing audio error
                 errorText = unicode("ERROR:Missing Audio:{0}\n", 'utf-8')
                 errorText = errorText.format(self.activeWord)
                 errorFile.write(errorText)
@@ -370,6 +372,14 @@ class SpellingBee(object):
 
                 self.activePronunciation = offlineProncnFileName
                 self.activePronunciationWord = wordClipForm
+
+        # Log audio mismatch error
+        wordToken = re.sub('[^a-zA-Z]', SB_EMPTY_STRING, self.activeWord.lower())
+        pronunciationToken = re.sub('[^a-zA-Z]', SB_EMPTY_STRING, self.activePronunciationWord.lower())
+        if wordToken != pronunciationToken:
+            errorText = unicode("ERROR:Audio Mismatch:{0}\n", 'utf-8')
+            errorText = errorText.format(self.activeWord)
+            errorFile.write(errorText)
 
         # Close connection and error logging
         errorFile.close()
@@ -944,7 +954,7 @@ def run_error_scan(spellBee):
 
     spellBee.display_about()
     userInput = cinput.get_keypress("\nReady for error scan? Press any key when ready ... ")
-    print ("\n")
+    print SB_EMPTY_STRING
 
     activeWordIndex = 0
 
@@ -956,12 +966,14 @@ def run_error_scan(spellBee):
 
         # Lookup word definition
         spellBee.lookup_dictionary_by_index(wordIndex)
-        print "Scanned word #{0}: {1}".format(wordIndex + 1, spellBee.activeWord)
+        displayText = unicode("Scanned word #{0}: {1}", 'utf-8')
+        print displayText.format(wordIndex + 1, spellBee.activeWord)
 
         # Move to next word
         activeWordIndex += 1
     
-    print "\nError scan is complete. All errors are logged to {0}{1}.".format(SB_DATA_DIR, SB_ERR_LOG)
+    displayText = unicode("\nError scan is complete. All errors are logged to {0}{1}.", 'utf-8')
+    print displayText.format(SB_DATA_DIR, SB_ERR_LOG)
     
 
 ################################################################
