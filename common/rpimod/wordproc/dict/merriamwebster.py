@@ -70,6 +70,7 @@ def cleanse_dictionary_entry(entryXML):
 
     DEBUG_VAR="entryXML"
     coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(entryXML)))
+    coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, entryXML))
 
     # Handle XML cleansing in ascii
     if isinstance(entryXML, str):
@@ -99,6 +100,10 @@ def cleanse_dictionary_entry(entryXML):
         outputXML = unicode(cleansedXML, 'utf-8')
     else:
         outputXML = cleansedXML
+
+    DEBUG_VAR="outputXML"
+    coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(outputXML)))
+    coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, outputXML))
 
     return outputXML
 
