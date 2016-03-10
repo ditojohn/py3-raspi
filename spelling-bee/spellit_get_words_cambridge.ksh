@@ -3,7 +3,7 @@
 
 wordlist=$DATA/spellit_get_words_list.dat
 
-sourceURL="http://www.oxforddictionaries.com/us/definition/american_english/@word@?searchDictCode=all"
+sourceURL="http://dictionary.cambridge.org/us/dictionary/english/@word@"
 
 while read word;
 do

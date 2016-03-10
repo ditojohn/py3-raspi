@@ -27,13 +27,20 @@
 # Sample Search URL: http://www.merriam-webster.com/dictionary/test
 # Sample Pronunciation URL: http://media.merriam-webster.com/soundc11/t/test0001.wav
 #
-# Secondary Source: Oxford Advanced Learner's Dictionary
-# Sample Search URL: http://www.oxfordlearnersdictionaries.com/us/definition/english/test_1?q=test
-# Sample Pronunciation URL: http://www.oxfordlearnersdictionaries.com/us/media/english/us_pron/t/tes/test_/test__us_1.mp3
+# Secondary Source: Oxford Dictionaries
+# Sample Search URL: http://www.oxforddictionaries.com/us/definition/american_english/test?searchDictCode=all
+# Sample Pronunciation URL: http://www.oxforddictionaries.com/us/media/american_english/us_pron/t/tes/test_/test__us_1.mp3
 #
 # Tertiary Source: Collins Dictionary
 # Sample Search URL: http://www.collinsdictionary.com/dictionary/american/test
 # Sample Pronunciation URL: http://www.collinsdictionary.com/sounds/e/en_/en_us/en_us_test.mp3
+#
+# Alternate Word Forms Source: Cambrdige Dictionary
+# Sample Search URL: http://dictionary.cambridge.org/us/pronunciation/english/test
+# Sample Pronunciation URL: http://dictionary.cambridge.org/us/media/english/us_pron/t/tes/test_/test.mp3
+#
+# Alternate Source: Pronunciation Guide on Youtube
+# Feed URL: https://www.youtube.com/channel/UCwo_pNsPgyF8j7Rih73_2wg/feed
 #
 # Alternate Source: Google
 # Sample Search URL: http://www.google.com/search?q=define%3A+test
