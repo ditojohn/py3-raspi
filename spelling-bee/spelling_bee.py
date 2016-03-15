@@ -35,8 +35,8 @@
 # Sample Search URL: http://www.collinsdictionary.com/dictionary/american/test
 # Sample Pronunciation URL: http://www.collinsdictionary.com/sounds/e/en_/en_us/en_us_test.mp3
 #
-# Alternate Word Forms Source: Cambrdige Dictionary
-# Sample Search URL: http://dictionary.cambridge.org/us/pronunciation/english/test
+# Alternate Word Forms Source: Cambridge Dictionary
+# Sample Search URL: http://dictionary.cambridge.org/us/dictionary/english/test
 # Sample Pronunciation URL: http://dictionary.cambridge.org/us/media/english/us_pron/t/tes/test_/test.mp3
 #
 # Alternate Source: Pronunciation Guide on Youtube
@@ -73,7 +73,8 @@ import pygame
 import random
 import glob
 
-sys.path.insert(0, "/home/pi/projects/raspi")
+#sys.path.insert(0, "/home/pi/projects/raspi")
+sys.path.insert(0, "..")
 import common.rpimod.stdio.input as cinput
 import common.rpimod.stdio.output as coutput
 import common.rpimod.wordproc.dict.merriamwebster as cdict
@@ -383,7 +384,7 @@ class SpellingBee(object):
         # Log audio mismatch error
         wordToken = re.sub('[^a-zA-Z]', SB_EMPTY_STRING, self.activeWord.lower())
         pronunciationToken = re.sub('[^a-zA-Z]', SB_EMPTY_STRING, self.activePronunciationWord.lower())
-        if wordToken != pronunciationToken:
+        if self.activePronunciation != SB_EMPTY_STRING and wordToken != pronunciationToken:
             errorText = unicode("ERROR:Audio Mismatch:{0}\n", 'utf-8')
             errorText = errorText.format(self.activeWord)
             errorFile.write(errorText)
@@ -691,18 +692,22 @@ def exit_app():
 
 def display_help(runMode):
     if runMode.lower() == "test":
-        print "{0} Keyboard Menu: {1}".format(runMode.title(), SB_TEST_KEYBOARD_MENU)
+        print "\n{0} Keyboard Menu: {1}".format(runMode.title(), SB_TEST_KEYBOARD_MENU)
     elif runMode.lower() == "revise":
-        print "{0} Keyboard Menu: {1}".format(runMode.title(), SB_REVISE_KEYBOARD_MENU)
+        print "\n{0} Keyboard Menu: {1}".format(runMode.title(), SB_REVISE_KEYBOARD_MENU)
     else:
-        print "{0} Keyboard Menu: {1}".format(runMode.title(), SB_PRACTICE_KEYBOARD_MENU)
+        print "\n{0} Keyboard Menu: {1}".format(runMode.title(), SB_PRACTICE_KEYBOARD_MENU)
 
 
 # todo: Implement goto feature to specify new start/stop words
 def run_practice(spellBee, practiceMode):
 
     userPracticeMode = practiceMode.strip().lower()
-    spellBee.display_about()
+
+    if userPracticeMode == "study":
+        spellBee.print_active_word_list()
+    else:
+        spellBee.display_about()
     display_help(userPracticeMode)
     userInput = cinput.get_keypress("\nReady to {0}? Press any key when ready ... ".format(userPracticeMode))
 
@@ -867,7 +872,7 @@ def run_test(spellBee):
 def run_revision(spellBee):
     _FUNC_NAME_ = "run_revision"
 
-    spellBee.display_about()
+    spellBee.print_active_word_list()
     display_help("revise")
     userInput = cinput.get_keypress("\nReady to revise? Press any key when ready ... ")
 

@@ -8,11 +8,19 @@
 # Date        : 2016/02/09
 #--------------------------------------------------------------------------------------------------
 
+################################################################
+# Source: Merriam-Webster's Collegiate Dictionary
+# Sample Search URL: http://www.merriam-webster.com/dictionary/test
+# Sample API URL: http://www.dictionaryapi.com/api/v1/references/collegiate/xml/test?key=cbbd4001-c94d-493a-ac94-7268a7e41f6f
+# Sample Pronunciation URL: http://media.merriam-webster.com/soundc11/t/test0001.wav
+################################################################
+
 import sys
 import re
 from xml.dom import minidom
 
-sys.path.insert(0, "/home/pi/projects/raspi")
+#sys.path.insert(0, "/home/pi/projects/raspi")
+sys.path.insert(0, "../../../..")
 import common.rpimod.stdio.output as coutput
 
 # Set to True to turn debug messages on
@@ -22,13 +30,19 @@ ERR_DEBUG = False
 # Dictionary Configuration Variables
 ################################################################
 
-# Sample dictionary API URL - http://www.dictionaryapi.com/api/v1/references/collegiate/xml/test?key=cbbd4001-c94d-493a-ac94-7268a7e41f6f
+DICT_SOURCE_NAME = unicode("Merriam-Webster's Collegiate Dictionary", 'utf-8')
 DICT_ENTRY_URL = unicode("http://www.dictionaryapi.com/api/v1/references/collegiate/xml/{WORD}?key={KEY}", 'utf-8')
 DICT_AUDIO_URL = unicode("http://media.merriam-webster.com/soundc11/{FOLDER}/{CLIP}", 'utf-8')
 DICT_KEY = unicode("cbbd4001-c94d-493a-ac94-7268a7e41f6f", 'utf-8')
 
 DICT_ASCII_EMPTY_STR = ""
 DICT_UNICODE_EMPTY_STR = unicode("", 'utf-8')
+
+
+def get_dictionary_source():
+    _FUNC_NAME_ = "get_dictionary_source"
+
+    return DICT_SOURCE_NAME
 
 
 def get_dictionary_entry(connectionPool, word):
@@ -57,20 +71,11 @@ def get_dictionary_entry(connectionPool, word):
     return outputXML
 
 
-def get_dictionary_audio(connectionPool, audioClipURL):
-    _FUNC_NAME_ = "get_dictionary_audio"
-
-    # Download audio clip
-    audioClipResponse = connectionPool.request('GET', audioClipURL)
-    return audioClipResponse.data
-
-
 def cleanse_dictionary_entry(entryXML):
     _FUNC_NAME_ = "cleanse_dictionary_entry"
 
     DEBUG_VAR="entryXML"
     coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(entryXML)))
-    coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, entryXML))
 
     # Handle XML cleansing in ascii
     if isinstance(entryXML, str):
@@ -82,13 +87,11 @@ def cleanse_dictionary_entry(entryXML):
     coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(cleansedXML)))
 
     cleanseTagList = []
-    for tag in ['d_link', 'fw', 'it', 'un']:
-        cleanseTagList.append(tag)
-    
     cleanseElementList = []
 
-    for tag in cleanseTagList:
+    cleanseTagList = ['d_link', 'fw', 'it', 'un']
 
+    for tag in cleanseTagList:
         DEBUG_VAR="tag"
         coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(tag)))
         coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
@@ -100,10 +103,6 @@ def cleanse_dictionary_entry(entryXML):
         outputXML = unicode(cleansedXML, 'utf-8')
     else:
         outputXML = cleansedXML
-
-    DEBUG_VAR="outputXML"
-    coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(outputXML)))
-    coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, outputXML))
 
     return outputXML
 
@@ -443,3 +442,11 @@ def parse_word_clip(word, entryXML):
         return [audioClipWord, audioClipURL]
     else:
         return [DICT_UNICODE_EMPTY_STR, DICT_UNICODE_EMPTY_STR]
+
+
+def get_dictionary_audio(connectionPool, audioClipURL):
+    _FUNC_NAME_ = "get_dictionary_audio"
+
+    # Download audio clip
+    audioClipResponse = connectionPool.request('GET', audioClipURL)
+    return audioClipResponse.data

@@ -2,16 +2,16 @@
 # -*- coding: utf-8 -*-
 
 #--------------------------------------------------------------------------------------------------
-# File name   : google.py
-# Description : Dictionary lookup functions sourcing from Google
+# File name   : oxford.py
+# Description : Dictionary lookup functions sourcing from Oxford
 # Author      : Dito Manavalan
-# Date        : 2016/02/20
+# Date        : 2016/03/15
 #--------------------------------------------------------------------------------------------------
 
 ################################################################
-# Source: Google
-# Sample Search URL: http://www.google.com/search?q=define+test
-# Sample Pronunciation URL: http://ssl.gstatic.com/dictionary/static/sounds/de/0/test.mp3
+# Source: Oxford Dictionaries
+# Sample Search URL: http://www.oxforddictionaries.com/us/definition/american_english/test?searchDictCode=all
+# Sample Pronunciation URL: http://www.oxforddictionaries.com/us/media/american_english/us_pron/t/tes/test_/test__us_1.mp3
 ################################################################
 
 import sys
@@ -28,9 +28,9 @@ ERR_DEBUG = False
 # Dictionary Configuration Variables
 ################################################################
 
-DICT_SOURCE_NAME = unicode("Google", 'utf-8')
-DICT_ENTRY_URL = unicode("http://www.google.com/search?hl=en&q=define+{WORD}", 'utf-8')
-DICT_AUDIO_URL = unicode("http:{PATH}", 'utf-8')
+DICT_SOURCE_NAME = unicode("Oxford Dictionaries", 'utf-8')
+DICT_ENTRY_URL = unicode("http://www.oxforddictionaries.com/us/definition/american_english/{WORD}?searchDictCode=all", 'utf-8')
+DICT_AUDIO_URL = unicode("{PATH}", 'utf-8')
 
 DICT_UNICODE_EMPTY_STR = unicode("", 'utf-8')
 DICT_UNICODE_NEWLINE_STR = unicode("\n", 'utf-8')
@@ -107,9 +107,9 @@ def cleanse_dictionary_entry(entryText):
     cleanseElementList = []
     splitElementList = []
 
-    cleanseTextList = [u'\xb7']
-    cleanseTagList = [u'b', u'i', u'u']
-    cleanseElementList = [u'script', u'style']
+    cleanseTextList = [u'\xb7', u'<span class="punctuation">']
+    #cleanseTagList = [u'b', u'i', u'u']
+    #cleanseElementList = [u'script', u'style']
     #splitElementList = ['<div class="lr_dct_ent"', '<div class="xpdxpnd _xk vkc_np"']
 
     # todo: enable cleansing
@@ -137,9 +137,6 @@ def cleanse_dictionary_entry(entryText):
 
         cleansedText = re.sub(r"<{0}.*?>.*?</{0}>".format(tag), DICT_UNICODE_EMPTY_STR, cleansedText)
 
-    # The Google define dictionary entry is identified by the HTML tag '<div class="lr_dct_ent"'
-    # The subsequent sections can be separated by the HTML tag '<div class="vk_'
-
     # Split key tags into separate lines for easier identification
     for tag in splitElementList:
         DEBUG_VAR="tag"
@@ -166,14 +163,9 @@ def parse_word_definition(word, entryText):
     DEBUG_VAR="sourceText"
     coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(sourceText)))
     
-    # The dictionary definition line is identified by the HTML tag '<div style="display:inline" data-dobid="dfn">'
-    startMarker = r'<div style="display:inline" data-dobid="dfn"><span>'
-    endMarker = r'</span>'
-    wordDefinitions = wordDefinitions + find_enclosed_text(startMarker, endMarker, sourceText)
-
-    # The encyclopedia definition line is identified by the HTML tag '<div class="_oDd" data-hveid=".*?"><span class="_Tgc">'
-    startMarker = r'<div class="_oDd" data-hveid=".*?"><span class="_Tgc">'
-    endMarker = r'</span></div>'
+    # The dictionary definition line is identified by the HTML tag '<span class="definition">...</span>'
+    startMarker = r'<span class="definition">'
+    endMarker = r'[:]*</span>'
     wordDefinitions = wordDefinitions + find_enclosed_text(startMarker, endMarker, sourceText)
 
     DEBUG_VAR="wordDefinitions"
@@ -202,17 +194,20 @@ def parse_word_clip(word, entryText):
     DEBUG_VAR="sourceText"
     coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(sourceText)))
 
-    # The pronunciation audio line is identified by the HTML tag '<audio src='
-    startMarker = r'<audio src="'
-    endMarker = r'" data-dobid="aud"'
+    # The pronunciation audio line is identified by the HTML tag '<div class="sound audio_play_button icon-audio" data-src-mp3="http://www.oxforddictionaries.com/us/media/american_english/us_pron/c/clo/cloud/cloud__us_1.mp3"'
+    startMarker = r'data-src-mp3="'
+    endMarker = r'"'
     audioClipURLs = audioClipURLs + find_enclosed_text(startMarker, endMarker, sourceText)
+
+    DEBUG_VAR="audioClipURLs"
+    coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
 
     if len(audioClipURLs) > 0:
         audioClipURL = DICT_AUDIO_URL.format(PATH=audioClipURLs[0])
 
         # The pronunciation audio header word is identified by the HTML tag '<span data-dobid="hdw">'
-        startMarker = r'<span data-dobid="hdw">'
-        endMarker = r'</span>'
+        startMarker = r'<h2 class="pageTitle">'
+        endMarker = r'\n</h2>'
         audioClipWords = audioClipWords + find_enclosed_text(startMarker, endMarker, sourceText)
 
         if len(audioClipWords) > 0:
