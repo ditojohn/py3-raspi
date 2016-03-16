@@ -2,16 +2,16 @@
 # -*- coding: utf-8 -*-
 
 #--------------------------------------------------------------------------------------------------
-# File name   : cambridge.py
-# Description : Dictionary lookup functions sourcing from Cambridge
+# File name   : freedictionary.py
+# Description : Dictionary lookup functions sourcing from The Free Dictionary
 # Author      : Dito Manavalan
 # Date        : 2016/03/15
 #--------------------------------------------------------------------------------------------------
 
 ################################################################
-# Source: Cambridge Dictionaries Online
-# Sample Search URL: http://dictionary.cambridge.org/us/dictionary/english/test
-# Sample Pronunciation URL: http://dictionary.cambridge.org/us/media/english/us_pron/t/tes/test_/test.mp3
+# Source: The Free Dictionary by Farlex
+# Sample Search URL: http://www.thefreedictionary.com/test
+# Sample Pronunciation URL: http://img2.tfd.com/pron/mp3/en/US/dg/dgdgd3sjstdthr.mp3
 ################################################################
 
 import sys
@@ -31,30 +31,27 @@ ERR_DEBUG = False
 
 
 def initialize_source():
-    cdict.DICT_SOURCE_NAME = unicode("Cambridge Dictionaries Online", 'utf-8')
-    cdict.DICT_ENTRY_URL = unicode("http://dictionary.cambridge.org/us/dictionary/english/{WORD}", 'utf-8')
-    cdict.DICT_AUDIO_URL = unicode("{PATH}", 'utf-8')
+    cdict.DICT_SOURCE_NAME = unicode("The Free Dictionary by Farlex", 'utf-8')
+    cdict.DICT_ENTRY_URL = unicode("http://www.thefreedictionary.com/{WORD}", 'utf-8')
+    cdict.DICT_AUDIO_URL = unicode("http://img2.tfd.com/pron/mp3/{PATH}.mp3", 'utf-8')
 
     cdict.DICT_CLEAN_TEXT_PATTERNS = [
-    u'\u200b',
-    u': '
+    r'<div class="sds-list">.*?<span lang=.*?</div>',
+    r'<span class="illustration">.*?</span>',
+    r'<script.*?>.*?</script>',
+    r'<style.*?>.*?</style>'
     ]
     cdict.DICT_CLEAN_INNER_TEXT_PATTERNS = []
-    cdict.DICT_CLEAN_OUTER_TEXT_PATTERNS = [
-    [r'<a.*?>', r'</a>'],
-    [r'<b>', r'</b>'],
-    [r'<i>', r'</i>'],
-    [r'<u>', r'</u>']
-    ]
+    cdict.DICT_CLEAN_OUTER_TEXT_PATTERNS = []
 
-    # The dictionary definition line is identified by the HTML tag '<span class="def">...</span>'
-    # The pronunciation audio line is identified by the HTML tag 'data-src-mp3="http://www.oxforddictionaries.com/us/media/american_english/us_pron/c/clo/cloud/cloud__us_1.mp3"'
-    # The pronunciation audio header word is identified by the HTML tag '<span class="hw">'
+    # The dictionary definition line is identified by the HTML tag '<div class="sds-list"><b>a. </b>....</div>'
+    # The pronunciation audio line is identified by the HTML tag '<div class="wy" id="wy1"></div><h1>cloud</h1><span class=snd2 data-snd="en/US/dg/dgdgd3sjstdthr">'
+    # The pronunciation audio header word is identified by the HTML tag '<div class="wy" id="wy1"></div><h1>cloud</h1><span class=snd2 data-snd="en/US/dg/dgdgd3sjstdthr">'
     cdict.DICT_MARKER_DEFINITION = [
-    [r'<span class="def">', r'</span>']
+    [r'<div class="sds-list"><b>.*?</b>\s*', r'\s*</div>']
     ]
-    cdict.DICT_MARKER_PRONUNCIATION_URL = [r'data-src-mp3="', r'"']
-    cdict.DICT_MARKER_PRONUNCIATION_WORD = [r'<span class="hw">', r'</span>']
+    cdict.DICT_MARKER_PRONUNCIATION_URL = [r'data-snd="', r'"']
+    cdict.DICT_MARKER_PRONUNCIATION_WORD = [r'<h1>', r'</h1>']
 
 
 def get_dictionary_source():
