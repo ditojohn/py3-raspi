@@ -40,7 +40,9 @@ def initialize_source():
     r'<span class="punctuation">'
     ]
     cdict.DICT_CLEAN_INNER_TEXT_PATTERNS = []
-    cdict.DICT_CLEAN_OUTER_TEXT_PATTERNS = []
+    cdict.DICT_CLEAN_OUTER_TEXT_PATTERNS = [
+    [r'<em>', r'</em>']
+    ]
 
     # The dictionary definition line is identified by the HTML tag '<span class="definition">...</span>'
     # The pronunciation audio line is identified by the HTML tag '<div class="sound audio_play_button icon-audio" data-src-mp3="http://www.oxforddictionaries.com/us/media/american_english/us_pron/c/clo/cloud/cloud__us_1.mp3"'
@@ -60,15 +62,18 @@ def get_dictionary_source():
 
 def get_dictionary_entry(connectionPool, word):
     _FUNC_NAME_ = "get_dictionary_entry"
+    initialize_source()
     return cdict.get_dictionary_entry(connectionPool, word)
 
 
 def parse_word_definition(word, entryText):
     _FUNC_NAME_ = "parse_word_definition"
+    initialize_source()
     return cdict.parse_word_definition(word, entryText)
 
 
 def parse_word_clip(word, entryText):
     _FUNC_NAME_ = "parse_word_clip"
+    initialize_source()
     return cdict.parse_word_clip(word, entryText)
 

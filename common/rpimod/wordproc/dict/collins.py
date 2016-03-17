@@ -62,15 +62,18 @@ def get_dictionary_source():
 
 def get_dictionary_entry(connectionPool, word):
     _FUNC_NAME_ = "get_dictionary_entry"
+    initialize_source()
     return cdict.get_dictionary_entry(connectionPool, word)
 
 
 def parse_word_definition(word, entryText):
     _FUNC_NAME_ = "parse_word_definition"
+    initialize_source()
     return cdict.parse_word_definition(word, entryText)
 
 
 def parse_word_clip(word, entryText):
     _FUNC_NAME_ = "parse_word_clip"
+    initialize_source()
     return cdict.parse_word_clip(word, entryText)
 
