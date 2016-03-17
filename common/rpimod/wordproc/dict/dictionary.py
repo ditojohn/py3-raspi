@@ -26,9 +26,9 @@ PRIORITIZED_DICT_SOURCES = [
 webster,
 oxford,
 cambridge,
-google,
 collins,
 randomhouse,
+google,
 freedictionary
 ]
 
@@ -42,7 +42,7 @@ DICT_SOURCES = {
 'freedictionary': freedictionary
 }
 
-DICT_LIST_BULLET = '• '
+DICT_LIST_BULLET = u'• '
 HEADER_TEXT_COLOR = 'green'
 SECTION_TEXT_COLOR = 'blue'
 ERROR_TEXT_COLOR = 'red'
@@ -115,12 +115,12 @@ def display_dictionary_entry(word, currentDefinitions, source, currentClipWord, 
         displayMessage = "Definition of {WORD} from {SOURCE}:".format(WORD=word, SOURCE=source)
         coutput.print_color(HEADER_TEXT_COLOR, displayMessage)
         for definition in currentDefinitions:
-            print "{BULLET}{ITEM}".format(BULLET=DICT_LIST_BULLET, ITEM=definition)
+            print u"{BULLET}{ITEM}".format(BULLET=DICT_LIST_BULLET, ITEM=definition)
 
     if currentClipWord != "":
         displayMessage = "Pronunciation of {WORD} from {SOURCE}:".format(WORD=currentClipWord, SOURCE=pronSource)
         coutput.print_color(SECTION_TEXT_COLOR, displayMessage)
-        print "{BULLET}{ITEM}".format(BULLET=DICT_LIST_BULLET, ITEM=currentClipURL)
+        print u"{BULLET}{ITEM}".format(BULLET=DICT_LIST_BULLET, ITEM=currentClipURL)
 
 
 def lookup_word(connectionPool, word, *lookupSource):

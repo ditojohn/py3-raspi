@@ -36,6 +36,7 @@ def initialize_source():
 
     cdict.DICT_CLEAN_TEXT_PATTERNS = [
     u'\xb7',
+    u'&quot;',
     r'<script.*?>.*?</script>',
     r'<style.*?>.*?</style>'
     ]
