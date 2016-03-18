@@ -13,7 +13,10 @@ import re
 
 #sys.path.insert(0, "/home/pi/projects/raspi")
 sys.path.insert(0, "../../../..")
+
 import common.rpimod.stdio.output as coutput
+import common.rpimod.stdio.fileio as cfile
+
 import common.rpimod.wordproc.dict.merriamwebster as webster
 import common.rpimod.wordproc.dict.oxford as oxford
 import common.rpimod.wordproc.dict.cambridge as cambridge
@@ -43,8 +46,10 @@ DICT_SOURCES = {
 }
 
 DICT_LIST_BULLET = u'• '
-HEADER_TEXT_COLOR = 'green'
-SECTION_TEXT_COLOR = 'blue'
+
+HEADER_TEXT_COLOR = 'cyan'
+SECTION_TEXT_COLOR = 'cyan'
+WARNING_TEXT_COLOR = 'yellow'
 ERROR_TEXT_COLOR = 'red'
 
 # Set to True to turn debug messages on
@@ -98,32 +103,29 @@ def fetch_dictionary_entry(connectionPool, word):
     return [word, wordDefinitions, wordDefinitionSource, pronunciationWord, pronunciationURL, pronunciationSource]
 
 
-def fetch_dictionary_audio(connectionPool, pronunciationURL):
-    _FUNC_NAME_ = "fetch_dictionary_audio"
-
-    # Download audio clip
-    audioClipResponse = connectionPool.request('GET', pronunciationURL)
-    return audioClipResponse.data
-
-
-def display_dictionary_entry(word, currentDefinitions, source, currentClipWord, currentClipURL, pronSource):
+def display_dictionary_entry(connectionPool, pronAudioOutput, pronLoopCount, pronLoopDelaySec, word, currentDefinitions, source, currentClipWord, currentClipURL, pronSource):
     print ""
+
     if len(currentDefinitions) == 0:
         displayMessage = "No definitions available for {WORD}".format(WORD=word)
-        coutput.print_color(HEADER_TEXT_COLOR, displayMessage)
+        coutput.print_color(WARNING_TEXT_COLOR, displayMessage)
     else:
         displayMessage = "Definition of {WORD} from {SOURCE}:".format(WORD=word, SOURCE=source)
         coutput.print_color(HEADER_TEXT_COLOR, displayMessage)
         for definition in currentDefinitions:
             print u"{BULLET}{ITEM}".format(BULLET=DICT_LIST_BULLET, ITEM=definition)
 
-    if currentClipWord != "":
+    if currentClipWord == "":
+        displayMessage = "No pronunciation available for {WORD}".format(WORD=word)
+        coutput.print_color(WARNING_TEXT_COLOR, displayMessage)
+    else:
         displayMessage = "Pronunciation of {WORD} from {SOURCE}:".format(WORD=currentClipWord, SOURCE=pronSource)
         coutput.print_color(SECTION_TEXT_COLOR, displayMessage)
         print u"{BULLET}{ITEM}".format(BULLET=DICT_LIST_BULLET, ITEM=currentClipURL)
+        cfile.play_url(connectionPool, currentClipURL, pronAudioOutput, pronLoopCount, pronLoopDelaySec)
 
 
-def lookup_word(connectionPool, word, *lookupSource):
+def lookup_word(connectionPool, pronAudioOutput, pronLoopCount, pronLoopDelaySec, word, *lookupSource):
     _FUNC_NAME_ = "lookup_word"
 
     isError = False
@@ -138,7 +140,7 @@ def lookup_word(connectionPool, word, *lookupSource):
         currentClipURL = dictEntry[4]
         pronSource = dictEntry[5]
 
-        display_dictionary_entry(word, currentDefinitions, source, currentClipWord, currentClipURL, pronSource)
+        display_dictionary_entry(connectionPool, pronAudioOutput, pronLoopCount, pronLoopDelaySec, word, currentDefinitions, source, currentClipWord, currentClipURL, pronSource)
 
     elif lookupSource[0].lower() == 'all' or lookupSource[0].lower() in DICT_SOURCES.keys():
         
@@ -160,7 +162,7 @@ def lookup_word(connectionPool, word, *lookupSource):
             currentDefinitions = dictSource.parse_word_definition(word, dictEntryText)
             [currentClipWord, currentClipURL] = dictSource.parse_word_clip(word, dictEntryText)
 
-            display_dictionary_entry(word, currentDefinitions, source, currentClipWord, currentClipURL, pronSource)
+            display_dictionary_entry(connectionPool, pronAudioOutput, pronLoopCount, pronLoopDelaySec, word, currentDefinitions, source, currentClipWord, currentClipURL, pronSource)
 
     else:
         print ""
