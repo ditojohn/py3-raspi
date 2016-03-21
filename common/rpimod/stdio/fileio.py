@@ -31,13 +31,13 @@ def read(inputFileName):
 
 
 def write(outputFileName, outputText):
-    outputFile = codecs.open(inputFileName, mode='w', encoding='utf-8')
+    outputFile = codecs.open(outputFileName, mode='w', encoding='utf-8')
     outputFile.write(outputText)
     outputFile.close()
 
 
 def append(outputFileName, outputText):
-    outputFile = codecs.open(inputFileName, mode='a', encoding='utf-8')
+    outputFile = codecs.open(outputFileName, mode='a', encoding='utf-8')
     outputFile.write(outputText)
     outputFile.close()
 
