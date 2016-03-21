@@ -32,7 +32,7 @@ def find_enclosed_text(rawStartPattern, rawEndPattern, text):
     rawSearchPattern = rawStartPattern + regexNonGreedyJoiner + rawEndPattern
 
     enclosedTextMatches = []
-    matches = re.finditer(rawSearchPattern, text)
+    matches = re.finditer(rawSearchPattern, text, flags=re.DOTALL)
     for match in matches:
         enclosedTextMatches.append(match.group(1))
 
@@ -56,7 +56,15 @@ def cleanse_text(rawText, rawTextPatterns, rawInnerTextPatterns, rawOuterTextPat
 
     # Cleanse text patterns
     for pattern in cleanseTextPatterns:
-        cleansedText = re.sub(pattern, UNICODE_EMPTY_STR, cleansedText)
+        DEBUG_VAR="pattern"
+        coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(pattern)))
+        coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
+
+        cleansedText = re.sub(pattern, UNICODE_EMPTY_STR, cleansedText, flags=re.DOTALL)
+
+        DEBUG_VAR="cleansedText"
+        coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(cleansedText)))
+        coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
 
     # Cleanse inner text surrounded by text patterns
     for enclosure in cleanseInnerTextPatterns:
@@ -65,7 +73,7 @@ def cleanse_text(rawText, rawTextPatterns, rawInnerTextPatterns, rawOuterTextPat
         coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
 
         pattern = r'(' + enclosure[0] + r').*?(' + enclosure[1] + r')'
-        cleansedText = re.sub(pattern, r'\g<1>\g<2>', cleansedText)
+        cleansedText = re.sub(pattern, r'\g<1>\g<2>', cleansedText, flags=re.DOTALL)
 
     # Cleanse outer text patterns preserving enclosed contents
     for enclosure in cleanseOuterTextPatterns:
@@ -74,7 +82,7 @@ def cleanse_text(rawText, rawTextPatterns, rawInnerTextPatterns, rawOuterTextPat
         coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
 
         pattern = enclosure[0] + r'(.*?)' + enclosure[1]
-        cleansedText = re.sub(pattern, r'\g<1>', cleansedText)
+        cleansedText = re.sub(pattern, r'\g<1>', cleansedText, flags=re.DOTALL)
 
     outputText = cleansedText
     return outputText
