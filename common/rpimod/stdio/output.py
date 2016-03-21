@@ -51,6 +51,17 @@ def print_columnized_slice(list, sliceIndexList, numCols):
 
     print_columnized_list(slicedList, numCols)
 
+def multiline_text(list):
+    textList = u""
+
+    for index, item in enumerate(list):
+        if index == 0:
+            textList = item
+        else:
+            textList = textList + u"\n" + item
+
+    return textList
+
 
 # Print to the terminal in color. References:
 # https://en.wikipedia.org/wiki/ANSI_escape_code#CSI_codes
