@@ -23,7 +23,7 @@ SB_WORD_LIST_URL = {
 }
 
 SB_WORD_LIST_OUT = {
-    '2016': 'data/downloads/spelling_bee_{YEAR}-{SEQ}-{LANG}-{TYPE}.txt'
+    '2016': 'data/download/spelling_bee_{YEAR}-{SEQ}-{LANG}-{TYPE}.txt'
 }
 
 SB_WORD_LIST = {
@@ -56,7 +56,7 @@ SB_CLEAN_INNER_TEXT_PATTERNS = [
 SB_CLEAN_OUTER_TEXT_PATTERNS = [
 ]
 
-'''
+
 ################################################################
 # Main Program
 ################################################################
@@ -114,7 +114,7 @@ for index, listID in enumerate(SB_WORD_LIST[args.contestYear]):
     cfile.write(listFileName, coutput.multiline_text(words))
 
 connectionPool.clear()
-'''
+
 
 ########################################################################
 # Debugging Commands
@@ -127,7 +127,7 @@ sudo python spellit_download_lists.py 2016
 ########################################################################
 # Sample application to test the python module
 ########################################################################
-
+'''
 connectionPool = urllib3.PoolManager(10, headers=SB_USER_AGENT)
 
 #listURLResponse = connectionPool.request('GET', 'http://myspellit.com/print_french.html')
@@ -138,4 +138,4 @@ print len(textlines)
 print textlines
 
 connectionPool.clear()
-
+'''
