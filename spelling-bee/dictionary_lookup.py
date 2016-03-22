@@ -38,3 +38,12 @@ else:
     cdict.lookup_word(connectionPool, DICT_AUDIO_OUTPUT, DICT_REPEAT_COUNT, DICT_REPEAT_DELAY, args.searchWord, args.dictionary)
 
 connectionPool.clear()
+
+########################################################################
+# Debugging Commands
+########################################################################
+'''
+cd $PROJ
+sudo python dictionary_lookup.py incorruptible
+sudo python dictionary_lookup.py incorruptible google
+'''
