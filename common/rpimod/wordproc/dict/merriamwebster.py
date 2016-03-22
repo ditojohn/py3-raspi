@@ -442,11 +442,3 @@ def parse_word_clip(word, entryXML):
         return [audioClipWord, audioClipURL]
     else:
         return [DICT_UNICODE_EMPTY_STR, DICT_UNICODE_EMPTY_STR]
-
-
-def get_dictionary_audio(connectionPool, audioClipURL):
-    _FUNC_NAME_ = "get_dictionary_audio"
-
-    # Download audio clip
-    audioClipResponse = connectionPool.request('GET', audioClipURL)
-    return audioClipResponse.data
