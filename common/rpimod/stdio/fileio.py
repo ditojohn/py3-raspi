@@ -9,11 +9,16 @@
 #--------------------------------------------------------------------------------------------------
 
 import os, errno
+import sys
 import uuid
 import time
 import glob
 import codecs
 import pygame
+import re
+
+sys.path.insert(0, "../../..")
+import common.rpimod.stdio.output as coutput
 
 
 def download(connectionPool, sourceURL, targetFileName):
@@ -83,10 +88,13 @@ def delete_temp():
 
 
 def play_url(connectionPool, sourceURL, audioOutput, loopCount, loopDelay):
-    tempFileName = "dlfile_ts{TIMESTAMP}_rnd{RAND}.tmp".format(TIMESTAMP=time.strftime("%Y%m%d%H%M%S"), RAND=str(uuid.uuid4()))
-    download(connectionPool, sourceURL, tempFileName)
-    play(tempFileName, audioOutput, loopCount, loopDelay)
-    delete_temp()
+    if '.mp3' in sourceURL or '.wav' in sourceURL:
+        tempFileName = "dlfile_ts{TIMESTAMP}_rnd{RAND}.tmp".format(TIMESTAMP=time.strftime("%Y%m%d%H%M%S"), RAND=str(uuid.uuid4()))
+        download(connectionPool, sourceURL, tempFileName)
+        play(tempFileName, audioOutput, loopCount, loopDelay)
+        delete_temp()
+    else:
+        coutput.print_color('red', 'ERROR: Unable to play audio from ' + sourceURL)
 
 
 def stream_wav(sourceURL, audioOutput):
