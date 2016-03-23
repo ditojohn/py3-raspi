@@ -24,6 +24,7 @@ import common.rpimod.wordproc.dict.google as google
 import common.rpimod.wordproc.dict.collins as collins
 import common.rpimod.wordproc.dict.randomhouse as randomhouse
 import common.rpimod.wordproc.dict.freedictionary as freedictionary
+import common.rpimod.wordproc.dict.youtube as youtube
 
 PRIORITIZED_DICT_SOURCES = [
 webster,
@@ -32,7 +33,8 @@ cambridge,
 collins,
 randomhouse,
 google,
-freedictionary
+freedictionary,
+youtube
 ]
 
 DICT_SOURCES = {
@@ -42,7 +44,8 @@ DICT_SOURCES = {
 'google': google,
 'collins': collins,
 'randomhouse': randomhouse,
-'freedictionary': freedictionary
+'freedictionary': freedictionary,
+'youtube': youtube
 }
 
 DICT_LIST_BULLET = u'• '
@@ -149,6 +152,10 @@ def lookup_word(connectionPool, pronAudioOutput, pronLoopCount, pronLoopDelaySec
 
         else:                
             dictSources.append(DICT_SOURCES[lookupSource[0].lower()])
+
+        DEBUG_VAR="dictSources"
+        coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(dictSources)))
+        coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))     
         
         for dictSource in dictSources:
             source = dictSource.get_dictionary_source()
@@ -174,40 +181,48 @@ def lookup_word(connectionPool, pronAudioOutput, pronLoopCount, pronLoopDelaySec
 ########################################################################
 # Sample application to test the python module
 ########################################################################
+'''
+import urllib3
 
-#import urllib3
-#
-#DICT_USER_AGENT = {'user-agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.116 Safari/537.36'}
-#connectionPool = urllib3.PoolManager(10, headers=DICT_USER_AGENT)
-#
+DICT_USER_AGENT = {'user-agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.116 Safari/537.36'}
+connectionPool = urllib3.PoolManager(10, headers=DICT_USER_AGENT)
+
+for word in []:
 #for word in ['cloud']:
-#    lookup_word(connectionPool, word)
-#
-#for word in ['sakura']:
-#    lookup_word(connectionPool, word, 'google')
-#
+    lookup_word(connectionPool, word)
+
+for word in ['sakura', 'wagnerian']:
+    lookup_word(connectionPool, 'Speaker', 1, 1.5, word, 'youtube')
+
+for word in []:
 #for word in ['horrible']:
-#    lookup_word(connectionPool, word, 'all')
-#
+    lookup_word(connectionPool, word, 'all')
+
+for word in []:
 #for word in ['horse']:
-#    lookup_word(connectionPool, word, 'blah')
-#
-#for word in []:
-##for word in ['cloud', 'klompen', 'fiery', 'incorruptible', 'sakura']:
-#    entry = fetch_dictionary_entry(connectionPool, word)
-#    print entry[0]
-#    #print entry[1]
-#    for definition in entry[1]:
-#        print definition
-#    print entry[2]
-#    print entry[3]
-#    print entry[4]
-#    print entry[5]
-#    print ""
-#
-#connectionPool.clear()
+    lookup_word(connectionPool, word, 'blah')
+
+for word in []:
+#for word in ['cloud', 'klompen', 'fiery', 'incorruptible', 'sakura']:
+    entry = fetch_dictionary_entry(connectionPool, word)
+    print entry[0]
+    #print entry[1]
+    for definition in entry[1]:
+        print definition
+    print entry[2]
+    print entry[3]
+    print entry[4]
+    print entry[5]
+    print ""
+
+connectionPool.clear()
+'''
 
 ########################################################################
 # Debugging Commands
 ########################################################################
 
+'''
+cd ~/projects/raspi/common/rpimod/wordproc/dict
+sudo python dictionary.py
+'''
