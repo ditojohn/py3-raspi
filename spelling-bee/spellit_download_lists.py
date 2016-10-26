@@ -19,15 +19,33 @@ import common.rpimod.wordproc.textparser as cparser
 SB_USER_AGENT = {'user-agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.116 Safari/537.36'}
 
 SB_WORD_LIST_URL = {
-    '2016': 'http://myspellit.com/print_{LANG}.html'
+    '2016': 'http://myspellit.com/print_{LANG}.html',
+    '2017': 'http://myspellit.com/print_{LANG}.html'
 }
 
 SB_WORD_LIST_OUT = {
-    '2016': 'data/download/spelling_bee_{YEAR}-{SEQ}-{LANG}-{TYPE}.txt'
+    '2016': 'data/download/spelling_bee_{YEAR}-{SEQ}-{LANG}-{TYPE}.txt',
+    '2017': 'data/download/spelling_bee_{YEAR}-{SEQ}-{LANG}-{TYPE}.txt'
 }
 
 SB_WORD_LIST = {
     '2016': [
+        'Latin',
+        'Arabic',
+        'Asian Languages',
+        'French',
+        'Eponyms',
+        'German',
+        'Slavic Languages',
+        'Dutch',
+        'Old English',
+        'New World Languages',
+        'Japanese',
+        'Greek',
+        'Italian',
+        'Spanish'
+    ],
+    '2017': [
         'Latin',
         'Arabic',
         'Asian Languages',
