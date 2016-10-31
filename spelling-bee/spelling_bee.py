@@ -89,6 +89,7 @@ SB_DICT_OFFLINE_CLIP = unicode("sb_{WORD}.wav", 'utf-8')
 SB_DICT_OVERRIDE_DIR = unicode(SB_DATA_DIR + 'dict/override/', 'utf-8')
 SB_DICT_OVERRIDE_DEFN = unicode("sb_{WORD}.dat", 'utf-8')
 SB_DICT_OVERRIDE_CLIP = unicode("sb_{WORD}.mp3", 'utf-8')
+SB_DICT_OVERRIDE_MSG = unicode("sb_{WORD}.msg", 'utf-8')
 
 SB_LIST_BULLET = unicode('• ', 'utf-8')
 SB_PROMPT_SYMBOL = unicode("> ", 'utf-8')
@@ -373,13 +374,22 @@ class SpellingBee(object):
             wordToken = re.sub('[^a-zA-Z]', SB_EMPTY_STRING, self.activeWord.lower())
             pronunciationToken = re.sub('[^a-zA-Z]', SB_EMPTY_STRING, self.activePronunciationWord.lower())
             if wordToken != pronunciationToken:
-                coutput.print_warn("A different form of the word is being pronounced")
+                coutput.print_warn("A different form of the word is being pronounced.")
             cfile.play(self.activePronunciation, SB_AUDIO_OUTPUT, SB_REPEAT_COUNT, SB_REPEAT_DELAY)
-                    
+
+    def print_word_tip(self):
+        overrideTipFileName = SB_DICT_OVERRIDE_DIR + SB_DICT_OVERRIDE_MSG.format(WORD=self.activeWord).replace(" ", "_")
+
+        # Check for word message/instruction override
+        if os.path.isfile(overrideTipFileName) and os.path.getsize(overrideTipFileName) > 0:
+            activeTip = cfile.read(overrideTipFileName)
+            coutput.print_tip(activeTip)
+
     def display_word_cue(self, title):
         print title
         self.print_word_definition()
         self.pronounce_word()
+        self.print_word_tip()
 
     def reset_test_result(self):
         self.activeTestDate = SB_EMPTY_STRING

@@ -133,6 +133,9 @@ def print_err (msg):
 def print_warn (msg):
     print "{colorOn}{header}{text}{colorOff}".format(colorOn=get_term_color('yellow', 'normal', 'normal'), header="WARNING: ", text=msg, colorOff=get_term_color('normal', 'normal', 'normal'))
 
+def print_tip (msg):
+    print "{colorOn}{header}{text}{colorOff}".format(colorOn=get_term_color('yellow', 'normal', 'inverse'), header="TIP: ", text=msg, colorOff=get_term_color('normal', 'normal', 'normal'))
+
 def print_color (color, msg):
     print "{colorOn}{text}{colorOff}".format(colorOn=get_term_color(color, 'normal', 'normal'), text=msg, colorOff=get_term_color('normal', 'normal', 'normal'))
 
