@@ -34,7 +34,7 @@ cat $DATA/sbe_resolvedPronErrors.tmp | column -x
 ###################################################################################
 
 # Check for missing definitions from error log
-cat $DATA/spelling_bee_errors.log | grep "Missing Definition" | cut -d ':' -f 3 | egrep -v "^$" > $DATA/sbe_logErrors.tmp
+cat $DATA/log/spelling_bee_errors.log | grep "Missing Definition" | cut -d ':' -f 3 | egrep -v "^$" > $DATA/sbe_logErrors.tmp
 
 # Consolidate definition errors (A)
 cat $DATA/sbe_xmlErrors.tmp $DATA/sbe_logErrors.tmp | sort -u > $DATA/sbe_allErrors.tmp
@@ -58,7 +58,7 @@ cat $DATA/sbe_unresolvedErrors.tmp | column -x
 ###################################################################################
 
 # Check for missing pronunciations from error log
-cat $DATA/spelling_bee_errors.log | grep "Missing Audio" | cut -d ':' -f 3 | egrep -v "^$" > $DATA/sbe_logErrors.tmp
+cat $DATA/log/spelling_bee_errors.log | grep "Missing Audio" | cut -d ':' -f 3 | egrep -v "^$" > $DATA/sbe_logErrors.tmp
 
 # Consolidate pronunciation errors (A)
 cat $DATA/sbe_xmlErrors.tmp $DATA/sbe_logErrors.tmp | sort -u > $DATA/sbe_allErrors.tmp
@@ -82,7 +82,7 @@ cat $DATA/sbe_unresolvedErrors.tmp | column -x
 ###################################################################################
 
 # Check for pronunciation mismatch from error log
-cat $DATA/spelling_bee_errors.log | grep "Audio Mismatch" | cut -d ':' -f 3 | egrep -v "^$" > $DATA/sbe_logErrors.tmp
+cat $DATA/log/spelling_bee_errors.log | grep "Audio Mismatch" | cut -d ':' -f 3 | egrep -v "^$" > $DATA/sbe_logErrors.tmp
 
 # Consolidate pronunciation errors (A)
 cat $DATA/sbe_logErrors.tmp | sort -u > $DATA/sbe_allErrors.tmp

@@ -14,13 +14,13 @@ html_select_tag ()
     echo "$splitCode"
 }
 
-wordlist=$DATA/spellit_get_words_list.dat
+wordlist=$PROJ/conf/spellit_get_words_list.dat
 
 searchAgent="Mozilla/6.0 (Macintosh; I; Intel Mac OS X 11_7_9; de-LI; rv:1.9b4) Gecko/2012010317 Firefox/10.0a4"
 searchURL="http://www.google.com/search?hl=en&q=YouTube+Pronunciation+Guide+How+to+Pronounce+@word@"
 
-#while read word;
-echo "Buckwagon" | while read word;
+while read word;
+#echo "Buckwagon" | while read word;
 do
     echo ""
     echo "Searching for word: ${word}"
@@ -38,5 +38,5 @@ do
     #echo "Sleeping ..."
     #sleep 5
 
-#done < ${wordlist}
-done
+done < ${wordlist}
+#done
