@@ -26,6 +26,8 @@ import common.rpimod.wordproc.dict.randomhouse as randomhouse
 import common.rpimod.wordproc.dict.freedictionary as freedictionary
 import common.rpimod.wordproc.dict.youtube as youtube
 
+'''
+# Reference Priority for Dictionary Sources
 PRIORITIZED_DICT_SOURCES = [
 webster,
 oxford,
@@ -35,6 +37,18 @@ randomhouse,
 google,
 freedictionary,
 youtube
+]
+'''
+
+PRIORITIZED_DICT_SOURCES = [
+cambridge,
+collins,
+randomhouse,
+google,
+freedictionary,
+youtube,
+oxford,
+webster
 ]
 
 DICT_SOURCES = {

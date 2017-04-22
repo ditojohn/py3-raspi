@@ -260,6 +260,10 @@ class SpellingBee(object):
             coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(self.activeEntry)))
             coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
 
+            DEBUG_VAR="self.activeDefinition"
+            coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(self.activeDefinition)))
+            coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
+
         # Check primary source for dictionary entry
         elif os.path.isfile(offlineEntryFileName) and os.path.getsize(offlineEntryFileName) > 100:
             coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "offlineEntryFile size :: {0}".format(os.path.getsize(offlineEntryFileName)))
@@ -303,13 +307,30 @@ class SpellingBee(object):
 
         # Check primary source for dictionary entry and pronunciation
         elif os.path.isfile(offlineEntryFileName) and os.path.getsize(offlineEntryFileName) > 100 and os.path.isfile(offlineProncnFileName) and os.path.getsize(offlineProncnFileName) > 1000:
-            coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "offlineProncnFile size :: {0}".format(os.path.getsize(offlineProncnFileName)))
 
             self.activePronunciation = offlineProncnFileName
+        
+            coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "offlineProncnFile size :: {0}".format(os.path.getsize(offlineProncnFileName)))
+           
+            DEBUG_VAR="self.activePronunciation"
+            coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(self.activePronunciation)))
+            coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
+
+            DEBUG_VAR="self.activeWord"
+            coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(self.activeWord)))
+            coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
+
+            DEBUG_VAR="self.activeEntry"
+            coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(self.activeEntry)))
+            coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
 
             # Retrieve pronunciation audio clip word form and filename
-            [wordClipForm, wordClipURL] = cdict.parse_word_clip(self.activeWord, self.activeEntry)
+            [wordClipForm, wordClipURL] = cdict.parse_word_clip(self.activeWord, cfile.read(offlineEntryFileName))
             self.activePronunciationWord = wordClipForm
+
+            DEBUG_VAR="self.activePronunciationWord"
+            coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(self.activePronunciationWord)))
+            coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
 
         else:
             # Retrieve pronunciation audio clip word form and filename
@@ -368,13 +389,24 @@ class SpellingBee(object):
                 definitionIndex += 1
 
     def pronounce_word(self):
+        _FUNC_NAME_ = "pronounce_word"
         if self.activePronunciation == SB_EMPTY_STRING:
             coutput.print_err("Unable to lookup audio pronunciation")
         else:
             wordToken = re.sub('[^a-zA-Z]', SB_EMPTY_STRING, self.activeWord.lower())
+            DEBUG_VAR="wordToken"
+            coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(wordToken)))
+            coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
+
             pronunciationToken = re.sub('[^a-zA-Z]', SB_EMPTY_STRING, self.activePronunciationWord.lower())
+            DEBUG_VAR="pronunciationToken"
+            coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(pronunciationToken)))
+            coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
+
             if wordToken != pronunciationToken:
                 coutput.print_warn("A different form of the word is being pronounced.")
+            
+            coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "Executing cfile.play")
             cfile.play(self.activePronunciation, SB_AUDIO_OUTPUT, SB_REPEAT_COUNT, SB_REPEAT_DELAY)
 
     def print_word_tip(self):
@@ -386,9 +418,15 @@ class SpellingBee(object):
             coutput.print_tip(activeTip)
 
     def display_word_cue(self, title):
+        _FUNC_NAME_ = "display_word_cue"
         print title
+        coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "Executing self.print_word_definition")
         self.print_word_definition()
+
+        coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "Executing self.pronounce_word")
         self.pronounce_word()
+
+        coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "Executing self.print_word_tip")
         self.print_word_tip()
 
     def reset_test_result(self):

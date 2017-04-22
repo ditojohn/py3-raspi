@@ -20,6 +20,13 @@ import re
 sys.path.insert(0, "../../..")
 import common.rpimod.stdio.output as coutput
 
+################################################################
+# Internal variables
+################################################################
+
+# Set to True to turn debug messages on
+ERR_DEBUG = False
+
 
 def download(connectionPool, sourceURL, targetFileName):
     fileData = connectionPool.request('GET', sourceURL).data
@@ -57,15 +64,26 @@ def set_audio_output(audioOutput):
 
 
 def play(fileName, audioOutput, loopCount, loopDelaySec):
+    _FUNC_NAME_ = "play"
+
+    coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "Executing set_audio_output")
     set_audio_output(audioOutput)
 
     for loopIndex in range (0, loopCount):
         pygame.mixer.init()
+
+        coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "Executing pygame.mixer.music.load")
         pygame.mixer.music.load(fileName)
+
+        coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "Executing pygame.mixer.music.play")
         pygame.mixer.music.play()
         while pygame.mixer.music.get_busy() == True:
             continue
+        time.sleep(0.06)            # introduce delay to ensure that the end of the audio is not clipped during playback
+        
+        coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "Executing pygame.mixer.stop")
         pygame.mixer.stop()
+        coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "Executing pygame.mixer.quit")
         pygame.mixer.quit()
 
         if loopIndex != (loopCount - 1):

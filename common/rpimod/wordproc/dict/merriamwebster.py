@@ -85,6 +85,7 @@ def cleanse_dictionary_entry(entryXML):
 
     DEBUG_VAR="cleansedXML"
     coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(cleansedXML)))
+    coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, cleansedXML))
 
     cleanseTagList = []
     cleanseElementList = []
