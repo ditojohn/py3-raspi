@@ -65,6 +65,7 @@ SB_TEST_SAVE_RESULT = True
 SB_TEST_SAVE_PRACTICE = True
 
 SB_DATA_DIR = "data/"
+SB_STUDY_DIR = "data/study/"
 SB_USER_AGENT = {'user-agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.116 Safari/537.36'}
 
 ################################################################
@@ -485,10 +486,10 @@ class SpellingBee(object):
             if len(self.activePracticeWords) > 0:
 
                 if practiceMode.lower() == "test":
-                    practiceFileName = SB_DATA_DIR + SB_PRACTICE_WORD_FILE
+                    practiceFileName = SB_STUDY_DIR + SB_PRACTICE_WORD_FILE
                     practiceFileName = practiceFileName.format(LISTID=self.contestList)
                 elif practiceMode.lower() == "revise":
-                    practiceFileName = SB_DATA_DIR + SB_REVISION_WORD_FILE
+                    practiceFileName = SB_STUDY_DIR + SB_REVISION_WORD_FILE
 
                 currentPracticeWordList = []
 
