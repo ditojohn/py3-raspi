@@ -112,6 +112,8 @@ class SpellingBee(object):
     """
     A Spelling Bee assistant to help with word list navigation and dictionary lookup.
     It has the following attributes:
+        activeMode:
+
         contestList: A string representing the word list identifier for the contest in YYYY[-language][-challenge] format
         wordList: A list containing words loaded from wordFile
 
@@ -134,6 +136,7 @@ class SpellingBee(object):
     def __init__(self, listID, mode, selection):
         _FUNC_NAME_ = "__init__"
 
+        self.activeMode = mode
         self.contestList = listID
         self.wordList = []
 
@@ -208,8 +211,22 @@ class SpellingBee(object):
         return len(self.activeWordIndexList)
 
     def display_about(self):
+        _FUNC_NAME_ = "display_about"
+
+        DEBUG_VAR="self.activeMode"
+        coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(self.activeMode)))
+        coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
+
         print "Spelling Bee {0}".format(self.contestList)
-        print "Word Count [{0}] Chapter [{1}/{2}] Words [{3}-{4}]".format(self.word_count(), self.activeChapter, self.chapter_count(), self.activeRangeStart + 1, self.activeRangeEnd + 1)
+
+        if self.activeMode.lower() == "chapter":
+            print "Word Count [{0}] Chapter [{1}/{2}] Words [{3}-{4}]".format(self.word_count(), self.activeChapter, self.chapter_count(), self.activeRangeStart + 1, self.activeRangeEnd + 1)
+
+        elif self.activeMode.lower() == "random":
+            print "Word Count [{0}] Random [{1}]".format(self.word_count(), self.active_word_count())
+
+        else:
+            print "Word Count [{0}] Words [{1}-{2}]".format(self.word_count(), self.activeRangeStart + 1, self.activeRangeEnd + 1)
 
     def print_active_word_list(self):
         self.display_about()
@@ -525,7 +542,16 @@ class SpellingBee(object):
      
         # Test header
         testStats = SB_NEWLINE + unicode("Spelling Bee {0}".format(self.contestList), 'utf-8')
-        testStats += SB_NEWLINE + unicode("Word Count [{0}] Chapter [{1}/{2}] Words [{3}-{4}]".format(self.word_count(), self.activeChapter, self.chapter_count(), self.activeRangeStart + 1, self.activeRangeEnd + 1), 'utf-8')
+
+        if self.activeMode.lower() == "chapter":
+            testStats += SB_NEWLINE + unicode("Word Count [{0}] Chapter [{1}/{2}] Words [{3}-{4}]".format(self.word_count(), self.activeChapter, self.chapter_count(), self.activeRangeStart + 1, self.activeRangeEnd + 1), 'utf-8')
+
+        elif self.activeMode.lower() == "random":
+            testStats += SB_NEWLINE + unicode("Word Count [{0}] Random [{1}]".format(self.word_count(), self.active_word_count()), 'utf-8')
+
+        else:
+            testStats += SB_NEWLINE + unicode("Word Count [{0}] Words [{1}-{2}]".format(self.word_count(), self.activeRangeStart + 1, self.activeRangeEnd + 1), 'utf-8')
+
         testStats += SB_NEWLINE + SB_NEWLINE + unicode("Test Date [{0}] Score [{1}]".format(self.activeTestDate, self.activeTestScore), 'utf-8')
 
         displayText = testStats
