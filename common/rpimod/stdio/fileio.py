@@ -16,6 +16,7 @@ import glob
 import codecs
 import pygame
 import re
+from pydub.utils import mediainfo
 
 sys.path.insert(0, "../../..")
 import common.rpimod.stdio.output as coutput
@@ -64,13 +65,25 @@ def set_audio_output(audioOutput):
 
 
 def play(fileName, audioOutput, loopCount, loopDelaySec):
+    # Reference:
+    # https://www.pygame.org/docs/ref/mixer.html#pygame.mixer.init
+    # http://techqa.info/programming/question/27745134/how-can-i-extract-the-metadata-and-bitrate-info-from-a-audio/video-file-in-python
+
     _FUNC_NAME_ = "play"
 
     coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "Executing set_audio_output")
     set_audio_output(audioOutput)
 
+    coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "Executing mediainfo")
+    fileInfo = mediainfo(fileName)
+    coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "{FILENAME}: {TITLE} [{VALUE}]".format(FILENAME=fileName, TITLE="sample_rate", VALUE=fileInfo['sample_rate']))
+    coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "{FILENAME}: {TITLE} [{VALUE}]".format(FILENAME=fileName, TITLE="bits_per_sample", VALUE=fileInfo['bits_per_sample']))
+    coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "{FILENAME}: {TITLE} [{VALUE}]".format(FILENAME=fileName, TITLE="channels", VALUE=fileInfo['channels']))
+
     for loopIndex in range (0, loopCount):
-        pygame.mixer.init()
+        # Syntax: init(frequency=22050, size=-16, channels=2, buffer=4096)
+        # pygame.mixer.init()
+        pygame.mixer.init(frequency=long(float(fileInfo['sample_rate'])), channels=int(fileInfo['channels']))
 
         coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "Executing pygame.mixer.music.load")
         pygame.mixer.music.load(fileName)
