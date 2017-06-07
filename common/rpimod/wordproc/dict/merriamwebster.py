@@ -23,7 +23,7 @@ sys.path.insert(0, "../../../..")
 import common.rpimod.stdio.output as coutput
 
 # Set to True to turn debug messages on
-ERR_DEBUG = True
+ERR_DEBUG = False
 
 ################################################################
 # Dictionary Configuration Variables

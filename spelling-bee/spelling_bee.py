@@ -107,6 +107,25 @@ SB_LOOKUP_WORD_DEFN_TITLE = unicode("\nDefinition of {WORD}:", 'utf-8')
 SB_NEWLINE = unicode("\n", 'utf-8')
 SB_EMPTY_STRING = unicode("", 'utf-8')
 
+SB_POS_REGEX_PATTERN = [
+    {'form': 'plural', 'pattern': '-s', 'regexPattern': re.compile("^.*s")},
+    {'form': 'adjective', 'pattern': '-able', 'regexPattern': re.compile("^.*able")},
+    {'form': 'adverb', 'pattern': '-ly', 'regexPattern': re.compile("^.*ly")},
+    {'form': 'noun suffix', 'pattern': '-ness', 'regexPattern': re.compile("^.*ness")},
+    {'form': 'past tense/adjective', 'pattern': '-ed', 'regexPattern': re.compile("^.*ed")},
+    {'form': 'progressive/participle', 'pattern': '-ing', 'regexPattern': re.compile("^.*ing")},
+    {'form': 'superlative', 'pattern': '-est', 'regexPattern': re.compile("^.*est")}
+]
+
+"""
+SB_ADJ_REGEX_PATTERN = re.compile("^.*able")
+SB_ADV_REGEX_PATTERN = re.compile("^.*ly")
+SB_NOUN_REGEX_PATTERN = re.compile("^.*ness")
+SB_PAST_ADJ_REGEX_PATTERN = re.compile("^.*ed")
+SB_PLURAL_REGEX_PATTERN = re.compile("^.*s")
+SB_PROG_PART_REGEX_PATTERN = re.compile("^.*ing")
+SB_SUPER_REGEX_PATTERN = re.compile("^.*est")
+"""
 
 class SpellingBee(object):
     """
@@ -423,7 +442,16 @@ class SpellingBee(object):
 
             if wordToken != pronunciationToken:
                 coutput.print_warn("A different form of the word is being pronounced.")
-            
+                for posPattern in SB_POS_REGEX_PATTERN:
+
+                    DEBUG_VAR="posPattern['form']"
+                    coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(posPattern['form'])))
+                    coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
+
+                    if posPattern['regexPattern'].match(wordToken):
+                        coutput.print_tip("The {0} form ({1}) of the word is to be spelled.".format(posPattern['form'], posPattern['pattern']))
+                        break;
+
             coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "Executing cfile.play")
             cfile.play(self.activePronunciation, SB_AUDIO_OUTPUT, SB_REPEAT_COUNT, SB_REPEAT_DELAY)
 
