@@ -82,8 +82,8 @@ def play(fileName, audioOutput, loopCount, loopDelaySec):
 
     for loopIndex in range (0, loopCount):
         # Syntax: init(frequency=22050, size=-16, channels=2, buffer=4096)
-        # pygame.mixer.init()
-        pygame.mixer.init(frequency=long(float(fileInfo['sample_rate'])), channels=int(fileInfo['channels']))
+        pygame.mixer.init()
+        #pygame.mixer.init(frequency=long(float(fileInfo['sample_rate'])), channels=int(fileInfo['channels']))
 
         coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "Executing pygame.mixer.music.load")
         pygame.mixer.music.load(fileName)
