@@ -18,6 +18,7 @@
 # XML Specification for Merriam-Webster's Collegiate Dictionary: http://www.dictionaryapi.com/content/products/documentation/collegiate-tag-description.txt
 ################################################################
 
+import sys
 import re
 import xml.etree.cElementTree as ElementTree
 
@@ -25,8 +26,11 @@ from abc import ABCMeta, abstractmethod, abstractproperty
 from urllib import quote, quote_plus
 from urllib2 import urlopen
 
+sys.path.insert(0, "..")
+import common.rpimod.stdio.output as coutput
+
 # Set to True to turn debug messages on
-ERR_DEBUG = False
+SB_ERR_DEBUG = False
 
 ################################################################
 # Dictionary Configuration Variables
@@ -48,9 +52,9 @@ class WordNotFoundException(KeyError):
         if suggestions is None:
             suggestions = []
         self.suggestions = suggestions
-        message = "'{0}' not found.".format(word)
+        message = unicode("'{0}' not found.", 'utf-8').format(word)
         if suggestions:
-            message = "{0} Try: {1}".format(message, ", ".join(suggestions))
+            message = unicode("{0} Try: {1}", 'utf-8').format(message, ", ".join(suggestions))
         KeyError.__init__(self, message, *args, **kwargs)
 
 class InvalidResponseException(WordNotFoundException):
@@ -181,6 +185,12 @@ class WordSense(object):
 
 class MWDictionaryEntry(object):
     def build_sound_url(self, fragment):
+        _FUNC_NAME_ = "build_sound_url"
+
+        DEBUG_VAR="fragment"
+        coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(fragment)))
+        coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
+
         base_url = "http://media.merriam-webster.com/soundc11"
         prefix_match = re.search(r'^([0-9]+|gg|bix)', fragment)
         if prefix_match:
@@ -256,6 +266,14 @@ class LearnersDictionary(MWApiWrapper):
                             yield Inflection(label, forms)
                         label, forms = child.text, []
                 if child.tag == 'if':
+                    forms.append(child.text)
+            if label is not None or forms != []:
+                yield Inflection(label, forms)
+
+        for node in root.findall("uro"):
+            label, forms = None, []
+            for child in node:
+                if child.tag == 'ure':
                     forms.append(child.text)
             if label is not None or forms != []:
                 yield Inflection(label, forms)
@@ -344,10 +362,11 @@ class CollegiateDictionary(MWApiWrapper):
     base_url = "http://www.dictionaryapi.com/api/v1/references/collegiate"
 
     def parse_xml(self, root, word):
+        _FUNC_NAME_ = "parse_xml"
         for entry in root.findall('entry'):
             args = {}
             args['headword'] = entry.find('hw').text
-            args['spelling'] = entry.find('ew').text
+            args['spelling'] = re.sub("\*", "", entry.find('hw').text)
             args['functional_label'] = getattr(entry.find('fl'), 'text', None)
             args['pronunciations'] = self._get_pronunciations(entry)
             args['inflections'] = self._get_inflections(entry)
@@ -358,7 +377,9 @@ class CollegiateDictionary(MWApiWrapper):
                                               if e.text]
             sound = entry.find("sound")
             if sound:
-                args['sound_fragments'] = [s.text for s in sound]
+                for s in sound:
+                    coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format("s.text", s.text))
+                args['sound_fragments'] = [s.text for s in sound if s.text]
             yield CollegiateDictionaryEntry(word, args)
 
     def _get_pronunciations(self, root):
@@ -375,6 +396,8 @@ class CollegiateDictionary(MWApiWrapper):
         inflection nodes that have <il>also</il> will have their inflected form
         added to the previous inflection entry.
         """
+        _FUNC_NAME_ = "_get_inflections"
+
         dict_helper =MWDictionaryEntry()
 
         for node in root.findall("in"):
@@ -386,11 +409,31 @@ class CollegiateDictionary(MWApiWrapper):
                     else:
                         if label is not None or forms != []:
                             yield Inflection(label, forms, spellings, sound_fragments, sound_urls, pronunciations)
-                        label, forms, sound_fragments, pronunciations = child.text, [], [], [], [], []
+                        label, forms, spellings, sound_fragments, sound_urls, pronunciations = child.text, [], [], [], [], []
                 if child.tag == 'if':
                     forms.append(child.text)
                     spellings.append(re.sub("\*", "", child.text))
                 if child.tag == 'sound':
+
+                    coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format("child.find(\"wav\").text", child.find("wav").text))
+
+                    sound_fragments.append(child.find("wav").text)
+                    sound_urls.append(dict_helper.build_sound_url(child.find("wav").text))
+                if child.tag == 'pr':
+                    pronunciations.append(child.text)
+            if label is not None or forms != []:
+                yield Inflection(label, forms, spellings, sound_fragments, sound_urls, pronunciations)
+
+        for node in root.findall("uro"):
+            label, forms, spellings, sound_fragments, sound_urls, pronunciations = None, [], [], [], [], []
+            for child in node:
+                if child.tag == 'ure':
+                    forms.append(child.text)
+                    spellings.append(re.sub("\*", "", child.text))
+                if child.tag == 'sound':
+                    
+                    coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format("child.find(\"wav\").text", child.find("wav").text))
+
                     sound_fragments.append(child.find("wav").text)
                     sound_urls.append(dict_helper.build_sound_url(child.find("wav").text))
                 if child.tag == 'pr':
