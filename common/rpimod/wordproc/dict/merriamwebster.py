@@ -96,7 +96,7 @@ def parse_word_definition(word, entryXML):
                 coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(sense.definition)))
                 coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
 
-                strDefinition = "({0}) {1}".format(entry.function, sense.definition)
+                strDefinition = unicode("({0}) {1}", 'utf-8').format(entry.function, sense.definition)
                 if isinstance(strDefinition, str):
                     wordDefinition.append(unicode(strDefinition, 'utf-8'))
                 else:
@@ -180,14 +180,16 @@ def parse_word_clip(word, entryXML):
                     coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(inflection.spellings)))
                     coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
 
-                    if len(inflection.spellings) > 0:
-                        if searchWord == inflection.spellings[0]:
-                            audioClipWord = inflection.spellings[0]
+                    for spelling in inflection.spellings:
+                        if searchWord == spelling:
+                            audioClipWord = spelling
                             wordFound = True
-                            audioClip = inflection.sound_urls[0]
-                            audioClipFound = True                       
-                            if wordFound:
-                                break
+                            break
+                    for sound_url in inflection.sound_urls:
+                        audioClip = sound_url
+                        audioClipFound = True
+                        break
+
                 if wordFound:
                     break
 
@@ -245,4 +247,14 @@ def parse_word_clip(word, entryXML):
     coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
 
     # Return audioClipWord and audioClip, if found
+    if isinstance(audioClipWord, str):
+        audioClipWord = unicode(audioClipWord, 'utf-8')
+    else:
+        audioClipWord = audioClipWord
+
+    if isinstance(audioClip, str):
+        audioClip = unicode(audioClip, 'utf-8')
+    else:
+        audioClip = audioClip
+
     return [audioClipWord, audioClip]
