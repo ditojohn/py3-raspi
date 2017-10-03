@@ -80,8 +80,10 @@ SB_TEST_LOG = unicode("log/spelling_bee_tests.log", 'utf-8')
 SB_REVISION_LOG = unicode("log/spelling_bee_revision.log", 'utf-8')
 
 SB_WORD_MULTI_FILES = unicode(SB_DATA_DIR + "spelling_bee_{WORD_FILE_PATTERN}.txt", 'utf-8')
+
+SB_PRACTICE_MULTI_FILES = unicode(SB_STUDY_DIR + "spelling_bee_{WORD_FILE_PATTERN}.txt", 'utf-8')
 SB_PRACTICE_WORD_FILE = unicode("spelling_bee_practice_{LISTID}.txt", 'utf-8')
-SB_REVISION_WORD_FILE = unicode("spelling_bee_revision_2016.txt", 'utf-8')
+SB_REVISION_WORD_FILE = unicode("spelling_bee_revision_{LISTID}.txt", 'utf-8')
 
 SB_DICT_OFFLINE_DIR = unicode(SB_DATA_DIR + 'dict/', 'utf-8')
 SB_DICT_OFFLINE_ENTR = unicode("sb_{WORD}.xml", 'utf-8')
@@ -104,28 +106,23 @@ SB_STUDY_WORD_DEFN_TITLE = unicode("\nDefinition of word #{INDEX} ({WORD}):", 'u
 SB_PRACTICE_WORD_DEFN_TITLE = unicode("\nDefinition of word #{INDEX}:", 'utf-8')
 SB_LOOKUP_WORD_DEFN_TITLE = unicode("\nDefinition of {WORD}:", 'utf-8')
 
+SB_ERR_CLIP_MISSING = False
+SB_ERR_CLIP_MISMATCH = False
+SB_ERR_DEFN_MISSING = False
+
 SB_NEWLINE = unicode("\n", 'utf-8')
 SB_EMPTY_STRING = unicode("", 'utf-8')
 
 SB_POS_REGEX_PATTERN = [
-    {'form': 'plural', 'pattern': '-s', 'regexPattern': re.compile("^.*s")},
-    {'form': 'adjective', 'pattern': '-able', 'regexPattern': re.compile("^.*able")},
-    {'form': 'adverb', 'pattern': '-ly', 'regexPattern': re.compile("^.*ly")},
-    {'form': 'noun suffix', 'pattern': '-ness', 'regexPattern': re.compile("^.*ness")},
-    {'form': 'past tense/adjective', 'pattern': '-ed', 'regexPattern': re.compile("^.*ed")},
-    {'form': 'progressive/participle', 'pattern': '-ing', 'regexPattern': re.compile("^.*ing")},
-    {'form': 'superlative', 'pattern': '-est', 'regexPattern': re.compile("^.*est")}
+    {'form': 'plural', 'pattern': '-s', 'regexPattern': re.compile("^.*s$")},
+    {'form': 'adjective', 'pattern': '-able/-al', 'regexPattern': re.compile("^.*(able|al)$")},
+    {'form': 'adverb', 'pattern': '-ly', 'regexPattern': re.compile("^.*ly$")},
+    {'form': 'noun suffix', 'pattern': '-ness', 'regexPattern': re.compile("^.*ness$")},
+    {'form': 'past tense/adjective', 'pattern': '-ed', 'regexPattern': re.compile("^.*ed$")},
+    {'form': 'progressive/participle', 'pattern': '-ing', 'regexPattern': re.compile("^.*ing$")},
+    {'form': 'superlative', 'pattern': '-est', 'regexPattern': re.compile("^.*est$")}
 ]
 
-"""
-SB_ADJ_REGEX_PATTERN = re.compile("^.*able")
-SB_ADV_REGEX_PATTERN = re.compile("^.*ly")
-SB_NOUN_REGEX_PATTERN = re.compile("^.*ness")
-SB_PAST_ADJ_REGEX_PATTERN = re.compile("^.*ed")
-SB_PLURAL_REGEX_PATTERN = re.compile("^.*s")
-SB_PROG_PART_REGEX_PATTERN = re.compile("^.*ing")
-SB_SUPER_REGEX_PATTERN = re.compile("^.*est")
-"""
 
 class SpellingBee(object):
     """
@@ -159,7 +156,11 @@ class SpellingBee(object):
         self.contestList = listID
         self.wordList = []
 
-        wordFileDir = SB_WORD_MULTI_FILES.format(WORD_FILE_PATTERN=listID)
+        if re.match(r'^practice', listID):
+            wordFileDir = SB_PRACTICE_MULTI_FILES.format(WORD_FILE_PATTERN=listID)
+        else:
+            wordFileDir = SB_WORD_MULTI_FILES.format(WORD_FILE_PATTERN=listID)
+
         for wordFileName in sorted(glob.glob(wordFileDir)):
             coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "wordFileName :: {0}".format(wordFileName))
             self.wordList = self.wordList + cfile.read(wordFileName).splitlines()                # Use of splitlines() avoids the newline character from being stored in the word list
@@ -233,7 +234,6 @@ class SpellingBee(object):
         _FUNC_NAME_ = "display_about"
 
         DEBUG_VAR="self.activeMode"
-        coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(self.activeMode)))
         coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
 
         print "Spelling Bee {0}".format(self.contestList)
@@ -264,29 +264,32 @@ class SpellingBee(object):
         _FUNC_NAME_ = "lookup_dictionary_by_word"
 
         DEBUG_VAR="self.wordList[0]"
-        coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(self.wordList[0])))
         coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
 
         DEBUG_VAR="word"
-        coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(word)))
         coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
 
         self.activeWord = word.strip()
 
         DEBUG_VAR="self.activeWord"
-        coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(self.activeWord)))
         coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
         
         # Setup connection and error logging
         connectionPool = urllib3.PoolManager(10, headers=SB_USER_AGENT)
         errorFileName = SB_DATA_DIR + SB_ERR_LOG
+        SB_ERR_DEFN_MISSING = False
+        SB_ERR_CLIP_MISSING = False
+        SB_ERR_CLIP_MISMATCH = False
 
         # Check offline for dictionary entry
         self.activeEntry = SB_EMPTY_STRING
         self.activeDefinition = []
 
-        overrideDefnFileName = SB_DICT_OVERRIDE_DIR + SB_DICT_OVERRIDE_DEFN.format(WORD=word).replace(" ", "_")
-        offlineEntryFileName = SB_DICT_OFFLINE_DIR + SB_DICT_OFFLINE_ENTR.format(WORD=word).replace(" ", "_")
+        overrideDefnFileName = SB_DICT_OVERRIDE_DIR + SB_DICT_OVERRIDE_DEFN.format(WORD=self.activeWord).replace(" ", "_")
+        offlineEntryFileName = SB_DICT_OFFLINE_DIR + SB_DICT_OFFLINE_ENTR.format(WORD=self.activeWord).replace(" ", "_")
+
+        DEBUG_VAR="overrideDefnFileName"
+        coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
 
         # Check for dictionary definition override
         if os.path.isfile(overrideDefnFileName) and os.path.getsize(overrideDefnFileName) > 0:
@@ -294,11 +297,9 @@ class SpellingBee(object):
             self.activeDefinition = cfile.read(overrideDefnFileName).splitlines()
 
             DEBUG_VAR="self.activeEntry"
-            coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(self.activeEntry)))
             coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
 
             DEBUG_VAR="self.activeDefinition"
-            coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(self.activeDefinition)))
             coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
 
         # Check primary source for dictionary entry
@@ -308,7 +309,6 @@ class SpellingBee(object):
             self.activeDefinition = cdict.parse_word_definition(self.activeWord, self.activeEntry)
 
             DEBUG_VAR="self.activeEntry"
-            coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(self.activeEntry)))
             coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
 
         else:
@@ -316,7 +316,6 @@ class SpellingBee(object):
             self.activeEntry = cdict.get_dictionary_entry(connectionPool, self.activeWord)
 
             DEBUG_VAR="self.activeEntry"
-            coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(self.activeEntry)))
             coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
 
             # Save dictionary entry offline
@@ -324,11 +323,12 @@ class SpellingBee(object):
 
             # Retrieve word definition
             self.activeDefinition = cdict.parse_word_definition(self.activeWord, self.activeEntry)
-            if len(self.activeDefinition) == 0:
-                # Log missing definition error
-                errorText = unicode("ERROR:Missing Definition:{0}\n", 'utf-8')
-                errorText = errorText.format(self.activeWord)
-                cfile.append(errorFileName, errorText)
+
+        DEBUG_VAR="self.activeDefinition"
+        coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
+
+        if len(self.activeDefinition) == 0:
+            SB_ERR_DEFN_MISSING = True
 
         # Check offline for word pronunciation
         self.activePronunciation = SB_EMPTY_STRING
@@ -336,6 +336,9 @@ class SpellingBee(object):
 
         overrideProncnFileName = SB_DICT_OVERRIDE_DIR + SB_DICT_OVERRIDE_CLIP.format(WORD=self.activeWord).replace(" ", "_")
         offlineProncnFileName = SB_DICT_OFFLINE_DIR + SB_DICT_OFFLINE_CLIP.format(WORD=self.activeWord).replace(" ", "_")
+
+        DEBUG_VAR="overrideProncnFileName"
+        coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
 
         # Check for dictionary pronunciation override
         if os.path.isfile(overrideProncnFileName) and os.path.getsize(overrideProncnFileName) > 0:
@@ -350,15 +353,12 @@ class SpellingBee(object):
             coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "offlineProncnFile size :: {0}".format(os.path.getsize(offlineProncnFileName)))
            
             DEBUG_VAR="self.activePronunciation"
-            coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(self.activePronunciation)))
             coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
 
             DEBUG_VAR="self.activeWord"
-            coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(self.activeWord)))
             coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
 
             DEBUG_VAR="self.activeEntry"
-            coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(self.activeEntry)))
             coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
 
             # Retrieve pronunciation audio clip word form and filename
@@ -375,10 +375,7 @@ class SpellingBee(object):
 
             # Save pronunciation offline
             if wordClipURL == SB_EMPTY_STRING:
-                # Log missing audio error
-                errorText = unicode("ERROR:Missing Audio:{0}\n", 'utf-8')
-                errorText = errorText.format(self.activeWord)
-                cfile.append(errorFileName, errorText)
+                SB_ERR_CLIP_MISSING = True
             else:
                 # Download audio clip
                 cfile.download(connectionPool, wordClipURL, offlineProncnFileName)
@@ -386,12 +383,27 @@ class SpellingBee(object):
                 self.activePronunciation = offlineProncnFileName
                 self.activePronunciationWord = wordClipForm
 
-        # Log audio mismatch error
-        wordToken = re.sub('[^a-zA-Z]', SB_EMPTY_STRING, self.activeWord.lower())
-        pronunciationToken = re.sub('[^a-zA-Z]', SB_EMPTY_STRING, self.activePronunciationWord.lower())
+        
+        #wordToken = re.sub('[^a-zA-Z]', SB_EMPTY_STRING, self.activeWord.lower())
+        wordToken = unicode(unicodedata.normalize('NFKD', self.activeWord.lower()).encode('ASCII', 'ignore'), 'utf-8')
+        
+        #pronunciationToken = re.sub('[^a-zA-Z]', SB_EMPTY_STRING, self.activePronunciationWord.lower())
+        pronunciationToken = unicode(unicodedata.normalize('NFKD', self.activePronunciationWord.lower()).encode('ASCII', 'ignore'), 'utf-8')
+        
         if self.activePronunciation != SB_EMPTY_STRING and wordToken != pronunciationToken:
-            errorText = unicode("ERROR:Audio Mismatch:{0}\n", 'utf-8')
-            errorText = errorText.format(self.activeWord)
+            SB_ERR_CLIP_MISMATCH = True
+
+        # Log errors
+        errorText = unicode("ERROR:{0}:", 'utf-8').format(self.activeWord)
+        if SB_ERR_DEFN_MISSING:
+            errorText += unicode(">Definition Missing", 'utf-8')
+        if SB_ERR_CLIP_MISSING:
+            errorText += unicode(">Audio Missing", 'utf-8')
+        if SB_ERR_CLIP_MISMATCH:
+            errorText += unicode(">Audio Mismatch", 'utf-8')
+        
+        if errorText != unicode("ERROR:{0}:", 'utf-8').format(self.activeWord):
+            errorText += unicode("\n", 'utf-8')
             cfile.append(errorFileName, errorText)
 
         # Close connection
@@ -430,12 +442,24 @@ class SpellingBee(object):
         if self.activePronunciation == SB_EMPTY_STRING:
             coutput.print_err("Unable to lookup audio pronunciation")
         else:
-            wordToken = re.sub('[^a-zA-Z]', SB_EMPTY_STRING, self.activeWord.lower())
+            DEBUG_VAR="self.activeWord"
+            coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(self.activeWord)))
+            coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
+
+            #wordToken = re.sub('[^a-zA-Z]', SB_EMPTY_STRING, self.activeWord.lower())
+            wordToken = unicode(unicodedata.normalize('NFKD', self.activeWord.lower()).encode('ASCII', 'ignore'), 'utf-8')
+
             DEBUG_VAR="wordToken"
             coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(wordToken)))
             coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
 
-            pronunciationToken = re.sub('[^a-zA-Z]', SB_EMPTY_STRING, self.activePronunciationWord.lower())
+            DEBUG_VAR="self.activePronunciationWord"
+            coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(self.activePronunciationWord)))
+            coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
+
+            #pronunciationToken = re.sub('[^a-zA-Z]', SB_EMPTY_STRING, self.activePronunciationWord.lower())
+            pronunciationToken = unicode(unicodedata.normalize('NFKD', self.activePronunciationWord.lower()).encode('ASCII', 'ignore'), 'utf-8')
+
             DEBUG_VAR="pronunciationToken"
             coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(pronunciationToken)))
             coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
@@ -532,9 +556,9 @@ class SpellingBee(object):
 
                 if practiceMode.lower() == "test":
                     practiceFileName = SB_STUDY_DIR + SB_PRACTICE_WORD_FILE
-                    practiceFileName = practiceFileName.format(LISTID=self.contestList)
                 elif practiceMode.lower() == "revise":
                     practiceFileName = SB_STUDY_DIR + SB_REVISION_WORD_FILE
+                practiceFileName = practiceFileName.format(LISTID=self.contestList)
 
                 currentPracticeWordList = []
 
@@ -542,14 +566,14 @@ class SpellingBee(object):
                 if os.path.isfile(practiceFileName) and os.path.getsize(practiceFileName) > 0:
                     currentPracticeWordList = cfile.read(practiceFileName).splitlines()                # Use of splitlines() avoids the newline character from being stored in the word list
 
+                practiceFileText = SB_EMPTY_STRING
+
                 # Save practice words to practice file, if not already saved
                 for word in self.activePracticeWords:
                     
                     DEBUG_VAR="word"
-                    coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(word)))
                     coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
 
-                    practiceFileText = SB_EMPTY_STRING
                     if word not in currentPracticeWordList:
                         practiceFileText = practiceFileText + word + SB_NEWLINE
 
@@ -934,7 +958,7 @@ def run_error_scan(spellBee):
         # Move to next word
         activeWordIndex += 1
     
-    displayText = unicode("\nError scan is complete. All errors are logged to {0}{1}.", 'utf-8')
+    displayText = unicode("\nError scan is complete. All errors are logged to {0}{1}", 'utf-8')
     print displayText.format(SB_DATA_DIR, SB_ERR_LOG)
     
 
