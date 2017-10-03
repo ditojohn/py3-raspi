@@ -10,6 +10,7 @@
 
 import sys
 import re
+import urllib3.exceptions
 
 #sys.path.insert(0, "/home/pi/projects/raspi")
 sys.path.insert(0, "../../../..")
@@ -60,22 +61,24 @@ def get_dictionary_entry(connectionPool, word):
     coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(dictEntryURL)))
     coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
 
-    dictEntryResponse = connectionPool.urlopen('GET', dictEntryURL)
+    try:
+        dictEntryResponse = connectionPool.urlopen('GET', dictEntryURL)
 
-    DEBUG_VAR="dictEntryResponse.data"
-    coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(dictEntryResponse.data)))
-    #coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
+        DEBUG_VAR="dictEntryResponse.data"
+        coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(dictEntryResponse.data)))
+        #coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
 
-    responseText = dictEntryResponse.data
+        responseText = dictEntryResponse.data
+
+    except urllib3.exceptions.MaxRetryError:
+        responseText = ""
 
     DEBUG_VAR="responseText"
     coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(responseText)))
 
     # Convert entry text to unicode
-    if isinstance(dictEntryResponse.data, str):
-        responseText = unicode(dictEntryResponse.data, 'utf-8')
-    else:
-        responseText = dictEntryResponse.data
+    if isinstance(responseText, str):
+        responseText = unicode(responseText, 'utf-8')
 
     DEBUG_VAR="responseText"
     coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(responseText)))
