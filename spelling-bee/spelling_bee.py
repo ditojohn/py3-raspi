@@ -112,6 +112,7 @@ SB_ERR_DEFN_MISSING = False
 
 SB_NEWLINE = unicode("\n", 'utf-8')
 SB_EMPTY_STRING = unicode("", 'utf-8')
+SB_WORD_DELIMITER = unicode(";", 'utf-8')
 
 SB_POS_REGEX_PATTERN = [
     {'form': 'plural', 'pattern': '-s', 'regexPattern': re.compile("^.*s$")},
@@ -138,6 +139,7 @@ class SpellingBee(object):
         activeRangeStart: 
         activeRangeEnd: 
 
+        activeWordAlternatives:
         activeWord:
         activeEntry:
         activeDefinition:
@@ -210,7 +212,9 @@ class SpellingBee(object):
             if self.activeRangeEnd >= len(self.wordList):
                 self.activeRangeEnd = len(self.wordList) - 1
 
+        self.activeWordAlternatives = SB_EMPTY_STRING
         self.activeWord = SB_EMPTY_STRING
+        
         self.activeEntry = SB_EMPTY_STRING
         self.activeDefinition = []
         self.activePronunciation = SB_EMPTY_STRING
@@ -269,8 +273,14 @@ class SpellingBee(object):
         DEBUG_VAR="word"
         coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
 
-        self.activeWord = word.strip()
+        self.activeWordAlternatives = word.strip()
+        activeWordAlternativesList = [w.strip() for w in self.activeWordAlternatives.split(SB_WORD_DELIMITER)]
 
+        DEBUG_VAR="activeWordAlternativesList"
+        coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
+
+        self.activeWord = activeWordAlternativesList[0]
+      
         DEBUG_VAR="self.activeWord"
         coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
         
@@ -505,37 +515,47 @@ class SpellingBee(object):
         self.activeTestValuations = []
         self.activePracticeWords = []
 
-    def valuate_test_response(self, testResponse, testWord, testMode):
-        valuationMode = testMode.lower()
-        valuationResponse = unicode(testResponse, 'utf-8').strip()
-        valuationWord = testWord.strip()
+    def normalize_word(self, normWord, normMode):
+        
+        if isinstance(normWord, str):
+            valuationWord = unicode(normWord, 'utf-8')
+        else:
+            valuationWord = normWord
+        
+        valuationWord = valuationWord.strip()
+        valuationMode = normMode.lower()
 
-        if testMode == "easy":
-            testDifficultyLevel = 0
-        elif testMode == "medium":
-            testDifficultyLevel = 1
-        elif testMode == "difficult":
-            testDifficultyLevel = 2
+        if valuationMode == "easy":
+            normDifficultyLevel = 0
+        elif valuationMode == "medium":
+            normDifficultyLevel = 1
+        elif valuationMode == "difficult":
+            normDifficultyLevel = 2
 
         # Rule difficulty goes from high to low
         # Most difficult rule would be relaxed in most number of levels
-        if testDifficultyLevel < 2:
+        if normDifficultyLevel < 2:
             # Relax foreign character restriction
-            valuationResponse = unicodedata.normalize('NFKD', valuationResponse).encode('ASCII', 'ignore')
-            valuationResponse = unicode(valuationResponse, 'utf-8')
             valuationWord = unicodedata.normalize('NFKD', valuationWord).encode('ASCII', 'ignore')
             valuationWord = unicode(valuationWord, 'utf-8')
 
-        if testDifficultyLevel < 1:
+        if normDifficultyLevel < 1:
             # Relax letter case restriction
-            valuationResponse = valuationResponse.lower()
             valuationWord = valuationWord.lower()
 
-        if valuationResponse == valuationWord:
-            valuationResult = True
-        else:
-            valuationResult = False
+        return valuationWord
 
+    def valuate_test_response(self, testResponse, testWords, testMode):
+        valuationResponse = self.normalize_word(testResponse, testMode)
+        valuationWords = [self.normalize_word(testWord, testMode) for testWord in testWords.split(SB_WORD_DELIMITER)]
+
+        valuationResult = False
+
+        for valuationWord in valuationWords:
+            if valuationResponse == valuationWord:
+                valuationResult = True
+                break
+    
         return valuationResult
 
     def log_test_result(self, testDate, testScore):
@@ -810,7 +830,7 @@ def run_test(spellBee):
             correctResponse = False
 
             # Process correct response
-            if spellBee.valuate_test_response(userResponse, spellBee.activeWord, SB_TEST_MODE):
+            if spellBee.valuate_test_response(userResponse, spellBee.activeWordAlternatives, SB_TEST_MODE):
                 correctResponse = True
                 testValuation = SB_RIGHT_SYMBOL + " " + userResponse
                 testCorrectCount += 1
@@ -821,7 +841,7 @@ def run_test(spellBee):
 
             # Indicate correct form of the answer, if different from the response
             if userResponse != spellBee.activeWord:
-                testValuation = testValuation + " (" + spellBee.activeWord + ")"
+                testValuation = testValuation + " (" + spellBee.activeWordAlternatives + ")"
 
             # Display valuation
             # Handle display text in ascii
@@ -872,7 +892,7 @@ def run_revision(spellBee):
 
         # Lookup word definition
         spellBee.lookup_dictionary_by_index(wordIndex)
-        spellBee.display_word_cue(SB_STUDY_WORD_DEFN_TITLE.format(INDEX=wordIndex + 1, WORD=spellBee.activeWord))
+        spellBee.display_word_cue(SB_STUDY_WORD_DEFN_TITLE.format(INDEX=wordIndex + 1, WORD=spellBee.activeWordAlternatives))
         userResponse = cinput.get_keypress("Enter response: ")
 
         # E[x]it test
@@ -895,7 +915,7 @@ def run_revision(spellBee):
         # Process correct response
         elif userResponse.lower() == "y":
             correctResponse = True
-            testValuation = SB_RIGHT_SYMBOL + " " + spellBee.activeWord
+            testValuation = SB_RIGHT_SYMBOL + " " + spellBee.activeWordAlternatives
             testCorrectCount += 1
 
             # Display valuation
@@ -912,7 +932,7 @@ def run_revision(spellBee):
         # Process incorrect response
         elif userResponse.lower() == "n":
             correctResponse = False
-            testValuation = SB_WRONG_SYMBOL + " " + spellBee.activeWord
+            testValuation = SB_WRONG_SYMBOL + " " + spellBee.activeWordAlternatives
             spellBee.log_practice_word(spellBee.activeWord)
 
             # Display valuation

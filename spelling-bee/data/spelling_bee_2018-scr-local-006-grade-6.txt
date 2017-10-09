@@ -33,7 +33,7 @@ regents
 infraction
 Pacific
 affirmation
-cipher
+cipher; cypher
 administration
 geometry
 consecutive
