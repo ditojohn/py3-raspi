@@ -115,10 +115,11 @@ SB_EMPTY_STRING = unicode("", 'utf-8')
 SB_WORD_DELIMITER = unicode(";", 'utf-8')
 
 SB_POS_REGEX_PATTERN = [
+    {'form': 'negative', 'pattern': 'non-/un-', 'regexPattern': re.compile("^(non|un).*$")},
+    {'form': 'noun suffix', 'pattern': '-ness', 'regexPattern': re.compile("^.*ness$")},
     {'form': 'plural', 'pattern': '-s', 'regexPattern': re.compile("^.*s$")},
     {'form': 'adjective', 'pattern': '-able/-al', 'regexPattern': re.compile("^.*(able|al)$")},
     {'form': 'adverb', 'pattern': '-ly', 'regexPattern': re.compile("^.*ly$")},
-    {'form': 'noun suffix', 'pattern': '-ness', 'regexPattern': re.compile("^.*ness$")},
     {'form': 'past tense/adjective', 'pattern': '-ed', 'regexPattern': re.compile("^.*ed$")},
     {'form': 'progressive/participle', 'pattern': '-ing', 'regexPattern': re.compile("^.*ing$")},
     {'form': 'superlative', 'pattern': '-est', 'regexPattern': re.compile("^.*est$")}
