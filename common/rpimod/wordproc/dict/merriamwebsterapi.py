@@ -371,15 +371,15 @@ class CollegiateDictionary(MWApiWrapper):
             args['pronunciations'] = self._get_pronunciations(entry)
             args['inflections'] = self._get_inflections(entry)
             args['senses'] = self._get_senses(entry)
-            args['sound_fragments'] = []
+            args['sound_fragments'] = [e.text for e in
+                                              entry.findall("sound/wav")
+                                              if e.text]
             args['illustration_fragments'] = [e.text for e in
                                               entry.findall("art/bmp")
                                               if e.text]
-            sound = entry.find("sound")
-            if sound:
-                for s in sound:
-                    coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format("s.text", s.text))
-                args['sound_fragments'] = [s.text for s in sound if s.text]
+
+            coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format("args['sound_fragments']", args['sound_fragments']))
+
             yield CollegiateDictionaryEntry(word, args)
 
     def _get_pronunciations(self, root):
@@ -403,6 +403,7 @@ class CollegiateDictionary(MWApiWrapper):
         for node in root.findall("in"):
             label, forms, spellings, sound_fragments, sound_urls, pronunciations = None, [], [], [], [], []
             for child in node:
+                coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format("child.tag", child.tag))
                 if child.tag == 'il':
                     if child.text in ['also', 'or']:
                         pass  # next form will be added to prev inflection-list
