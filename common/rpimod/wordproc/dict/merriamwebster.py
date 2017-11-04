@@ -181,14 +181,35 @@ def parse_word_clip(word, entryXML):
                     coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
 
                     for spelling in inflection.spellings:
+
+                        DEBUG_VAR="searchWord"
+                        coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(searchWord)))
+                        coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
+
+                        DEBUG_VAR="spelling"
+                        coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(spelling)))
+                        coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
+
                         if searchWord == spelling:
                             audioClipWord = spelling
                             wordFound = True
+
+                            DEBUG_VAR="inflection.sound_urls"
+                            coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(inflection.sound_urls)))
+                            coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
+
+                            for sound_url in inflection.sound_urls:
+
+                                DEBUG_VAR="sound_url"
+                                coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(sound_url)))
+                                coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
+
+                                audioClip = sound_url
+                                audioClipFound = True
+                                break
+
+                        if wordFound:
                             break
-                    for sound_url in inflection.sound_urls:
-                        audioClip = sound_url
-                        audioClipFound = True
-                        break
 
                 if wordFound:
                     break
