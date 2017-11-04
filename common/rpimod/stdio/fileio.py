@@ -76,9 +76,10 @@ def play(fileName, audioOutput, loopCount, loopDelaySec):
 
     coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "Executing mediainfo")
     fileInfo = mediainfo(fileName)
-    coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "{FILENAME}: {TITLE} [{VALUE}]".format(FILENAME=fileName, TITLE="sample_rate", VALUE=fileInfo['sample_rate']))
-    coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "{FILENAME}: {TITLE} [{VALUE}]".format(FILENAME=fileName, TITLE="bits_per_sample", VALUE=fileInfo['bits_per_sample']))
-    coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "{FILENAME}: {TITLE} [{VALUE}]".format(FILENAME=fileName, TITLE="channels", VALUE=fileInfo['channels']))
+    # todo: Print filename as part of debug message
+    coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "{TITLE} [{VALUE}]".format(TITLE="sample_rate", VALUE=fileInfo['sample_rate']))
+    coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "{TITLE} [{VALUE}]".format(TITLE="bits_per_sample", VALUE=fileInfo['bits_per_sample']))
+    coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "{TITLE} [{VALUE}]".format(TITLE="channels", VALUE=fileInfo['channels']))
 
     for loopIndex in range (0, loopCount):
         # Syntax: init(frequency=22050, size=-16, channels=2, buffer=4096)
