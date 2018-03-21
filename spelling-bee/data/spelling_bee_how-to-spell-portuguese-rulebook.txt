@@ -1,0 +1,10 @@
+Portuguese;long a is spelled as ei;pareira,copoeira,barbeiro,feijoada,freijo,seringueiro
+Portuguese;long i is spelled as ai;caixinha,coaita,pirai,saimiri,caique
+Portuguese;long u is spelled as u;teju,munguba,murumuru,pirarucu
+Portuguese;long u is spelled as o;choro,chocalho,fado
+Portuguese;long u is spelled as ou;cachou,toucan,marabout,chibigouazou
+Portuguese;/sh/ is spelled as x;maxixe,paxiuba,abacaxi,caixinha,guaxima,xarque
+Portuguese;/sh/ at beginning of word is spelled as ch;chamade,chamiso,chocalho,chavante
+Portuguese;/k/ is spelled as c;candiru,callimico,carambola
+Portuguese;/k/ is spelled as qu;quica,jequitiba,macaque
+Portuguese;/zh/ is spelled as j;feijoada,teju,acajou

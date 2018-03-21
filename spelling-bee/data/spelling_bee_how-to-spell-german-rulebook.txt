@@ -1,0 +1,8 @@
+German;long e is spelled as ie;vorspiel,glockenspiel,kunstlied,kriegspiel,blitzkrieg,volkslied,zwieback,wienerwurst,wiesenboden
+German;long i is spelled as ei;abseil,Fahrenheit,gesundheit,gauleiter,leitmotiv,einkanter,gneiss,zeitgeist,Kneippism,schwarmerei,meister,ortstein,geige,poltergeist
+German;/ch/ and /sh/ is spelled as sch;affenpinscher,gegenschein,schottische,kitsch,Nietzschean,schnitzel,putsch,austausch,bergschrund
+German;"lick" (sort of!) is spelled as lich;geistlich,lieblich,schlich,frohlich
+German;/v/ is spelled as w;wenzel,edelweiss,wisent,weltpolitik,Weimaraner,wedel,leberwurst,wiesenboden
+German;/k/ is spelled as k;einkanter,kohlrabi,lebkuchen,blitzkrieg,kipfel,randkluft,kuchen,nachtmusik,kitsch,steinkern,weltpolitik
+German;/k/ is spelled as ck;pickelhaube,schnecke,zwieback,pumpernickel
+German;/k/ is spelled as ch;echt

@@ -1,0 +1,4 @@
+Sanskrit/Hindi;long e at end of word is spelled as i;Hindi,amani,bibi,basmati,tandoori,begari,chakari,jungli,chhatri,dasturi,dhauri,granthi,kangri,koftgari,Pindari,lassi,poori,roti,pachisi,darzi,sabzi
+Sanskrit/Hindi;schwa at end of word is spelled as a;mahatma,Buddha,karma,natya,chakra,pajama
+Sanskrit/Hindi;schwa at end of word is spelled as ah;almirah,keddah,ayah,khankah,kajawah,numnah
+Sanskrit/Hindi;"ana" as in British pronunciation of banana (sort of!) at end of word is spelled as ana;Nirvana,gymkhana,dhyana,jnana,rana,zenana

@@ -1,0 +1,11 @@
+Spanish;Because Spanish is a Romance language that comes from Latin, it follows basic Latin rules (like the ones regarding the use of "c" and "f");fiesta,cafeteria,flamingo
+Spanish;"e" is used to spell the /ay/ sound;mesa,señorita,jalapeño,quesadilla
+Spanish;"i" represents the /ee/ sound;señorita,hacienda
+Spanish;Exception to: "i" represents the /ee/ sound;rodeo
+Spanish;"o" is a common ending, for the /oh/ sound;desperado,nacho,tornado,tomato,rodeo,pronto,flamingo
+Spanish;"j" is used for the /h/ sound;jalapeño,junta
+Spanish;the double l ("ll") is common in Spanish, especially for representing the /y/ sound;quesadilla,tortilla
+Spanish;Exception to: the double l ("ll") is common in Spanish, especially for representing the /y/ sound;vanilla
+Spanish;"qu" is a way to spell the /k/ sound;quesadilla,conquistador,quebrada
+Spanish;"n" for the /ny/ sound;señorita,piñata,jalapeño
+Spanish;"a" is used to spell the schwa at the end;mesa,señorita,fiesta,plaza,vanilla,cafeteria

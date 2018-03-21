@@ -1,0 +1,6 @@
+Greek;/f/ is spelled as ph;alphabet,phase,philosophy,phonics,telegraph,diphtheria,phobia,amphibian,sphere
+Greek;short i is spelled as y;abyss,dyslexia,synonym,sympathy,system,gymnasium,odyssey,Olympiad,onyx,syzygy
+Greek;/k/ is spelled as c, k, or ch;carcinogen,cathode,democracy,kinetic,krypton,kaumographer,kaleidoscope,chrome,chloride,chaos,echo,chorus,technology,architect,character
+Greek;/r/ is spelled as r/rh/rrh;parallel,periphery,theory,pyramid,thorax,rheostat,rhapsody,rhinoceros,rhythm,hemorrhage,cirrhosis
+Greek;/z/ at beginning of word is spelled as x (from Greek letter xi);xylophone,xanthic,xenial
+Greek;/z/ at beginning of word is spelled as z (from Greek letter zeta);zeal,zephyr,zetetic,zeugma
