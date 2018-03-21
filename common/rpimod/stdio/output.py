@@ -8,53 +8,74 @@
 # Date        : 2016/01/28
 #--------------------------------------------------------------------------------------------------
 
+import unicodedata
 import math
 import logging
+
+# Set to True to turn debug messages on
+ERR_DEBUG = False
 
 # Display a list as evenly spaced columns
 OUT_MARGIN_WIDTH = 4                                    # set margin width to 4 characters
 
-def columnize(list, numCols):
-    elementCount = len(list)
+def visual_len(word):
+    visual_word = unicodedata.normalize('NFKD', word).encode('ASCII', 'ignore')
+    # Add back special characters to determine final visual length
+    rlen = len(visual_word)
+    rlen = rlen + word.count(u'ˈ') + word.count(u'ˌ')
+    rlen = rlen + word.count(u'ə') + word.count(u'ᵊ')
+    rlen = rlen + word.count(u'œ') + word.count(u'ᵫ')
+    rlen = rlen + word.count(u'ŋ')
+    rlen = rlen + word.count(u'•') + word.count(u'√')
+    
+    return rlen
+
+def columnize(elementList, numCols):
+    _FUNC_NAME_ = "columnize"
+    elementCount = len(elementList)
     colCount = numCols
     rowCount = int(math.ceil(float(elementCount)/float(colCount)))
 
     elementMargin = OUT_MARGIN_WIDTH                               
     columnizedList = []
 
-    if len(list) > 0:
-        elementMaxLength = max([len(element) for element in list])
+    if elementCount > 0:
+        elementMaxLength = max([visual_len(element) for element in elementList])
+        DEBUG_VAR="elementMaxLength"
+        print_debug(ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, eval(DEBUG_VAR)))
 
         for rowIndex in range(0, rowCount):
             row = []
             elementIndex = rowIndex
             for colIndex in range(0, colCount):
                 if elementIndex < elementCount:
-                    row.append(list[elementIndex].ljust(elementMaxLength + elementMargin, ' '))
+                    elementLength = visual_len(elementList[elementIndex])
+                    elementPadLength = elementMaxLength + elementMargin - elementLength
+                    row.append(elementList[elementIndex] + ' ' * elementPadLength)
                     elementIndex += rowCount
             columnizedList.append(row)
 
     return columnizedList
 
-def print_columnized_list(list, numCols):
-    columnizedList = columnize(list, numCols)
+def print_columnized_list(elementList, numCols):
+    columnizedList = columnize(elementList, numCols)
 
     for row in columnizedList:
         for col in row:
             print col,
         print ""
 
-def print_columnized_slice(list, sliceIndexList, numCols):
+def print_columnized_slice(elementList, sliceIndexList, numCols):
     slicedList = []
     for index in sliceIndexList:
-        slicedList.append(list[index])
+        slicedList.append(elementList[index])
 
     print_columnized_list(slicedList, numCols)
 
-def multiline_text(list):
+def multiline_text(elementList):
     textList = u""
 
-    for index, item in enumerate(list):
+    for index, item in enumerate(elementList):
         if index == 0:
             textList = item
         else:
@@ -62,6 +83,12 @@ def multiline_text(list):
 
     return textList
 
+def coalesce(*args):
+    for arg in args:
+        if arg != u"":
+            return arg
+
+    return None
 
 # Print to the terminal in color. References:
 # https://en.wikipedia.org/wiki/ANSI_escape_code#CSI_codes
@@ -127,17 +154,23 @@ def get_term_color (textColor, backgroundColor, effect):
 
     return colorCode
 
+def print_color (color, msg):
+
+    if isinstance(msg, str):
+        msgText = unicode(msg, 'utf-8')
+    else:
+        msgText = msg
+
+    print unicode("{colorOn}{text}{colorOff}", 'utf-8').format(colorOn=get_term_color(color, 'normal', 'normal'), text=msgText, colorOff=get_term_color('normal', 'normal', 'normal'))
+
 def print_err (msg):
-    print "{colorOn}{header}{text}{colorOff}".format(colorOn=get_term_color('red', 'normal', 'normal'), header="ERROR: ", text=msg, colorOff=get_term_color('normal', 'normal', 'normal'))
+    print_color ('red', 'ERROR: ' + msg)
 
 def print_warn (msg):
-    print "{colorOn}{header}{text}{colorOff}".format(colorOn=get_term_color('yellow', 'normal', 'normal'), header="WARNING: ", text=msg, colorOff=get_term_color('normal', 'normal', 'normal'))
+    print_color ('yellow', 'WARNING: ' + msg)
 
 def print_tip (msg):
-    print "{colorOn}{header}{text}{colorOff}".format(colorOn=get_term_color('cyan', 'normal', 'normal'), header="TIP: ", text=msg, colorOff=get_term_color('normal', 'normal', 'normal'))
-
-def print_color (color, msg):
-    print "{colorOn}{text}{colorOff}".format(colorOn=get_term_color(color, 'normal', 'normal'), text=msg, colorOff=get_term_color('normal', 'normal', 'normal'))
+    print_color ('magenta', 'TIP: ' + msg)
 
 # Logging and debugging
 # Usage:
