@@ -2,7 +2,7 @@
 # -*- encoding: utf-8 -*-
 
 #--------------------------------------------------------------------------------------------------
-# File name   : merriamwebsterv2.py
+# File name   : merriamwebster.py
 # Description : Dictionary lookup functions sourcing from Merriam Webster Collegiate Dictionary
 # Author      : Dito Manavalan
 # Date        : 2017/06/07
@@ -109,6 +109,8 @@ def parse_word_definition(word, entryXML):
 
 
 # todo: Improve lookup/pronunciation with root word match e.g. idiosyncratic <uor>
+# todo: Add pronunciation support for word inflections
+
 def parse_word_clip(word, entryXML):
     _FUNC_NAME_ = "parse_word_clip"
     searchWord = word
@@ -129,6 +131,7 @@ def parse_word_clip(word, entryXML):
     audioClipFound = False
     audioClip = DICT_UNICODE_EMPTY_STR
     audioClipWord = DICT_UNICODE_EMPTY_STR
+    audioClipPron = DICT_UNICODE_EMPTY_STR
 
     try:
         # Pass #1: Find matching headword spelling
@@ -144,6 +147,7 @@ def parse_word_clip(word, entryXML):
             if searchWord == entry.spelling:
                 for audio in entry.audio:
                     audioClipWord = entry.spelling
+                    audioClipPron = entry.pronunciation
                     wordFound = True
                     audioClip = audio
                     audioClipFound = True
@@ -166,6 +170,7 @@ def parse_word_clip(word, entryXML):
             wordFound = False
             audioClip = DICT_UNICODE_EMPTY_STR
             audioClipWord = DICT_UNICODE_EMPTY_STR
+            audioClipPron = DICT_UNICODE_EMPTY_STR
 
             entries = dictionary.lookup(searchWord, sourceXML)
             for entry in entries:
@@ -228,6 +233,7 @@ def parse_word_clip(word, entryXML):
             wordFound = False
             audioClip = DICT_UNICODE_EMPTY_STR
             audioClipWord = DICT_UNICODE_EMPTY_STR
+            audioClipPron = DICT_UNICODE_EMPTY_STR
 
             entries = dictionary.lookup(searchWord, sourceXML)
             for entry in entries:
@@ -252,10 +258,12 @@ def parse_word_clip(word, entryXML):
     except api.WordNotFoundException:
         audioClip = DICT_UNICODE_EMPTY_STR
         audioClipWord = DICT_UNICODE_EMPTY_STR
+        audioClipPron = DICT_UNICODE_EMPTY_STR
 
     if not audioClipFound:
         audioClip = DICT_UNICODE_EMPTY_STR
         audioClipWord = DICT_UNICODE_EMPTY_STR
+        audioClipPron = DICT_UNICODE_EMPTY_STR
 
     DEBUG_VAR="searchWord"
     coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(searchWord)))
@@ -270,12 +278,12 @@ def parse_word_clip(word, entryXML):
     # Return audioClipWord and audioClip, if found
     if isinstance(audioClipWord, str):
         audioClipWord = unicode(audioClipWord, 'utf-8')
-    else:
-        audioClipWord = audioClipWord
 
     if isinstance(audioClip, str):
         audioClip = unicode(audioClip, 'utf-8')
-    else:
-        audioClip = audioClip
 
-    return [audioClipWord, audioClip]
+    if isinstance(audioClipPron, str):
+        audioClipPron = unicode(audioClipPron, 'utf-8')
+
+    return [audioClipWord, audioClip, audioClipPron]
+    
