@@ -41,6 +41,7 @@ DICT_ENTRY_URL = unicode("http://www.dictionaryapi.com/api/v1/references/collegi
 DICT_AUDIO_URL = unicode("http://media.merriam-webster.com/soundc11/{FOLDER}/{CLIP}", 'utf-8')
 DICT_KEY = unicode("cbbd4001-c94d-493a-ac94-7268a7e41f6f", 'utf-8')
 
+DICT_UNICODE_EMPTY_STR = unicode("", 'utf-8')
 
 ################################################################
 # Exception Classes
@@ -192,9 +193,12 @@ class MWDictionaryEntry(object):
         coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
 
         base_url = "http://media.merriam-webster.com/soundc11"
-        prefix_match = re.search(r'^([0-9]+|gg|bix)', fragment)
-        if prefix_match:
-            prefix = prefix_match.group(1)
+        number_prefix_match = re.search(r'^([0-9]+)', fragment)
+        special_prefix_match = re.search(r'^(gg|bix)', fragment)
+        if number_prefix_match:
+            prefix = "number"
+        elif special_prefix_match:
+            prefix = special_prefix_match.group(1)
         else:
             prefix = fragment[0]
         return "{0}/{1}/{2}".format(base_url, prefix, fragment)
@@ -329,7 +333,8 @@ class CollegiateDictionaryEntry(MWDictionaryEntry):
         self.headword = attrs.get('headword')
         self.spelling = attrs.get('spelling')
         self.function = attrs.get('functional_label')
-        self.pronunciations = attrs.get("pronunciations")     
+        self.pronunciation = attrs.get("pronunciation")
+        #self.pronunciations = attrs.get("pronunciations")     
         self.inflections = attrs.get("inflections")
         self.senses = attrs.get("senses")
         self.audio = [self.build_sound_url(f) for f in
@@ -367,8 +372,9 @@ class CollegiateDictionary(MWApiWrapper):
             args = {}
             args['headword'] = entry.find('hw').text
             args['spelling'] = re.sub("\*", "", entry.find('hw').text)
-            args['functional_label'] = getattr(entry.find('fl'), 'text', None)
-            args['pronunciations'] = self._get_pronunciations(entry)
+            args['functional_label'] = getattr(entry.find('fl'), 'text', DICT_UNICODE_EMPTY_STR)
+            args['pronunciation'] = getattr(entry.find('pr'), 'text', DICT_UNICODE_EMPTY_STR)
+            #args['pronunciations'] = self._get_pronunciations(entry)
             args['inflections'] = self._get_inflections(entry)
             args['senses'] = self._get_senses(entry)
             args['sound_fragments'] = [e.text for e in
