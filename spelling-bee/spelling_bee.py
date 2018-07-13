@@ -39,8 +39,6 @@ import argparse
 import math
 import re
 import urllib3
-import codecs
-import unicodedata
 import random
 import glob
 
@@ -136,7 +134,9 @@ SB_POS_REGEX_PATTERN = [
     {'form': 'adverb', 'pattern': '-ly', 'regexPattern': re.compile("^.*ly$")},
     {'form': 'past tense/adjective', 'pattern': '-ed', 'regexPattern': re.compile("^.*ed$")},
     {'form': 'progressive/participle', 'pattern': '-ing', 'regexPattern': re.compile("^.*ing$")},
-    {'form': 'superlative', 'pattern': '-est', 'regexPattern': re.compile("^.*est$")}
+    {'form': 'superlative', 'pattern': '-est', 'regexPattern': re.compile("^.*est$")},
+    {'form': 'agent noun/comparative', 'pattern': '-er', 'regexPattern': re.compile("^.*er$")},
+    {'form': 'agent noun', 'pattern': '-or', 'regexPattern': re.compile("^.*or$")}
 ]
 
 
@@ -449,12 +449,9 @@ class SpellingBee(object):
                 self.activeAudioFileWord = wordClipForm
                 self.activePronunciation = wordClipPron
         
-        #wordToken = re.sub('[^a-zA-Z]', SB_EMPTY_STRING, self.activeWord.lower())
-        wordToken = unicode(unicodedata.normalize('NFKD', self.activeWord.lower()).encode('ASCII', 'ignore'), 'utf-8')
-        
-        #pronunciationToken = re.sub('[^a-zA-Z]', SB_EMPTY_STRING, self.activeAudioFileWord.lower())
-        pronunciationToken = unicode(unicodedata.normalize('NFKD', self.activeAudioFileWord.lower()).encode('ASCII', 'ignore'), 'utf-8')
-        
+        wordToken = coutput.tokenize(self.activeWord)
+        pronunciationToken = coutput.tokenize(self.activeAudioFileWord)
+       
         if self.activeAudioFile != SB_EMPTY_STRING and wordToken != pronunciationToken:
             SB_ERR_CLIP_MISMATCH = True
 
@@ -528,23 +525,12 @@ class SpellingBee(object):
             coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(self.activeWord)))
             coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
 
-            #wordToken = re.sub('[^a-zA-Z]', SB_EMPTY_STRING, self.activeWord.lower())
-            wordToken = unicode(unicodedata.normalize('NFKD', self.activeWord.lower()).encode('ASCII', 'ignore'), 'utf-8')
-
-            DEBUG_VAR="wordToken"
-            coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(wordToken)))
-            coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
-
             DEBUG_VAR="self.activeAudioFileWord"
             coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(self.activeAudioFileWord)))
             coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
 
-            #pronunciationToken = re.sub('[^a-zA-Z]', SB_EMPTY_STRING, self.activeAudioFileWord.lower())
-            pronunciationToken = unicode(unicodedata.normalize('NFKD', self.activeAudioFileWord.lower()).encode('ASCII', 'ignore'), 'utf-8')
-
-            DEBUG_VAR="pronunciationToken"
-            coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(pronunciationToken)))
-            coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
+            wordToken = coutput.tokenize(self.activeWord)
+            pronunciationToken = coutput.tokenize(self.activeAudioFileWord)
 
             if self.activePronunciation != SB_EMPTY_STRING:
                 coutput.print_color('cyan', 'Pronunciation: ' + self.activePronunciation )
@@ -621,8 +607,7 @@ class SpellingBee(object):
         # Most difficult rule would be relaxed in most number of levels
         if normDifficultyLevel < 2:
             # Relax foreign character restriction
-            valuationWord = unicodedata.normalize('NFKD', valuationWord).encode('ASCII', 'ignore')
-            valuationWord = unicode(valuationWord, 'utf-8')
+            valuationWord = coutput.normalize(valuationWord)
 
         if normDifficultyLevel < 1:
             # Relax letter case restriction

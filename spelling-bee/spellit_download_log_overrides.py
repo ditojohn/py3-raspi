@@ -6,6 +6,7 @@
 # Example:    sudo python spellit_download_log_overrides.py
 ################################################################
 
+import os
 import sys
 import re
 import urllib3
@@ -17,7 +18,7 @@ import common.rpimod.wordproc.dict.dictionary as cdict
 
 SDO_USER_AGENT = {'user-agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.116 Safari/537.36'}
 
-SDO_LIST_FILE = unicode("data/log/spelling_bee_errors.log", 'utf-8')
+SDO_LIST_FILE = unicode("data/log/spelling_bee_errors.list", 'utf-8')
 SDO_OVERRIDE_DEFN_FILE = unicode("data/download/sb_{WORD}.dat", 'utf-8')
 SDO_OVERRIDE_PRON_FILE = unicode("data/download/sb_{WORD}.mp3", 'utf-8')
 SDO_LOG_FILE = unicode("data/log/spellit_download_log_overrides.log", 'utf-8')

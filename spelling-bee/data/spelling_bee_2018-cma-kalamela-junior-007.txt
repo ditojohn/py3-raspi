@@ -208,7 +208,8 @@ implore
 debris
 surmise
 forthwith
-derivedubiquitous
+derived
+ubiquitous
 frugal
 derogatory
 vacillate

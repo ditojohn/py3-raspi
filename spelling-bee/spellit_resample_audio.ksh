@@ -17,12 +17,12 @@ do
 
     print "\n--------------------------"
     print "Converting ${fileName}.wav ..."
-    avconv -i ${srcDir}/${fileName}.wav -ar ${tgtSampleRate} ${tgtDir}/${fileName}.mp3
+    avconv -i ${srcDir}/"${fileName}.wav" -ar ${tgtSampleRate} ${tgtDir}/"${fileName}.mp3"
     rc=$?
     if [[ ${rc} -eq 0 ]]
     then
         echo ">> Conversion complete for ${fileName}.wav"
-        mv ${srcDir}/${fileName}.wav ${tgtArchDir}/${fileName}.wav
+        mv ${srcDir}/"${fileName}.wav" ${tgtArchDir}/"${fileName}.wav"
         echo ">> Archived ${fileName}.wav"
     else
         echo ">> Conversion failed for ${fileName}"
@@ -37,12 +37,12 @@ do
 
     print "\n--------------------------"
     print "Resampling ${fileName} ..."
-    avconv -i ${srcDir}/${fileName} -ar ${tgtSampleRate} ${tgtDir}/${fileName}
+    avconv -i ${srcDir}/"${fileName}" -ar ${tgtSampleRate} ${tgtDir}/"${fileName}"
     rc=$?
     if [[ ${rc} -eq 0 ]]
     then
         echo ">> Resampling complete for ${fileName}"
-        mv ${srcDir}/${fileName} ${tgtArchDir}/${fileName}
+        mv ${srcDir}/"${fileName}" ${tgtArchDir}/"${fileName}"
         echo ">> Archived ${fileName}"
     else
         echo ">> Resampling failed for ${fileName}"

@@ -10,6 +10,7 @@
 
 import unicodedata
 import math
+import re
 import logging
 
 # Set to True to turn debug messages on
@@ -17,6 +18,11 @@ ERR_DEBUG = False
 
 # Display a list as evenly spaced columns
 OUT_MARGIN_WIDTH = 4                                    # set margin width to 4 characters
+
+CHR_NEWLINE = unicode("\n", 'utf-8')
+CHR_EMPTY_STRING = unicode("", 'utf-8')
+CHR_WORD_DELIMITER = unicode(";", 'utf-8')
+
 
 def visual_len(word):
     visual_word = unicodedata.normalize('NFKD', word).encode('ASCII', 'ignore')
@@ -89,6 +95,20 @@ def coalesce(*args):
             return arg
 
     return None
+
+def normalize(word):
+    wordToken = word
+    wordToken = unicode(unicodedata.normalize('NFKD', wordToken).encode('ASCII', 'ignore'), 'utf-8')
+   
+    return wordToken
+
+def tokenize(word):
+    wordToken = word
+    #wordToken = re.sub('[^a-zA-Z]', SB_EMPTY_STRING, wordToken.lower())
+    wordToken = unicode(unicodedata.normalize('NFKD', wordToken.lower()).encode('ASCII', 'ignore'), 'utf-8')
+    wordToken = re.sub('[- ]', CHR_EMPTY_STRING, wordToken)
+   
+    return wordToken
 
 # Print to the terminal in color. References:
 # https://en.wikipedia.org/wiki/ANSI_escape_code#CSI_codes
