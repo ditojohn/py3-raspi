@@ -91,7 +91,7 @@ surefire
 tractor
 jersey
 sofa
-likeable
+likeable; likable
 hinge
 dozen
 people
@@ -129,7 +129,7 @@ watchdog
 dearly
 clutch
 polar
-imposter
+imposter; impostor
 tirade
 field
 postpone
@@ -205,7 +205,7 @@ dwindled
 median
 soprano
 tropical
-catalog
+catalog; catalogue
 lactose
 diploma
 smidge
@@ -317,7 +317,7 @@ synthetic
 organelle
 maverick
 infrastructure
-kaftan
+kaftan; caftan
 résumé
 cylindrical
 hubris
@@ -383,7 +383,7 @@ corollary
 inimical
 garrulous
 tarantula
-mazel tov
+mazel tov; mazal tov
 esplanade
 smorgasbord
 mawkish
@@ -438,7 +438,7 @@ joule
 freesia
 susurration
 potpourri
-leitmotif
+leitmotif; leitmotiv
 Chihuahua
 ecclesiastical
 cozen

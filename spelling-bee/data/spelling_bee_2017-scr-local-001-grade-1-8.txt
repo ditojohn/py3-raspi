@@ -44,7 +44,7 @@ digging
 soap
 bones
 small
-center
+center; centre
 lava
 monster
 bathtub
@@ -201,7 +201,7 @@ voyage
 hooves
 funnel
 gravely
-hiccups
+hiccups; hiccoughs
 performance
 specific
 dowdy
@@ -348,7 +348,7 @@ scrumptiously
 boulevards
 laburnums
 thaumaturge
-marvelous
+marvelous; marvellous
 vulpine
 catastrophic
 quandary
@@ -446,5 +446,5 @@ netsuke
 recherché
 supererogation
 au fait
-wallah
+wallah; walla
 a posteriori
