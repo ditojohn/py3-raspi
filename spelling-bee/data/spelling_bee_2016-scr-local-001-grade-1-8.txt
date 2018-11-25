@@ -91,7 +91,7 @@ surefire
 tractor
 jersey
 sofa
-likeable; likable
+likable; likeable
 hinge
 dozen
 people
@@ -129,7 +129,7 @@ watchdog
 dearly
 clutch
 polar
-imposter; impostor
+impostor; imposter
 tirade
 field
 postpone
@@ -317,7 +317,7 @@ synthetic
 organelle
 maverick
 infrastructure
-kaftan; caftan
+caftan; kaftan
 résumé
 cylindrical
 hubris
