@@ -127,9 +127,9 @@ SB_EMPTY_STRING = unicode("", 'utf-8')
 SB_WORD_DELIMITER = unicode(";", 'utf-8')
 
 SB_POS_REGEX_PATTERN = [
+    {'form': 'plural', 'pattern': '-s', 'regexPattern': re.compile("^.*s$")},
     {'form': 'negative', 'pattern': 'non-/un-', 'regexPattern': re.compile("^(non|un).*$")},
     {'form': 'noun suffix', 'pattern': '-ness', 'regexPattern': re.compile("^.*ness$")},
-    {'form': 'plural', 'pattern': '-s', 'regexPattern': re.compile("^.*s$")},
     {'form': 'adjective', 'pattern': '-able/-al', 'regexPattern': re.compile("^.*(able|al)$")},
     {'form': 'adverb', 'pattern': '-ly', 'regexPattern': re.compile("^.*ly$")},
     {'form': 'past tense/adjective', 'pattern': '-ed', 'regexPattern': re.compile("^.*ed$")},
@@ -138,7 +138,6 @@ SB_POS_REGEX_PATTERN = [
     {'form': 'agent noun/comparative', 'pattern': '-er', 'regexPattern': re.compile("^.*er$")},
     {'form': 'agent noun', 'pattern': '-or', 'regexPattern': re.compile("^.*or$")}
 ]
-
 
 class SpellingBee(object):
     """
