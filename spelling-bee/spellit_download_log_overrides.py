@@ -28,9 +28,14 @@ SDO_ERR_AUDIO_REGEX_PATTERN = re.compile(".*Audio (Missing|Mismatch).*")
 SDO_ERR_DEFN_MISSING = False
 SDO_ERR_CLIP_MISSING = False
 
+# Set to True to turn debug messages on
+SB_ERR_DEBUG = False
+
 ################################################################
 # Main Program
 ################################################################
+
+_FUNC_NAME_ = "main"
 
 connectionPool = urllib3.PoolManager(10, headers=SDO_USER_AGENT)
 
@@ -39,16 +44,21 @@ logEntries = cfile.read(SDO_LIST_FILE).splitlines()
 print "Downloading overrides ..."
 
 for entry in logEntries:
+    coutput.print_watcher(SB_ERR_DEBUG, _FUNC_NAME_, 'entry')
+
     logValues = entry.split(':')
     
     word = logValues[1]
     wordEntry = cdict.fetch_dictionary_entry(connectionPool, word)
+    coutput.print_watcher(SB_ERR_DEBUG, _FUNC_NAME_, 'wordEntry')
+
     SDO_ERR_DEFN_MISSING = False
     SDO_ERR_CLIP_MISSING = False
-
+    
     print unicode("Word: {0}\t{1}", 'utf-8').format(word, logValues[2])
 
     if SDO_ERR_DEFN_REGEX_PATTERN.match(logValues[2]):
+        coutput.print_watcher(SB_ERR_DEBUG, _FUNC_NAME_, 'wordEntry[1]')
         if len(wordEntry[1]) > 0:
             print ">> Downloaded definition override"
             cfile.write(SDO_OVERRIDE_DEFN_FILE.format(WORD=word), coutput.multiline_text(wordEntry[1]))
@@ -57,6 +67,7 @@ for entry in logEntries:
             coutput.print_color('yellow', "WARNING: Definition override not available")
  
     if SDO_ERR_AUDIO_REGEX_PATTERN.match(logValues[2]):
+        coutput.print_watcher(SB_ERR_DEBUG, _FUNC_NAME_, 'wordEntry[4]')
         if wordEntry[4] != "":
             print ">> Downloaded pronunciation override"
             cfile.download(connectionPool, wordEntry[4], SDO_OVERRIDE_PRON_FILE.format(WORD=word))
