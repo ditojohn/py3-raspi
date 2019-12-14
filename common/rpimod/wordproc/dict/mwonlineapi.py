@@ -5,7 +5,7 @@
 # File name   : mwonlineapi.py
 # Description : Merriam Webster Online Dictionary API implementation
 # Author      : Dito Manavalan
-# Date        : 2018/01/11
+# Date        : 2019/03/02
 #--------------------------------------------------------------------------------------------------
 
 import sys
@@ -14,153 +14,315 @@ import re
 from bs4 import BeautifulSoup
 
 sys.path.insert(0, "..")
-import common.rpimod.stdio.output as cout
+import common.rpimod.stdio.output as coutput
 import dictionaryapi as cdict
-import mwcollegiateapi as mwdict
+import mwcollegiateapi as cparentdict
 
 # Set to True to turn debug messages on
-SB_ERR_DEBUG = False
+#MOD_ERR_DEBUG = True
+MOD_ERR_DEBUG = False
 
 ################################################################
 # Merriam Webster Online Dictionary
 ################################################################
 
-class DictionaryConfig(mwdict.DictionaryConfig):
+class DictionaryConfig(cparentdict.DictionaryConfig):
     def __init__(self):
 
         # Configuration Attributes
         self.name = u"Merriam-Webster's Online Dictionary"
-        self.pronunciation_key_file = u"data/pronunciation_key_merriam-webster.txt"
-        self.entry_url_format = u"https://www.merriam-webster.com/dictionary/{WORD}"
-        self.audio_url_format = u"http://media.merriam-webster.com/soundc11/{FOLDER}/{CLIP}.wav"
+        self.pronunciation_guide_file = u"data/mwcollegiatepronguide.txt"
+        self.entry_url_format = u"http://www.merriam-webster.com/dictionary/{WORD}"
+        self.audio_url_format = u"http://media.merriam-webster.com/soundc11/{FOLDER}/{CLIP}"
         self.illustration_url_format = u"https://www.merriam-webster.com/art/dict/{CLIP}.htm"
+        self.entry_extension = u".html"
+        self.audio_extension = u".wav"
+        self.illustration_extension = u".bmp"
         self.api_key = cdict.DICT_UNICODE_EMPTY_STR
         self.parser = u"html.parser"
+        self.pronunciation_guide = self.build_pronunciation_guide()
+
+        """
+        Dictionary Entry (container): <div id="dictionary-entry-1"> or <div id="medical-entry-1"> or <div id="legal-entry-1">
+        -- maps to wordEntry
+
+            Head Word: <h1 class="hword"> or <p class="hword">
+            -- maps to wordEntry.entry_word
+
+            Functional Label: <span class="fl"> or <span class='lb'>
+            -- maps to wordEntry.functional_label
+
+            Etymology: <p class="et">
+            -- maps to wordEntry.etymology
+
+            Word Syllables: <span class="word-syllables">
+            -- maps to wordEntry.word_syllables
+
+            Pronunciation: <a class="play-pron">
+            -- maps to wordEntry.pronunciation
+
+            Respelling: <span class="prs">
+            -- maps to wordEntry.respelling
+
+            Senses (container): <div class="vg">
+
+            Inflection: <span class="vg-ins">
+            -- maps to wordEntry.inflections
+
+                Inflection Form: <span class="if">
+                -- maps to wordEntry.inflections.form
+
+                Inflection Functional Label: <span class="il">
+                -- maps to wordEntry.inflections.functional_label
+        """
+        self.element_match_patterns = {
+            
+            u'div' : {
+                u'class' : re.compile(ur'(entry-header|entry-attr)'),
+                u'id' : re.compile(ur'dictionary-entry-.*|medical-entry-.*|legal-entry-.*|etymology-anchor|first-known-anchor')
+            }
+        }
+
+        self.entry_match_patterns = {
+            
+            u'div' : {
+                u'id' : re.compile(ur'dictionary-entry-.*|medical-entry-.*|legal-entry-.*')
+            }
+        }
 
 
-    def build_entry_url(self, key_word):
-        _FUNC_NAME_ = "DictionaryConfig.build_entry_url"
+class DictionaryEntry(cparentdict.DictionaryEntry):
 
-        return self.entry_url_format.format(WORD=key_word).replace(u" ", u"%20")
+    def build_pronunciation(self, element, word_form):
+        # Accepts <a class="play-pron"> element as input
+        _FUNC_NAME_ = "DictionaryEntry.build_pronunciation"
+        
+        url_fragment = element['data-file'].strip()
+        url_fragment = self.build_audio_url(url_fragment)
+
+        pronunciation = cdict.WordPronunciation(url_fragment)
+        pronunciation.form = word_form
+        pronunciation.spelling = word_form.replace(u'·​', u'')
+
+        return pronunciation
 
 
-class DictionaryEntry(mwdict.DictionaryEntry):
+    def build_respelling(self, element, word_form):
+        # Accepts <span class="prs"> element as input
+        _FUNC_NAME_ = "DictionaryEntry.build_respelling"
+
+        elementText = element.get_text().strip().replace('\n','').replace(' ','')
+        
+        prsPattern = re.compile(ur'\\.*\\')
+        prsElements = prsPattern.findall(elementText)
+
+        if prsElements is not None and len(prsElements) > 0:
+            prsElementText = prsElements[0]
+            prsElementText = prsElementText.strip()
+
+            respelling = cdict.WordRespelling(prsElementText, self.config.name)
+            respelling.form = word_form
+            respelling.spelling = word_form.replace(u'·​', u'')
+        else:
+            respelling = None
+
+        return respelling
+
+
+    def build_senses(self, element, dateText):
+        _FUNC_NAME_ = "DictionaryEntry.build_senses"
+
+        # Accepts <div class="vg"> element as input
+        """
+        Senses (container): <div class="vg">
+
+            Sense (container): <div class="sense">
+            -- maps to wordEntry.senses
+
+                Definition (container): <span class="dt ">
+                    -- maps to wordEntry.senses.definition
+
+                    Examples: <span class="ex-sent sents">
+                    -- maps to wordEntry.senses.examples
+        """
+        
+        senses = []
+        
+        for sense in element.find_all('div', class_="sense"):
+            slElementText = cdict.DICT_UNICODE_EMPTY_STR
+            dtElementText = cdict.DICT_UNICODE_EMPTY_STR
+            exElementText = cdict.DICT_UNICODE_EMPTY_STR
+
+            for subElement in sense.find_all('span', class_="sl"):
+                subElementText = subElement.get_text().strip()
+
+                slElementText = subElementText
+
+            # Process <span class="dt"> elements
+            # This includes <span class="dtText"> and <span class="un"> elements
+            for subElement in sense.find_all('span', class_="dt"):
+                # Hold example sentences for later
+                examples = subElement.find_all('span', class_="ex-sent") 
+                [x.extract() for x in subElement.find_all('span', class_="ex-sent")]
+
+                subElementText = subElement.get_text().strip()
+                subElementText = re.sub(ur'called also', u'- called also', subElementText, flags=re.UNICODE)
+                subElementText = re.sub(ur'[ ]+—[ ]+(compare).*', u'', subElementText, flags=re.UNICODE)
+                subElementText = re.sub(ur'^[ ]*:[ ]*', u'', subElementText, flags=re.UNICODE)
+                subElementText = re.sub(ur'[ ]*:[ ]*', u'; ', subElementText, flags=re.UNICODE)
+                subElementText = re.sub(ur'[\n ]+', u' ', subElementText, flags=re.UNICODE)
+                if slElementText != cdict.DICT_UNICODE_EMPTY_STR:
+                    subElementText = slElementText + u': ' + subElementText
+
+                dtElementText = subElementText
+                ws = cdict.WordSense(dtElementText)
+                ws.date = dateText
+
+            for subElement in examples:
+                # Remove author and source references
+                [x.extract() for x in subElement.find_all('span', class_="auth")]
+                [x.extract() for x in subElement.find_all('span', class_="source")]
+
+                subElementText = subElement.get_text().strip()
+                subElementText = re.sub(ur'[\n ]+', u' ', subElementText, flags=re.UNICODE)
+
+                exElementText = subElementText
+                if exElementText != cdict.DICT_UNICODE_EMPTY_STR:
+                    ws.examples.append(exElementText)
+
+            senses.append(ws)
+
+        return senses
+
 
     def set_word_entries(self):
         _FUNC_NAME_ = "DictionaryEntry.set_word_entries"
 
-        wordEntryInitialized = False
-
         soup = BeautifulSoup(self.entry_raw_text, self.config.parser)
-        nameFilter = re.compile(ur'(h1|h2|span|a|div)')
-        classAttrFilter = re.compile(ur'(hword|fl|prs|dt|play-pron|et|in)')
+        currEntryWord = cdict.DICT_UNICODE_EMPTY_STR
+        currFuncLabel = cdict.DICT_UNICODE_EMPTY_STR
+        currEtymology = cdict.DICT_UNICODE_EMPTY_STR
+        currOrigin = cdict.DICT_UNICODE_EMPTY_STR
+        currWordSyllables = cdict.DICT_UNICODE_EMPTY_STR
+        currPronunciation = None
+        currRespelling = None
 
-        for entry in soup.find_all(nameFilter, {'class':['hword', 'fl', 'word-syllables', 'prs', 'dt', 'play-pron', 'et', 'in']}, recursive=True):
-        #for entry in soup.find_all(nameFilter, classAttrFilter, recursive=True):
+        for entry in soup.find_all(self.config.is_required_element):
+            #coutput.print_watcher(MOD_ERR_DEBUG, _FUNC_NAME_, 'entry')
 
-            DEBUG_VAR="entry.name"
-            cout.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, DEBUG_VAR + " :: " + eval(DEBUG_VAR))
+            if entry.name == u'div' and entry.has_attr(u'id') and re.compile(ur'etymology-anchor').match(entry.attrs[u'id']):
 
-            DEBUG_VAR="entry['class'][0]"
-            cout.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, DEBUG_VAR + " :: " + eval(DEBUG_VAR))
+                # Process etymology: <p class="function-label"> and <p class="et">
+                currEtymology = cdict.DICT_UNICODE_EMPTY_STR
+                for element in entry.find_all(u'p', class_=re.compile(ur'function-label|et')):
+                    if u'function-label' in element['class']:
+                        elementText = element.get_text().strip()
+                        elementText = re.sub(ur'[ ]*\([0-9]+\)[ ]*', u'', elementText, flags=re.UNICODE)
+                        elementText = u'(' + elementText.strip() + u') '
 
-            cout.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, entry.get_text())
+                        if currEtymology == cdict.DICT_UNICODE_EMPTY_STR:
+                            currEtymology = elementText
+                        else:
+                            currEtymology = currEtymology + u'; ' + elementText
 
-            if entry.name in ['h1', 'h2']:
-                if wordEntryInitialized:
-                    DEBUG_VAR="wordEntry"
-                    cout.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, DEBUG_VAR + " :: " + str(eval(DEBUG_VAR)))
+                    elif u'et' in element['class']:
+                        elementText = element.get_text().strip()
 
-                    self.word_entries.append(wordEntry)
-                    wordEntryInitialized = False
+                        if currEtymology == cdict.DICT_UNICODE_EMPTY_STR:
+                            currEtymology = elementText
+                        else:
+                            currEtymology = currEtymology + elementText
 
-                elementText = entry.get_text().strip()
+            elif entry.name == u'div' and entry.has_attr(u'id') and re.compile(ur'first-known-anchor').match(entry.attrs[u'id']):
+
+                # Process origin: <p class="function-label"> and <p class="ety-sl">
+                currEtymology = cdict.DICT_UNICODE_EMPTY_STR
+                for element in entry.find_all(u'p', class_=re.compile(ur'function-label|ety-sl')):
+                    if u'function-label' in element['class']:
+                        elementText = element.get_text().strip()
+                        elementText = re.sub(ur'[ ]*\([0-9]+\)[ ]*', u'', elementText, flags=re.UNICODE)
+                        elementText = u'(' + elementText.strip() + u') '
+
+                        if currOrigin == cdict.DICT_UNICODE_EMPTY_STR:
+                            currOrigin = elementText
+                        else:
+                            currOrigin = currOrigin + u'; ' + elementText
+
+                    elif u'ety-sl' in element['class']:
+                        elementText = element.get_text().strip()
+
+                        if currOrigin == cdict.DICT_UNICODE_EMPTY_STR:
+                            currOrigin = elementText
+                        else:
+                            currOrigin = currOrigin + elementText
+
+
+        for entry in soup.find_all(self.config.is_required_element):
+
+            if entry.name == u'div' and entry.has_attr(u'class') and any(re.compile(ur'entry-.*').match(x) for x in entry.attrs[u'class']):
+                coutput.print_watcher(MOD_ERR_DEBUG, _FUNC_NAME_, 'entry')
+
+                # Process head word: <h1 class="hword"> or <p class="hword">
+                for element in entry.find_all(class_="hword"):
+                    elementText = element.get_text().strip()
+                    currEntryWord = elementText
+                    #coutput.print_watcher(MOD_ERR_DEBUG, _FUNC_NAME_, 'currEntryWord')
+
+                # Process functional label: <span class="fl">
+                for element in entry.find_all('span', class_="fl"):
+                    elementText = element.get_text().strip()
+                    elementText = re.sub(ur'[ ]*\(.*$', u'', elementText, flags=re.UNICODE)
+                    currFuncLabel = elementText
+                    #coutput.print_watcher(MOD_ERR_DEBUG, _FUNC_NAME_, 'currFuncLabel')
+
+                # Process functional label: <span class="lb">
+                for element in entry.find_all('span', class_="lb"):
+                    coutput.print_watcher(MOD_ERR_DEBUG, _FUNC_NAME_, 'element')
+                    elementText = element.get_text().strip()
+                    elementText = currFuncLabel + u', ' + elementText
+                    currFuncLabel = elementText.strip()
+                    #coutput.print_watcher(MOD_ERR_DEBUG, _FUNC_NAME_, 'currFuncLabel')
+
+                # Process word syllables: <span class="word-syllables">
+                for element in entry.find_all('span', class_="word-syllables"):
+                    elementText = element.get_text().strip()
+                    currWordSyllables = elementText
+                    #coutput.print_watcher(MOD_ERR_DEBUG, _FUNC_NAME_, 'currWordSyllables')
+
+                # Process pronunciation: <a class="play-pron">
+                for element in entry.find_all('a', class_="play-pron"):
+                    currPronunciation = self.build_pronunciation(element, coutput.coalesce(currWordSyllables, currEntryWord))
+                    #coutput.print_watcher(MOD_ERR_DEBUG, _FUNC_NAME_, 'currPronunciation')
+
+                # Process respellings: <span class="prs">
+                for element in entry.find_all('span', class_="prs"):
+                    currRespelling = self.build_respelling(element, coutput.coalesce(currWordSyllables, currEntryWord))
+                    #coutput.print_watcher(MOD_ERR_DEBUG, _FUNC_NAME_, 'currRespelling')
+            
+            # Process dictionary entry (container): <div id="dictionary-entry-1"> or <div id="medical-entry-1"> or <div id="legal-entry-1">
+            elif self.config.is_entry_element(entry):
+                coutput.print_watcher(MOD_ERR_DEBUG, _FUNC_NAME_, 'entry')
+
                 wordEntry = cdict.WordEntry(self.config.name, self.key_word)
-                wordEntry.entry_word = elementText
-                wordEntryInitialized = True
+                wordEntry.entry_word = currEntryWord
+                wordEntry.functional_label = currFuncLabel
+                wordEntry.etymology = currEtymology
+                wordEntry.word_syllables = currWordSyllables
+                wordEntry.pronunciation = currPronunciation
+                wordEntry.respelling = currRespelling
 
-            elif entry.name == 'span' and entry['class'][0] == 'fl':
-                elementText = entry.get_text().strip()
-                wordEntry.functional_label = elementText
+                # Process word senses: <div class="vg">
+                for element in entry.find_all('div', class_="vg"):
+                    wordEntry.senses.extend(self.build_senses(element, currOrigin))
 
-            elif entry.name == 'span' and entry['class'][0] == 'word-syllables':
-                elementText = entry.get_text().strip()
-                wordEntry.word_syllables = elementText
+                self.word_entries.append(wordEntry)
 
-            elif entry.name == 'a' and 'play-pron' in entry['class'] and 'hw-play-pron' in entry['class']:
-                elementText = entry['data-file']
-                if wordEntry.pronunciation.audio_url == cdict.DICT_UNICODE_EMPTY_STR:
-                    wordEntry.pronunciation.audio_url = self.build_audio_url(elementText)
-                    wordEntry.pronunciation.form = wordEntry.head_word
+        coutput.print_watcher(MOD_ERR_DEBUG, _FUNC_NAME_, 'self.word_entries')
+        return
 
-            elif entry.name == 'span' and entry['class'][0] == 'prs':
-                elementText = entry.get_text().strip().replace('\n','').replace(' ','')
-                prsPattern = re.compile(ur'\\.*\\')
-                elementText = prsPattern.findall(elementText)[0]
-                if wordEntry.respelling.text == cdict.DICT_UNICODE_EMPTY_STR:
-                    wordEntry.respelling.text = elementText
+        #TBD
+        #for entry in soup.find_all('div', {'class':"headword-row"}):
+            #print entry.get_text()
 
-            elif entry.name == 'div' and entry['class'][0] == 'et':
-                originText = entry.get_text().strip()
-                elementText = re.sub(ur'[ ]+—[ ]+more.*', u'', originText, flags=re.UNICODE)
-                wordEntry.etymology = elementText
-
-            elif entry.name == 'span' and entry['class'][0] == 'dt':
-
-                examples = entry.find_all('ul') 
-                [x.extract() for x in entry.findAll(['ul'])]
-
-                elementText = entry.get_text().strip()
-                elementText = re.sub(ur'[ ]+—[ ]+(compare).*', u'', elementText, flags=re.UNICODE)
-                elementText = re.sub(ur'^[ ]*:[ ]*', u'', elementText, flags=re.UNICODE)
-                elementText = re.sub(ur'[ ]*:[ ]*', u'; ', elementText, flags=re.UNICODE)
-                elementText = re.sub(ur'[\n ]+', u' ', elementText, flags=re.UNICODE)
-                wordSense = cdict.WordSense(elementText)
-
-                for ul in examples:
-                    elementText = ul.get_text().strip()
-                    wordSense.examples.append(elementText)
-
-                DEBUG_VAR="wordSense"
-                cout.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, DEBUG_VAR + " :: " + str(eval(DEBUG_VAR)))
-
-                wordEntry.senses.append(wordSense)
-                wordSense = None
-
-            elif entry.name == 'span' and entry['class'][0] == 'in':
-
-                ilElementText = cdict.DICT_UNICODE_EMPTY_STR
-                ifElementText = cdict.DICT_UNICODE_EMPTY_STR
-                prElementText = cdict.DICT_UNICODE_EMPTY_STR
-                prsElementText = cdict.DICT_UNICODE_EMPTY_STR
-
-                for inflection in entry.find_all('span', {'class':['il', 'if', 'prs', 'pr']}, recursive=True):
-                    if inflection['class'][0] == 'il':
-                        ilElementText = inflection.get_text().strip()
-
-                    elif inflection['class'][0] == 'if':
-                        ifElementText = inflection.get_text().strip()
-                        
-                    elif inflection['class'][0] == 'prs':
-
-                        for pr in inflection.find_all('a', {'class':['play-pron']}, recursive=True, limit=1):
-                            prElementText = pr['data-file']
-
-                        elementText = inflection.get_text().strip()
-                        prsPattern = re.compile(ur'\\.*\\')
-                        elementText = prsPattern.findall(elementText)[0]
-                        if prsElementText == cdict.DICT_UNICODE_EMPTY_STR:
-                            prsElementText = elementText
-
-                wordInflection = cdict.WordInflection(ilElementText)
-                wordInflection.form = ifElementText
-                wordInflection.pronunciation_audio_url = self.build_audio_url(prElementText)
-                wordInflection.pronunciation_respelling = prsElementText
-                wordEntry.inflections.append(wordInflection)
-
-        if wordEntryInitialized:
-            DEBUG_VAR="wordEntry"
-            cout.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, DEBUG_VAR + " :: " + str(eval(DEBUG_VAR)))
-
-            self.word_entries.append(wordEntry)
-
+        #for entry in soup.find_all('div', {'id':"other-words-anchor"}):
+            #print entry.get_text()

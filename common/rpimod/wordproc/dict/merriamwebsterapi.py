@@ -175,8 +175,8 @@ class WordSense(object):
         self.examples = examples
 
     def __str__(self):
-        return "{0}, ex: [{1}]".format(self.definition[:30],
-                                    ", ".join(i[:15] for i in self.examples))
+        return "{0}, ex: [{1}]".format(self.definition[:30], ", ".join(i[:15] for i in self.examples))
+
     def __repr__(self):
         return "WordSense({0})".format(self.__str__())
 
@@ -188,9 +188,7 @@ class MWDictionaryEntry(object):
     def build_sound_url(self, fragment):
         _FUNC_NAME_ = "build_sound_url"
 
-        DEBUG_VAR="fragment"
-        coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(fragment)))
-        coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
+        coutput.print_watcher(SB_ERR_DEBUG, _FUNC_NAME_, 'fragment')
 
         base_url = "http://media.merriam-webster.com/soundc11"
         number_prefix_match = re.search(r'^([0-9]+)', fragment)
@@ -284,6 +282,8 @@ class LearnersDictionary(MWApiWrapper):
 
     def _get_pronunciations(self, root):
         """ Returns list of IPA for regular and 'alternative' pronunciation. """
+        _FUNC_NAME_ = "LearnersDictionary._get_pronunciations"
+
         prons = root.find("./pr")
         pron_list = []
         if prons is not None:
@@ -293,6 +293,7 @@ class LearnersDictionary(MWApiWrapper):
         if prons is not None:
             ps = self._flatten_tree(prons, exclude=['it'])
             pron_list.extend(ps)
+        coutput.print_watcher(SB_ERR_DEBUG, _FUNC_NAME_, '<ReplaceText>') 
         return [p.strip(', ') for p in pron_list]
 
     def _get_senses(self, root):
@@ -328,12 +329,18 @@ class LearnersDictionary(MWApiWrapper):
 ################################################################
 
 class CollegiateDictionaryEntry(MWDictionaryEntry):
+    
     def __init__(self, word, attrs):
+        _FUNC_NAME_ = "CollegiateDictionaryEntry.__init__"
+
         self.word = word
         self.headword = attrs.get('headword')
         self.spelling = attrs.get('spelling')
         self.function = attrs.get('functional_label')
+        
         self.pronunciation = attrs.get("pronunciation")
+        coutput.print_watcher(SB_ERR_DEBUG, _FUNC_NAME_, "self.pronunciation")
+
         #self.pronunciations = attrs.get("pronunciations")     
         self.inflections = attrs.get("inflections")
         self.senses = attrs.get("senses")
@@ -367,34 +374,42 @@ class CollegiateDictionary(MWApiWrapper):
     base_url = "http://www.dictionaryapi.com/api/v1/references/collegiate"
 
     def parse_xml(self, root, word):
-        _FUNC_NAME_ = "parse_xml"
+        _FUNC_NAME_ = "CollegiateDictionary.parse_xml"
         for entry in root.findall('entry'):
             args = {}
             args['headword'] = entry.find('hw').text
             args['spelling'] = re.sub("\*", "", entry.find('hw').text)
             args['functional_label'] = getattr(entry.find('fl'), 'text', DICT_UNICODE_EMPTY_STR)
+            
             args['pronunciation'] = getattr(entry.find('pr'), 'text', DICT_UNICODE_EMPTY_STR)
+            coutput.print_watcher(SB_ERR_DEBUG, _FUNC_NAME_, "args['pronunciation']") 
             #args['pronunciations'] = self._get_pronunciations(entry)
+            
             args['inflections'] = self._get_inflections(entry)
             args['senses'] = self._get_senses(entry)
+            
             args['sound_fragments'] = [e.text for e in
                                               entry.findall("sound/wav")
                                               if e.text]
+            coutput.print_watcher(SB_ERR_DEBUG, _FUNC_NAME_, "args['sound_fragments']")
+
             args['illustration_fragments'] = [e.text for e in
                                               entry.findall("art/bmp")
                                               if e.text]
-
-            coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format("args['sound_fragments']", args['sound_fragments']))
 
             yield CollegiateDictionaryEntry(word, args)
 
     def _get_pronunciations(self, root):
         """ Returns list of IPA for regular and 'alternative' pronunciation. """
+        _FUNC_NAME_ = "CollegiateDictionary._get_pronunciations"
+
         prons = root.find("./pr")
         pron_list = []
         if prons is not None:
             ps = self._flatten_tree(prons, exclude=['it'])
             pron_list.extend(ps)
+        
+        coutput.print_watcher(SB_ERR_DEBUG, _FUNC_NAME_, 'pron_list')
         return pron_list
 
     def _get_inflections(self, root):
@@ -402,9 +417,9 @@ class CollegiateDictionary(MWApiWrapper):
         inflection nodes that have <il>also</il> will have their inflected form
         added to the previous inflection entry.
         """
-        _FUNC_NAME_ = "_get_inflections"
+        _FUNC_NAME_ = "CollegiateDictionary._get_inflections"
 
-        dict_helper =MWDictionaryEntry()
+        dict_helper = MWDictionaryEntry()
 
         for node in root.findall("in"):
             label, forms, spellings, sound_fragments, sound_urls, pronunciations = None, [], [], [], [], []

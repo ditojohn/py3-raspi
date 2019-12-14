@@ -28,11 +28,12 @@ import pkg_resources
 from bs4 import BeautifulSoup
 
 sys.path.insert(0, "..")
-import common.rpimod.stdio.output as cout
+import common.rpimod.stdio.output as coutput
 import common.rpimod.stdio.fileio as cfile
 
 # Set to True to turn debug messages on
-SB_ERR_DEBUG = True
+#MOD_ERR_DEBUG = True
+MOD_ERR_DEBUG = False
 
 ################################################################
 # General Lexical Variables and Functions
@@ -41,12 +42,10 @@ SB_ERR_DEBUG = True
 DICT_UNICODE_EMPTY_STR = unicode("", 'utf-8')
 DICT_UNICODE_FALLBACK_STR = unicode("<None>", 'utf-8')
 
-DICT_USER_AGENT = {'user-agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.116 Safari/537.36'}
-
 
 def format_txt(caption, element):
     if type(element) is not list:
-        elementText = u"{0}: {1}\n".format(caption, cout.coalesce(element, DICT_UNICODE_FALLBACK_STR))
+        elementText = u"{0}: {1}\n".format(caption, coutput.coalesce(element, DICT_UNICODE_FALLBACK_STR))
     else:
         if len(element) <= 0:
             elementText = u"{0}: {1}\n".format(caption, DICT_UNICODE_FALLBACK_STR)
@@ -93,6 +92,7 @@ class WordNotFoundException(KeyError):
             message = unicode("{0} Try: {1}", 'utf-8').format(message, ", ".join(suggestions))
         KeyError.__init__(self, message, *args, **kwargs)
 
+
 class InvalidResponseException(WordNotFoundException):
     def __init__(self, word, *args, **kwargs):
         self.word = word
@@ -112,12 +112,14 @@ class WordIllustration(object):
         self.illustration_url = illustration_url
         self.caption = DICT_UNICODE_EMPTY_STR
         self.form = DICT_UNICODE_EMPTY_STR
+        self.spelling = DICT_UNICODE_EMPTY_STR
 
     def __unicode__(self):
         objectText = u""
         objectText = objectText + format_txt(u'[Illustration URL]', self.illustration_url)
         objectText = objectText + format_txt(u'[Caption         ]', self.caption)
         objectText = objectText + format_txt(u'[Word Form       ]', self.form)
+        objectText = objectText + format_txt(u'[Word Spelling   ]', self.spelling)
         return objectText
 
     def __str__(self):
@@ -130,6 +132,7 @@ class WordIllustration(object):
         yield self.illustration_url
         yield self.caption
         yield self.form
+        yield self.spelling
 
 
 class WordPronunciation(object):
@@ -137,12 +140,16 @@ class WordPronunciation(object):
         self.audio_url = pron_url
         self.word_pronunciation = DICT_UNICODE_EMPTY_STR
         self.form = DICT_UNICODE_EMPTY_STR
+        self.spelling = DICT_UNICODE_EMPTY_STR
+        self.audio_file = DICT_UNICODE_EMPTY_STR
 
     def __unicode__(self):
         objectText = u""
         objectText = objectText + format_txt(u'[Audio URL         ]', self.audio_url)
         objectText = objectText + format_txt(u'[Word Pronunciation]', self.word_pronunciation)
         objectText = objectText + format_txt(u'[Word Form         ]', self.form)
+        objectText = objectText + format_txt(u'[Word Spelling     ]', self.spelling)
+        objectText = objectText + format_txt(u'[Audio File        ]', self.audio_file)
         return objectText
 
     def __str__(self):
@@ -155,6 +162,8 @@ class WordPronunciation(object):
         yield self.audio_url
         yield self.word_pronunciation
         yield self.form
+        yield self.spelling
+        yield self.audio_file
 
 
 class WordRespelling(object):
@@ -162,12 +171,14 @@ class WordRespelling(object):
         self.text = text
         self.source = source
         self.form = DICT_UNICODE_EMPTY_STR
+        self.spelling = DICT_UNICODE_EMPTY_STR
 
     def __unicode__(self):
         objectText = u""
-        objectText = objectText + format_txt(u'[Text     ]', self.text)
-        objectText = objectText + format_txt(u'[Source   ]', self.source)
-        objectText = objectText + format_txt(u'[Word Form]', self.form)
+        objectText = objectText + format_txt(u'[Text         ]', self.text)
+        objectText = objectText + format_txt(u'[Source       ]', self.source)
+        objectText = objectText + format_txt(u'[Word Form    ]', self.form)
+        objectText = objectText + format_txt(u'[Word Spelling]', self.spelling)
         return objectText
 
     def __str__(self):
@@ -180,11 +191,13 @@ class WordRespelling(object):
         yield self.text
         yield self.source
         yield self.form
+        yield self.spelling
         
 
 class WordInflection(object):
     def __init__(self, form):
         self.form = form
+        self.spelling = DICT_UNICODE_EMPTY_STR
         self.functional_label = DICT_UNICODE_EMPTY_STR
         self.pronunciation = None
         self.respelling = None
@@ -193,10 +206,11 @@ class WordInflection(object):
     def __unicode__(self):
         objectText = u""
         objectText = objectText + format_txt(u'[Word Form    ]', self.form)
-        objectText = objectText + format_txt(u'[Func. Label  ]', self.functional_label)
-        objectText = objectText + format_obj(u'[Pronunciation]', self.pronunciation)
-        objectText = objectText + format_obj(u'[Respelling   ]', self.respelling)
-        objectText = objectText + format_obj(u'[Senses       ]', self.senses)
+        objectText = objectText + u"\t" + format_txt(u'[Word Spelling]', self.spelling)
+        objectText = objectText + u"\t" + format_txt(u'[Func. Label  ]', self.functional_label)
+        objectText = objectText + u"\t" + format_obj(u'[Pronunciation]', self.pronunciation)
+        objectText = objectText + u"\t" + format_obj(u'[Respelling   ]', self.respelling)
+        objectText = objectText + u"\t" + format_obj(u'[Senses       ]', self.senses)
         return objectText
 
     def __str__(self):
@@ -206,21 +220,26 @@ class WordInflection(object):
         return "WordInflection({0})".format(self.__str__())
 
     def __iter__(self):
-        yield self.functional_label
         yield self.form
+        yield self.spelling
+        yield self.functional_label
+        yield self.pronunciation
+        yield self.respelling
+        yield self.senses
 
 
 class WordSense(object):
     def __init__(self, definition):
         self.definition = definition
-        self.examples = []
         self.date = DICT_UNICODE_EMPTY_STR
+        self.examples = []
+
 
     def __unicode__(self):
         objectText = u""
         objectText = objectText + format_txt(u'[Definition]', self.definition)
-        objectText = objectText + format_txt(u'[Date      ]', self.date)
-        objectText = objectText + format_txt(u'[Examples  ]', self.examples)
+        objectText = objectText + u"\t" + format_txt(u'[Date      ]', self.date)
+        objectText = objectText + u"\t" + format_txt(u'[Examples  ]', self.examples)
         return objectText
         
     def __str__(self):
@@ -230,9 +249,9 @@ class WordSense(object):
         return "WordSense({0})".format(self.__str__())
 
     def __iter__(self):
-        yield self.date
         yield self.definition
         yield self.examples
+        yield self.date
 
 
 class WordEntry(object):
@@ -241,10 +260,10 @@ class WordEntry(object):
         self.entry_word = entry_word
         self.head_word = DICT_UNICODE_EMPTY_STR
         self.functional_label = DICT_UNICODE_EMPTY_STR
+        self.etymology = DICT_UNICODE_EMPTY_STR
         self.word_syllables = DICT_UNICODE_EMPTY_STR
         self.pronunciation = None
         self.respelling = None
-        self.etymology = DICT_UNICODE_EMPTY_STR
         self.senses = []
         self.inflections = []
         self.illustrations = []
@@ -278,13 +297,14 @@ class SimplifiedWordEntry(object):
         self.key_word = key_word
         self.entry_word = entry_word
         self.functional_label = DICT_UNICODE_EMPTY_STR
+        self.etymology = DICT_UNICODE_EMPTY_STR
         self.pronunciation = None
         self.respelling = None
-        self.etymology = DICT_UNICODE_EMPTY_STR
         self.definitions = []
 
     def __unicode__(self):
         objectText = u""
+        objectText = objectText + format_txt(u'[Source       ]', self.source)
         objectText = objectText + format_txt(u'[Key Word     ]', self.key_word)
         objectText = objectText + format_txt(u'[Entry Word   ]', self.entry_word)
         objectText = objectText + format_txt(u'[Func. Label  ]', self.functional_label)
@@ -300,6 +320,126 @@ class SimplifiedWordEntry(object):
     def __repr__(self):
         return "SimplifiedWordEntry({0})".format(self.__str__())
 
+    def has_definitions(self):
+        if len(self.definitions) == 0:
+            return False
+        else:
+            return True
+
+    def has_pronunciation(self):
+        if self.pronunciation is None:
+            return False
+        else:
+            return True
+
+    def has_pronunciation_audio(self):
+        if not self.has_pronunciation():
+            return False
+        elif self.pronunciation.audio_file == DICT_UNICODE_EMPTY_STR:
+            return False
+        else:
+            return True
+
+    def has_mispronunciation(self):
+        _FUNC_NAME_ = "SimplifiedWordEntry.has_mispronunciation"
+
+        if not self.has_pronunciation():
+            return False      
+        elif self.key_word == self.pronunciation.form:
+            return False
+        else:
+            return True
+
+
+    def has_respelling(self):
+        if self.respelling is None:
+            return False
+        else:
+            return True
+
+
+    # Override definition
+    def override_definitions(self, source, entry_word, overrides):
+        _FUNC_NAME_ = "SimplifiedWordEntry.override_definitions"
+        if len(overrides) > 0:
+            self.source = source
+            self.entry_word = entry_word
+
+            # Remove duplicate definitions
+            for override in overrides:
+                
+                # Handle overrides that are marked special by the application using a prefix e.g. *
+                override_text = re.sub(ur'(^[^\(a-zA-Z0-9]|[\. ]+$)', DICT_UNICODE_EMPTY_STR, override, flags=re.IGNORECASE)
+                coutput.print_watcher(MOD_ERR_DEBUG, _FUNC_NAME_, 'override')
+                coutput.print_watcher(MOD_ERR_DEBUG, _FUNC_NAME_, 'override_text')
+
+                for definition in self.definitions:
+                    definition_text = re.sub(ur'(^[^\(a-zA-Z0-9]|[\. ]+$)', DICT_UNICODE_EMPTY_STR, definition, flags=re.IGNORECASE)
+                    coutput.print_watcher(MOD_ERR_DEBUG, _FUNC_NAME_, 'definition')
+                    coutput.print_watcher(MOD_ERR_DEBUG, _FUNC_NAME_, 'definition_text')
+                    if definition_text == override_text:
+                        self.definitions.remove(definition)
+                        coutput.print_debug(MOD_ERR_DEBUG, _FUNC_NAME_, "Removed duplicate definition")
+            
+            # Override definitions
+            self.definitions = overrides + self.definitions
+
+
+    def set_offline_pronunciation(self, pron_url, word_form, word_spelling, file_name):        
+        default_url = unicode("[Offline Dictionary Pronunciation]", 'utf-8')
+        assign_url = coutput.coalesce(pron_url, default_url)
+
+        if self.pronunciation is None:
+            self.pronunciation = WordPronunciation(assign_url)
+            self.pronunciation.form = word_form
+            self.pronunciation.spelling = word_spelling
+        
+        self.pronunciation.audio_file = file_name
+
+
+    def override_pronunciation(self, word_form, word_spelling, file_name):
+        default_url = unicode("[Dictionary Pronunciation Override]", 'utf-8')
+
+        if self.pronunciation is None:
+            self.pronunciation = WordPronunciation(default_url)
+        else:
+            self.pronunciation.audio_url = default_url
+
+        self.pronunciation.form = word_form
+        self.pronunciation.spelling = word_spelling      
+        self.pronunciation.audio_file = file_name
+
+
+    def generate_override(self):
+        _FUNC_NAME_ = "SimplifiedWordEntry.generate_override"
+
+        """
+        #!Source: <Name of source>
+        #!Respelling: <Respelling>
+        #!AudioURL: <URL of pronunciation audio>
+        #!Etymology: <Language of origin>
+        #!Sentence: <Sentence>
+        #!Note: <Note>
+        #!Meta: <Metadata>
+        (<Part of speech>) <Definition>
+        """
+
+        override = []
+
+        if self.source != DICT_UNICODE_EMPTY_STR:
+            override.append(u"#!Source: " + self.source)
+        if self.respelling is not None:
+            override.append(u"#!Respelling: " + self.respelling.text)
+        if self.pronunciation is not None:
+            override.append(u"#!AudioURL: " + self.pronunciation.audio_url)
+        if self.etymology != DICT_UNICODE_EMPTY_STR:
+            override.append(u"#!Etymology: " + self.etymology)
+
+        override = override + self.definitions
+
+        return coutput.multiline_text(override)
+
+
 ################################################################
 # Base Dictionary
 ################################################################
@@ -313,15 +453,79 @@ class DictionaryConfig(object):
         self.entry_url_format = DICT_UNICODE_EMPTY_STR
         self.audio_url_format = DICT_UNICODE_EMPTY_STR
         self.illustration_url_format = DICT_UNICODE_EMPTY_STR
+        self.entry_extension = DICT_UNICODE_EMPTY_STR
+        self.audio_extension = DICT_UNICODE_EMPTY_STR
+        self.illustration_extension = DICT_UNICODE_EMPTY_STR
         self.api_key = DICT_UNICODE_EMPTY_STR
         self.parser = DICT_UNICODE_EMPTY_STR
         self.pronunciation_guide = []
+        self.element_match_patterns = {}
+        self.entry_match_patterns = {}
+
+
+    def is_required_element(self, element):
+        _FUNC_NAME_ = "DictionaryConfig.is_required_element"
+
+        isRequiredElement = False
+        
+        # Search for element/tag name
+        for elementName in self.element_match_patterns.keys():
+            if element.name == elementName:
+                
+                # Search for element/tag attribute
+                for elementAttr in self.element_match_patterns[elementName]:
+                    if element.has_attr(elementAttr):
+
+                        # Search for element/tag value
+                        elementValList = []
+                        if isinstance(element[elementAttr], unicode):
+                            elementValList.append(element[elementAttr])
+                        elif type(element[elementAttr]) is list:
+                            elementValList = elementValList + element[elementAttr]
+
+                        for elementVal in elementValList:
+                            if self.element_match_patterns[elementName][elementAttr].match(elementVal):
+                                isRequiredElement = True
+                                return isRequiredElement
+
+        return isRequiredElement
+
+
+    def is_entry_element(self, element):
+        _FUNC_NAME_ = "DictionaryConfig.is_entry_element"
+
+        isEntryElement = False
+        
+        # Search for element/tag name
+        for elementName in self.entry_match_patterns.keys():
+            if element.name == elementName:
+                
+                # Search for element/tag attribute
+                for elementAttr in self.entry_match_patterns[elementName]:
+                    if element.has_attr(elementAttr):
+
+                        # Search for element/tag value
+                        elementValList = []
+                        if isinstance(element[elementAttr], unicode):
+                            elementValList.append(element[elementAttr])
+                        elif type(element[elementAttr]) is list:
+                            elementValList = elementValList + element[elementAttr]
+
+                        for elementVal in elementValList:
+                            if self.entry_match_patterns[elementName][elementAttr].match(elementVal):
+                                isEntryElement = True
+                                return isEntryElement
+
+        return isEntryElement
 
 
     def build_entry_url(self, key_word):
         _FUNC_NAME_ = "DictionaryConfig.build_entry_url"
 
-        return self.entry_url_format.format(WORD=key_word).replace(u" ", u"%20")
+        coutput.print_watcher(MOD_ERR_DEBUG, _FUNC_NAME_, 'key_word')
+        coutput.print_watcher(MOD_ERR_DEBUG, _FUNC_NAME_, 'coutput.normalize(key_word)')
+        #return self.entry_url_format.format(WORD=key_word).replace(u" ", u"%20")
+        return self.entry_url_format.format(WORD=coutput.normalize(key_word)).replace(u" ", u"%20")
 
 
     def build_pronunciation_guide(self):
@@ -388,6 +592,7 @@ class DictionaryEntry(object):
 
     
     def set_simplified_word_entry(self):
+        _FUNC_NAME_ = "DictionaryEntry.set_simplified_word_entry"
                 
         simplifiedWordEntry = None
 
@@ -410,7 +615,7 @@ class DictionaryEntry(object):
         if not matchEntryFound:
             for we in self.word_entries:
                 for infl in we.inflections:
-                    if self.key_word == infl.form:
+                    if self.key_word == infl.spelling:
                         matchEntries.append(we)
                         matchInflection = infl
                         matchEntryFound = True
@@ -429,26 +634,39 @@ class DictionaryEntry(object):
                 break
 
         # Populate conformed entry attributes
+        coutput.print_watcher(MOD_ERR_DEBUG, _FUNC_NAME_, 'matchEntryFound')
+        coutput.print_watcher(MOD_ERR_DEBUG, _FUNC_NAME_, 'matchType')
+
+        # If matching entry is found, populate pronunciation attributes
         if matchEntryFound:
-            simplifiedWordEntry = SimplifiedWordEntry(matchEntries[0].source, self.key_word, matchEntries[0].entry_word)
         
-            # Populate pronunciation attributes
             if matchType == "inflection":
-                simplifiedWordEntry.functional_label = cout.coalesce(matchInflection.functional_label, matchEntries[0].functional_label)
+                simplifiedWordEntry = SimplifiedWordEntry(matchEntries[0].source, self.key_word, matchInflection.spelling)
+                simplifiedWordEntry.functional_label = coutput.coalesce(matchInflection.functional_label, matchEntries[0].functional_label)
 
-                elementText = cout.coalesce(matchInflection.pronunciation.audio_url, matchEntries[0].pronunciation.audio_url)
-                simplifiedWordEntry.pronunciation = WordPronunciation(elementText)
-                simplifiedWordEntry.pronunciation.word_pronunciation = cout.coalesce(matchInflection.pronunciation.word_pronunciation, matchEntries[0].pronunciation.word_pronunciation)
-                simplifiedWordEntry.pronunciation.form = cout.coalesce(matchInflection.pronunciation.form, matchEntries[0].pronunciation.form)
+                if matchInflection.pronunciation is not None:
+                    coutput.print_watcher(MOD_ERR_DEBUG, _FUNC_NAME_, 'matchInflection.pronunciation.audio_url')
+                    simplifiedWordEntry.pronunciation = WordPronunciation(matchInflection.pronunciation.audio_url)
+                    simplifiedWordEntry.pronunciation.word_pronunciation = matchInflection.pronunciation.word_pronunciation
+                    simplifiedWordEntry.pronunciation.form = matchInflection.pronunciation.form
+                    simplifiedWordEntry.pronunciation.spelling = matchInflection.pronunciation.spelling
 
-                elementText = cout.coalesce(matchInflection.respelling.text, matchEntries[0].respelling.text)
-                sourceText = cout.coalesce(matchInflection.respelling.source, matchEntries[0].respelling.source)
-                simplifiedWordEntry.respelling = WordRespelling(elementText, sourceText)
-                simplifiedWordEntry.respelling.form = cout.coalesce(matchInflection.respelling.form, matchEntries[0].respelling.form)
+                    coutput.print_watcher(MOD_ERR_DEBUG, _FUNC_NAME_, 'simplifiedWordEntry.pronunciation.word_pronunciation')
+                    coutput.print_watcher(MOD_ERR_DEBUG, _FUNC_NAME_, 'simplifiedWordEntry.pronunciation.form')
+                    coutput.print_watcher(MOD_ERR_DEBUG, _FUNC_NAME_, 'simplifiedWordEntry.pronunciation.spelling')
+
+                if matchInflection.respelling is not None:
+                    simplifiedWordEntry.respelling = WordRespelling(matchInflection.respelling.text, matchInflection.respelling.source)
+                    simplifiedWordEntry.respelling.form = matchInflection.respelling.form
+                    simplifiedWordEntry.respelling.spelling = matchInflection.respelling.spelling
 
             else:
+                simplifiedWordEntry = SimplifiedWordEntry(matchEntries[0].source, self.key_word, matchEntries[0].entry_word)
                 simplifiedWordEntry.functional_label = matchEntries[0].functional_label
+
+                coutput.print_watcher(MOD_ERR_DEBUG, _FUNC_NAME_, 'matchEntries[0].pronunciation')
                 simplifiedWordEntry.pronunciation = copy.deepcopy(matchEntries[0].pronunciation)
+
                 simplifiedWordEntry.respelling = copy.deepcopy(matchEntries[0].respelling)
                
             # Consolidate etymology and senses (definitions and examples)           
@@ -457,6 +675,8 @@ class DictionaryEntry(object):
 
             for we in matchEntries:
                 
+                coutput.print_watcher(MOD_ERR_DEBUG, _FUNC_NAME_, 'we')
+
                 if we.etymology != DICT_UNICODE_EMPTY_STR and we.etymology not in etymologies:
                     etymologies.append(we.etymology)
 
@@ -468,12 +688,30 @@ class DictionaryEntry(object):
                     defnText = flText + unicode(sense.definition)
                     if defnText not in definitions:
                         definitions.append(defnText)
+
+                # Handle inflections within matching entries
+                for infl in we.inflections:
+
+                    flText = DICT_UNICODE_EMPTY_STR
+                    if infl.functional_label != DICT_UNICODE_EMPTY_STR:
+                        flText = u"({0}) ".format(infl.functional_label)
+
+                    for sense in infl.senses:
+                        defnText = flText + unicode(sense.definition)
+                        if defnText not in definitions:
+                            definitions.append(defnText)
             
             simplifiedWordEntry.etymology = u"; ".join(et for et in etymologies)
             simplifiedWordEntry.definitions = definitions[:]
 
-            # Set conformed entry
-            self.simplified_word_entry = simplifiedWordEntry
+        # Else if no matching entry is found, create a skeleton entry
+        else:
+            simplifiedWordEntry = SimplifiedWordEntry(DICT_UNICODE_EMPTY_STR, self.key_word, DICT_UNICODE_EMPTY_STR)
+
+        # Set conformed entry
+        self.simplified_word_entry = simplifiedWordEntry
+
+        coutput.print_watcher(MOD_ERR_DEBUG, _FUNC_NAME_, 'simplifiedWordEntry')
 
 
 class DictionaryAssistant(object):
@@ -482,16 +720,55 @@ class DictionaryAssistant(object):
 
         # Set configuration attributes
         self.config = dict_config
-        # Open connection pool
-        self.connectionPool = urllib3.PoolManager(10, headers=DICT_USER_AGENT)
+
+        # Set part of speech regex patterns
+        self.posRules = [
+            {'form': 'plural', 'pattern': '-s', 'regexPattern': re.compile("^.*s$")},
+            {'form': 'negative', 'pattern': 'non-/un-', 'regexPattern': re.compile("^(non|un).*$")},
+            {'form': 'noun suffix', 'pattern': '-ness', 'regexPattern': re.compile("^.*ness$")},
+            {'form': 'adjective', 'pattern': '-able/-al', 'regexPattern': re.compile("^.*(able|al)$")},
+            {'form': 'adverb', 'pattern': '-ly', 'regexPattern': re.compile("^.*ly$")},
+            {'form': 'past tense/adjective', 'pattern': '-ed', 'regexPattern': re.compile("^.*ed$")},
+            {'form': 'progressive/participle', 'pattern': '-ing', 'regexPattern': re.compile("^.*ing$")},
+            {'form': 'superlative', 'pattern': '-est', 'regexPattern': re.compile("^.*est$")},
+            {'form': 'agent noun/comparative', 'pattern': '-er', 'regexPattern': re.compile("^.*er$")},
+            {'form': 'agent noun', 'pattern': '-or', 'regexPattern': re.compile("^.*or$")}
+        ]
 
 
     def __del__(self):
-        self.connectionPool.clear()
+        pass
 
 
-    def download_entry(self, key_word):
+    def download_entry(self, connection_pool, key_word):
         _FUNC_NAME_ = "DictionaryAssistant.download_entry"
 
-        connectionResponse = self.connectionPool.request('GET', self.config.build_entry_url(key_word))
-        return connectionResponse.data
+        connectionResponse = connection_pool.request('GET', self.config.build_entry_url(key_word))
+
+        # Perform unicode conversion
+        if isinstance(connectionResponse.data, str):
+            entryData = unicode(connectionResponse.data, 'utf-8')
+        else:
+            entryData = connectionResponse.data
+
+        return entryData
+
+
+    def compare_word_form(self, key_word, entry_word):
+        _FUNC_NAME_ = "DictionaryAssistant.compare_word_form"
+
+        keyWordToken = coutput.tokenize(key_word)
+        entryWordToken = coutput.tokenize(entry_word)
+
+        coutput.print_watcher(MOD_ERR_DEBUG, _FUNC_NAME_, 'keyWordToken')
+        coutput.print_watcher(MOD_ERR_DEBUG, _FUNC_NAME_, 'entryWordToken')
+
+        if keyWordToken != entryWordToken:
+            coutput.print_warn("A different form of the word is being pronounced.")
+
+            for posPattern in self.posRules:
+                coutput.print_watcher(MOD_ERR_DEBUG, _FUNC_NAME_, "posPattern['form']")
+
+                if posPattern['regexPattern'].match(keyWordToken):
+                    coutput.print_tip("The {0} form ({1}) of the word is to be spelled.".format(posPattern['form'], posPattern['pattern']))
+                    break;

@@ -47,12 +47,12 @@ randomhouse,
 google,
 freedictionary,
 youtube,
-oxford,
-webster
+oxford
+#webster
 ]
 
 DICT_SOURCES = {
-'webster': webster,
+#'webster': webster,
 'oxford': oxford,
 'cambridge': cambridge,
 'google': google,
@@ -91,6 +91,8 @@ def fetch_dictionary_entry(connectionPool, word):
     for dictSource in PRIORITIZED_DICT_SOURCES:
         dictEntryText = dictSource.get_dictionary_entry(connectionPool, word)
 
+        coutput.print_watcher(ERR_DEBUG, _FUNC_NAME_, 'dictSource')
+
         if wordDefinitionFound == False:
             currentDefinitions = dictSource.parse_word_definition(word, dictEntryText)
             if len(currentDefinitions) > 0:
@@ -98,10 +100,7 @@ def fetch_dictionary_entry(connectionPool, word):
                 wordDefinitions = currentDefinitions
                 wordDefinitionFound = True
 
-                DEBUG_VAR="wordDefinitionSource"
-                coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(wordDefinitionSource)))
-                coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
-
+                coutput.print_watcher(ERR_DEBUG, _FUNC_NAME_, 'wordDefinitionSource')
 
         if wordPronunciationFound == False:
             [currentClipWord, currentClipURL] = dictSource.parse_word_clip(word, dictEntryText)
@@ -110,9 +109,7 @@ def fetch_dictionary_entry(connectionPool, word):
                 [pronunciationWord, pronunciationURL] = [currentClipWord, currentClipURL]
                 wordPronunciationFound = True
 
-                DEBUG_VAR="pronunciationSource"
-                coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(pronunciationSource)))
-                coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
+                coutput.print_watcher(ERR_DEBUG, _FUNC_NAME_, 'pronunciationSource')
 
         if wordDefinitionFound == True and wordPronunciationFound == True:
             break
@@ -167,17 +164,13 @@ def lookup_word(connectionPool, pronAudioOutput, pronLoopCount, pronLoopDelaySec
         else:                
             dictSources.append(DICT_SOURCES[lookupSource[0].lower()])
 
-        DEBUG_VAR="dictSources"
-        coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(dictSources)))
-        coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))     
-        
+        coutput.print_watcher(ERR_DEBUG, _FUNC_NAME_, 'dictSources')
+
         for dictSource in dictSources:
             source = dictSource.get_dictionary_source()
             pronSource = dictSource.get_dictionary_source()
 
-            DEBUG_VAR="source"
-            coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(source)))
-            coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
+            coutput.print_watcher(ERR_DEBUG, _FUNC_NAME_, 'source')
 
             dictEntryText = dictSource.get_dictionary_entry(connectionPool, word)
             currentDefinitions = dictSource.parse_word_definition(word, dictEntryText)

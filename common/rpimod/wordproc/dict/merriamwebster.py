@@ -50,16 +50,10 @@ def get_dictionary_entry(connectionPool, word):
     # Download dictionary entry
     dictEntryURL = DICT_ENTRY_URL.format(WORD=word, KEY=DICT_KEY).replace(" ", "%20")
     dictEntryURL = dictEntryURL.encode('utf-8')             # Handle URL strings in ascii
-
-    DEBUG_VAR="dictEntryURL"
-    coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(dictEntryURL)))
-    coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
+    coutput.print_watcher(ERR_DEBUG, _FUNC_NAME_, 'dictEntryURL')
 
     dictEntryResponse = connectionPool.request('GET', dictEntryURL)
-
-    DEBUG_VAR="dictEntryResponse.data"
-    coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(dictEntryResponse.data)))
-    coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
+    coutput.print_watcher(ERR_DEBUG, _FUNC_NAME_, 'dictEntryResponse.data')
 
     # Convert XML to unicode
     if isinstance(dictEntryResponse.data, str):
@@ -74,15 +68,13 @@ def parse_word_definition(word, entryXML):
     _FUNC_NAME_ = "parse_word_definition"
     searchWord = word
 
-    DEBUG_VAR="entryXML"
-    coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(entryXML)))
+    coutput.print_watcher(ERR_DEBUG, _FUNC_NAME_, 'entryXML')
 
     sourceXML = entryXML
     if isinstance(sourceXML, unicode):
         sourceXML = sourceXML.encode('utf-8')
 
-    DEBUG_VAR="sourceXML"
-    coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(sourceXML)))
+    coutput.print_watcher(ERR_DEBUG, _FUNC_NAME_, 'sourceXML')
 
     wordDefinition = []
     dictionary = api.CollegiateDictionary(DICT_KEY)
@@ -92,9 +84,7 @@ def parse_word_definition(word, entryXML):
         for entry in entries:
             for sense in entry.senses:
 
-                DEBUG_VAR="sense.definition"
-                coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(sense.definition)))
-                coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
+                coutput.print_watcher(ERR_DEBUG, _FUNC_NAME_, 'sense.definition')
 
                 strDefinition = unicode("({0}) {1}", 'utf-8').format(entry.function, sense.definition)
                 if isinstance(strDefinition, str):
@@ -115,15 +105,13 @@ def parse_word_clip(word, entryXML):
     _FUNC_NAME_ = "parse_word_clip"
     searchWord = word
 
-    DEBUG_VAR="entryXML"
-    coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(entryXML)))
+    coutput.print_watcher(ERR_DEBUG, _FUNC_NAME_, 'entryXML')
 
     sourceXML = entryXML
     if isinstance(sourceXML, unicode):
         sourceXML = sourceXML.encode('utf-8')
 
-    DEBUG_VAR="sourceXML"
-    coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(sourceXML)))
+    coutput.print_watcher(ERR_DEBUG, _FUNC_NAME_, 'sourceXML')
 
     dictionary = api.CollegiateDictionary(DICT_KEY)
 
@@ -140,9 +128,7 @@ def parse_word_clip(word, entryXML):
         entries = dictionary.lookup(searchWord, sourceXML)
         for entry in entries:
 
-            DEBUG_VAR="entry.spelling"
-            coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(entry.spelling)))
-            coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
+            coutput.print_watcher(ERR_DEBUG, _FUNC_NAME_, 'entry.spelling')
 
             if searchWord == entry.spelling:
                 for audio in entry.audio:
@@ -157,12 +143,8 @@ def parse_word_clip(word, entryXML):
                 break
 
         coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "End of Pass #1")
-        DEBUG_VAR="audioClipFound"
-        coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(audioClipFound)))
-        coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
-        DEBUG_VAR="wordFound"
-        coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(wordFound)))
-        coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
+        coutput.print_watcher(ERR_DEBUG, _FUNC_NAME_, 'audioClipFound')
+        coutput.print_watcher(ERR_DEBUG, _FUNC_NAME_, 'wordFound')
 
         # Pass #2: Find matching inflection
         coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "Start of Pass #2")
@@ -175,39 +157,26 @@ def parse_word_clip(word, entryXML):
             entries = dictionary.lookup(searchWord, sourceXML)
             for entry in entries:
 
-                DEBUG_VAR="entry.spelling"
-                coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(entry.spelling)))
-                coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
+                coutput.print_watcher(ERR_DEBUG, _FUNC_NAME_, 'entry.spelling')
 
                 for inflection in entry.inflections:
 
-                    DEBUG_VAR="inflection.spellings"
-                    coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(inflection.spellings)))
-                    coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
+                    coutput.print_watcher(ERR_DEBUG, _FUNC_NAME_, 'inflection.spellings')
 
                     for spelling in inflection.spellings:
 
-                        DEBUG_VAR="searchWord"
-                        coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(searchWord)))
-                        coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
-
-                        DEBUG_VAR="spelling"
-                        coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(spelling)))
-                        coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
+                        coutput.print_watcher(ERR_DEBUG, _FUNC_NAME_, 'searchWord')
+                        coutput.print_watcher(ERR_DEBUG, _FUNC_NAME_, 'spelling')
 
                         if searchWord == spelling:
                             audioClipWord = spelling
                             wordFound = True
 
-                            DEBUG_VAR="inflection.sound_urls"
-                            coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(inflection.sound_urls)))
-                            coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
+                            coutput.print_watcher(ERR_DEBUG, _FUNC_NAME_, 'inflection.sound_urls')
 
                             for sound_url in inflection.sound_urls:
 
-                                DEBUG_VAR="sound_url"
-                                coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(sound_url)))
-                                coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
+                                coutput.print_watcher(ERR_DEBUG, _FUNC_NAME_, 'sound_url')
 
                                 audioClip = sound_url
                                 audioClipFound = True
@@ -220,12 +189,8 @@ def parse_word_clip(word, entryXML):
                     break
 
         coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "End of Pass #2")
-        DEBUG_VAR="audioClipFound"
-        coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(audioClipFound)))
-        coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
-        DEBUG_VAR="wordFound"
-        coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(wordFound)))
-        coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
+        coutput.print_watcher(ERR_DEBUG, _FUNC_NAME_, 'audioClipFound')
+        coutput.print_watcher(ERR_DEBUG, _FUNC_NAME_, 'wordFound')
 
         # Pass #3: Find pronunciation for first entry, if no match found
         coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "Start of Pass #3")
@@ -248,12 +213,8 @@ def parse_word_clip(word, entryXML):
                     break
         
         coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "End of Pass #3")
-        DEBUG_VAR="audioClipFound"
-        coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(audioClipFound)))
-        coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
-        DEBUG_VAR="wordFound"
-        coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(wordFound)))
-        coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
+        coutput.print_watcher(ERR_DEBUG, _FUNC_NAME_, 'audioClipFound')
+        coutput.print_watcher(ERR_DEBUG, _FUNC_NAME_, 'wordFound')
 
     except api.WordNotFoundException:
         audioClip = DICT_UNICODE_EMPTY_STR
@@ -265,15 +226,9 @@ def parse_word_clip(word, entryXML):
         audioClipWord = DICT_UNICODE_EMPTY_STR
         audioClipPron = DICT_UNICODE_EMPTY_STR
 
-    DEBUG_VAR="searchWord"
-    coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(searchWord)))
-    coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
-    DEBUG_VAR="audioClipWord"
-    coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(audioClipWord)))
-    coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
-    DEBUG_VAR="audioClip"
-    coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(audioClip)))
-    coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
+    coutput.print_watcher(ERR_DEBUG, _FUNC_NAME_, 'searchWord')
+    coutput.print_watcher(ERR_DEBUG, _FUNC_NAME_, 'audioClipWord')
+    coutput.print_watcher(ERR_DEBUG, _FUNC_NAME_, 'audioClip')
 
     # Return audioClipWord and audioClip, if found
     if isinstance(audioClipWord, str):

@@ -33,7 +33,7 @@ ERR_DEBUG = False
 def initialize_source():
     cdict.DICT_SOURCE_NAME = unicode("Cambridge Dictionaries Online", 'utf-8')
     cdict.DICT_ENTRY_URL = unicode("http://dictionary.cambridge.org/us/dictionary/english/{WORD}", 'utf-8')
-    cdict.DICT_AUDIO_URL = unicode("{PATH}", 'utf-8')
+    cdict.DICT_AUDIO_URL = unicode("http://dictionary.cambridge.org{PATH}", 'utf-8')
 
     cdict.DICT_CLEAN_TEXT_PATTERNS = [
     u'\u200b',
