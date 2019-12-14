@@ -2,8 +2,11 @@
 alias off="sudo poweroff"
 alias py="sudo python"
 
-if [ -d "$HOME/projects/raspi" ] ; then
-    export PROJ_ROOT=$HOME/projects/raspi
+export REPO_NAME=raspi
+
+if [ -d "$HOME/projects/${REPO_NAME}" ] ; then
+    
+    export REPO_ROOT=$HOME/projects/${REPO_NAME}
 fi
 
 # file maintenance
@@ -24,24 +27,32 @@ backup() {
 # project navigation and maintenance
 proj() {
 	project="$1"
-	if [ -r "${PROJ_ROOT}/${project}/project_setup.cfg" ] ; then
+	if [ -r "${REPO_ROOT}/${project}/project_setup.cfg" ] ; then
 		echo ""
 		echo "Switching to project ${project}."
 		echo ""
-		cd ${PROJ_ROOT}/${project}
-		. "${PROJ_ROOT}/${project}/project_setup.cfg"
+		cd ${REPO_ROOT}/${project}
+		. "${REPO_ROOT}/${project}/project_setup.cfg"
 	fi
 }
 
 checkin() {
-	gitProject="$1"
-	gitComment="$2"
+	gitRepo="$REPO_NAME"
+	gitComment="$1"
+	gitUser="$2"
+	gitPwd="$3"
 
-	cd $PROJ_ROOT
+	cd $REPO_ROOT
+	printf "\n**********  Git Status: Pre check-in  **********\n"
 	git status
-	git add *
+
+	printf "\n**********     Git Status: Commit     **********\n"
 	git commit -m "${gitComment}"
-	git push "${gitProject}" master
+
+	printf "\n**********      Git Status: Push      **********\n"
+	git push "https://${gitUser}:${gitPwd}@github.com/${gitUser}/${gitRepo}.git" master
+
+	printf "\n**********  Git Status: Post check-in **********\n"
 	git status
 	cd -
 }
