@@ -26,10 +26,17 @@ import common.rpimod.stdio.output as coutput
 ################################################################
 
 # Set to True to turn debug messages on
+#ERR_DEBUG = True
 ERR_DEBUG = False
 
 
 def download(connectionPool, sourceURL, targetFileName):
+    _FUNC_NAME_ = "download"
+
+    DEBUG_VAR="sourceURL"
+    coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(sourceURL)))
+    coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
+
     fileData = connectionPool.request('GET', sourceURL).data
     targetFile = open(targetFileName, "wb")
     targetFile.write(fileData)

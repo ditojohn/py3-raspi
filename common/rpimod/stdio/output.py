@@ -8,6 +8,12 @@
 # Date        : 2016/01/28
 #--------------------------------------------------------------------------------------------------
 
+#--------------------------------------------------------------------------------------------------
+# Reference:
+# sys._getframe: https://docs.python.org/2/library/sys.html?highlight=_getframe#sys._getframe
+#--------------------------------------------------------------------------------------------------
+
+import sys
 import unicodedata
 import math
 import re
@@ -214,3 +220,9 @@ def print_debug (debugEnabled, context, msg):
         logger.debug('[%s] %s', context, msg)
         logger.setLevel(logging.CRITICAL)
 
+def print_watcher (debugEnabled, context, expr):
+    if debugEnabled:
+        frame = sys._getframe(1)
+        logger.setLevel(logging.DEBUG)
+        logger.debug('WATCH [%s] %s :: %s :: %s', context, expr, type(eval(expr, frame.f_globals, frame.f_locals)), repr(eval(expr, frame.f_globals, frame.f_locals)))
+        logger.setLevel(logging.CRITICAL)
