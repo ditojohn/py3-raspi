@@ -45,13 +45,16 @@ import glob
 import traceback
 import logging
 
-#sys.path.insert(0, "/home/pi/projects/raspi")
 sys.path.insert(0, "..")
 import common.rpimod.stdio.input as cinput
 import common.rpimod.stdio.output as coutput
 import common.rpimod.stdio.fileio as cfile
-import common.rpimod.wordproc.dict.merriamwebster as cdict
-import common.rpimod.wordproc.dict.dictionary as cdictall
+import common.rpimod.wordproc.dict.dictionaryapi as cdictassist
+import common.rpimod.wordproc.dict.mwcollegiateapi as cdictapi
+
+# Set to True to turn debug messages on
+#SB_ERR_DEBUG = True
+SB_ERR_DEBUG = False
 
 ################################################################
 # Spelling Bee Configuration variables
@@ -63,6 +66,7 @@ SB_DEFINITION_COUNT = 3
 SB_DEFINITION_HIDE_EXPLICIT = True                              # Set to True if definitions containing the word are to be hidden
 SB_COLUMN_COUNT = 5
 SB_GUIDE_COLUMN_COUNT = 4
+SB_KEY_COLUMN_COUNT = 2
 
 SB_AUDIO_OUTPUT = 'Speaker'
 SB_REPEAT_COUNT = 1
@@ -80,14 +84,9 @@ SB_USER_AGENT = {'user-agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/
 # Internal variables
 ################################################################
 
-# Set to True to turn debug messages on
-SB_ERR_DEBUG = False
-
 SB_ERR_LOG = unicode("log/spelling_bee_errors.log", 'utf-8')
 SB_TEST_LOG = unicode("log/spelling_bee_tests.log", 'utf-8')
 SB_REVISION_LOG = unicode("log/spelling_bee_revision.log", 'utf-8')
-
-SB_PRONUNCIATION_GUIDE = unicode("data/pronunciation_key_merriam-webster.txt", 'utf-8')
 
 SB_RULEBOOK_MULTI_FILES = unicode(SB_DATA_DIR + "spelling_bee_*rulebook.txt", 'utf-8')
 
@@ -107,37 +106,27 @@ SB_DICT_OVERRIDE_CLIP = unicode("sb_{WORD}.mp3", 'utf-8')
 SB_DICT_OVERRIDE_MSG = unicode("sb_{WORD}.msg", 'utf-8')
 
 SB_LIST_BULLET = unicode('• ', 'utf-8')
+SB_SPL_BULLET = unicode('✱ ', 'utf-8')
 SB_PROMPT_SYMBOL = unicode("> ", 'utf-8')
 SB_RIGHT_SYMBOL = unicode('√', 'utf-8')
 SB_WRONG_SYMBOL = unicode('X', 'utf-8')
-SB_PRACTICE_KEYBOARD_MENU = unicode("[N]ext [P]revious [R]epeat Re[v]iew [S]how [L]ookup [G]uide [H]elp E[x]it", 'utf-8')
-SB_TEST_KEYBOARD_MENU = unicode("[R]epeat [G]uide [H]elp E[x]it", 'utf-8')
-SB_REVISE_KEYBOARD_MENU = unicode("[Y]es [N]o [R]epeat Re[v]iew [G]uide [H]elp E[x]it", 'utf-8')
+SB_MASK_SYMBOL = unicode('*', 'utf-8')
+SB_SPL_SYMBOL = unicode('*', 'utf-8')
+SB_PRACTICE_KEYBOARD_MENU = unicode("[N]ext [P]revious [R]epeat [G]oto Re[v]iew [S]how [L]ookup [K]ey [H]elp E[x]it", 'utf-8')
+SB_TEST_KEYBOARD_MENU = unicode("[R]epeat [K]ey [H]elp E[x]it", 'utf-8')
+SB_REVISE_KEYBOARD_MENU = unicode("[Y]es [N]o [R]epeat Re[v]iew [K]ey [H]elp E[x]it", 'utf-8')
 
-SB_STUDY_WORD_DEFN_TITLE = unicode("\nDefinition of word #{INDEX} ({WORD}):", 'utf-8')
-SB_PRACTICE_WORD_DEFN_TITLE = unicode("\nDefinition of word #{INDEX}:", 'utf-8')
+SB_STUDY_WORD_DEFN_TITLE = unicode("\nDefinition of word #{INDEX} ({WORD}) [{SEQ}/{COUNT}]:", 'utf-8')
+SB_PRACTICE_WORD_DEFN_TITLE = unicode("\nDefinition of word #{INDEX} [{SEQ}/{COUNT}]:", 'utf-8')
 SB_LOOKUP_WORD_DEFN_TITLE = unicode("\nDefinition of {WORD}:", 'utf-8')
 
 SB_ERR_CLIP_MISSING = False
 SB_ERR_CLIP_MISMATCH = False
-SB_ERR_DEFN_MISSING = False
 
 SB_NEWLINE = unicode("\n", 'utf-8')
 SB_EMPTY_STRING = unicode("", 'utf-8')
 SB_WORD_DELIMITER = unicode(";", 'utf-8')
 
-SB_POS_REGEX_PATTERN = [
-    {'form': 'plural', 'pattern': '-s', 'regexPattern': re.compile("^.*s$")},
-    {'form': 'negative', 'pattern': 'non-/un-', 'regexPattern': re.compile("^(non|un).*$")},
-    {'form': 'noun suffix', 'pattern': '-ness', 'regexPattern': re.compile("^.*ness$")},
-    {'form': 'adjective', 'pattern': '-able/-al', 'regexPattern': re.compile("^.*(able|al)$")},
-    {'form': 'adverb', 'pattern': '-ly', 'regexPattern': re.compile("^.*ly$")},
-    {'form': 'past tense/adjective', 'pattern': '-ed', 'regexPattern': re.compile("^.*ed$")},
-    {'form': 'progressive/participle', 'pattern': '-ing', 'regexPattern': re.compile("^.*ing$")},
-    {'form': 'superlative', 'pattern': '-est', 'regexPattern': re.compile("^.*est$")},
-    {'form': 'agent noun/comparative', 'pattern': '-er', 'regexPattern': re.compile("^.*er$")},
-    {'form': 'agent noun', 'pattern': '-or', 'regexPattern': re.compile("^.*or$")}
-]
 
 class SpellingBee(object):
     """
@@ -147,39 +136,45 @@ class SpellingBee(object):
 
         contestList: A string representing the word list identifier for the contest in YYYY[-language][-challenge] format
         wordList: A list containing words loaded from wordFile
+        vocabList: A list containing vocabulary entries loaded from wordFile
 
         activeWordIndexList:
         activeChapter: 
         activeRangeStart: 
-        activeRangeEnd: 
+        activeRangeEnd:
 
-        activeWordAlternatives:
-        activeWord:
-        activeEntry:
-        activeDefinition:
-        activeAudioFile:
-        activeAudioFileWord:
-        activePronunciation:
+        activeDictEntry:
+
         activeTestValuations:
 
         word_count():
         chapter_count():
         active_word_count():
     """
-    def __init__(self, runMode, listID, mode, selection):
+    def __init__(self, runMode, listID, mode, selection, silentMode):
         _FUNC_NAME_ = "__init__"
 
-        self.runMode = runMode
-        self.activeMode = mode
+        self.runMode = runMode.lower()
+        self.activeMode = mode.lower()
+        self.silentMode = silentMode
         self.contestList = listID
         self.wordList = []
+        self.vocabList = []
         self.ruleBook = {}
+
+        # Setup and configure dictionary
+        self.dictConfig = cdictapi.DictionaryConfig()
+        self.dictAssist = cdictassist.DictionaryAssistant(self.dictConfig)
+
+        # Setup connection pool
+        self.connectionPool = urllib3.PoolManager(10, headers=SB_USER_AGENT)
 
         # Setup rulebook for advanced techniques
         wordFileDir = SB_RULEBOOK_MULTI_FILES
 
         for wordFileName in sorted(glob.glob(wordFileDir)):
-            coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "wordFileName :: {0}".format(wordFileName))
+            coutput.print_watcher(SB_ERR_DEBUG, _FUNC_NAME_, 'wordFileName')
+
             for ruleLine in cfile.read(wordFileName).splitlines():
                 ruleSegments = ruleLine.split(SB_WORD_DELIMITER)
                 ruleEtymology = ruleSegments[0].strip()
@@ -198,7 +193,7 @@ class SpellingBee(object):
             wordFileDir = SB_WORD_MULTI_FILES.format(WORD_FILE_PATTERN=listID)
 
         for wordFileName in sorted(glob.glob(wordFileDir)):
-            coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "wordFileName :: {0}".format(wordFileName))
+            coutput.print_watcher(SB_ERR_DEBUG, _FUNC_NAME_, 'wordFileName')
 
             # Retrieve words from rule book files (*rulebook.txt)
             if re.search(r'rulebook.txt$', wordFileName) and not re.search(r'(practice|revision)', wordFileName):
@@ -212,21 +207,30 @@ class SpellingBee(object):
                     
                 for ruleWord in ruleWordSet:
                     self.wordList = self.wordList + [ruleWord]
+                    self.vocabList = self.vocabList + [None]
 
-            # Retrieve words from word list files (*.txt)
+            # Retrieve words and vocabulary entries from word list files (*.txt)
             else:
-                self.wordList = self.wordList + cfile.read(wordFileName).splitlines()                # Use of splitlines() avoids the newline character from being stored in the word list
+                # Use of splitlines() avoids the newline character from being stored in the word list
+                entryList = cfile.read(wordFileName).splitlines()
+                for entry in entryList:
+                    entryElements = entry.split("|")
+                    self.wordList = self.wordList + [entryElements[0]]
+                    if len(entryElements) > 1:
+                        self.vocabList = self.vocabList + [entryElements[1]]
+                    else:
+                        self.vocabList = self.vocabList + [None]
 
         rangeSelection = selection.split("-")
         self.activeChapter = "0"
 
-        if mode.lower() == "chapter":
+        if self.activeMode == "chapter":
             self.activeChapter = int(rangeSelection[0])
             self.activeRangeStart = (self.activeChapter - 1) * SB_CHAPTER_SIZE
             self.activeRangeEnd = self.activeRangeStart + SB_CHAPTER_SIZE - 1
             self.activeWordIndexList = list(range(self.activeRangeStart, self.activeRangeEnd+1))
 
-        elif mode.lower() == "count":
+        elif self.activeMode == "count":
             self.activeRangeStart = int(rangeSelection[0]) - 1
             if len(rangeSelection) > 1:
                 self.activeRangeEnd = int(rangeSelection[1]) - 1
@@ -234,16 +238,16 @@ class SpellingBee(object):
                 self.activeRangeEnd = len(self.wordList) - 1
             self.activeWordIndexList = list(range(self.activeRangeStart, self.activeRangeEnd+1))
 
-        elif mode.lower() == "word":
+        elif self.activeMode == "word":
             self.activeRangeStart = self.get_word_index(rangeSelection[0])
             if self.activeRangeStart < 0:
-                print "ERROR: Unable to locate '{0}' in word list".format(rangeSelection[0])
+                coutput.print_err("Unable to locate '{0}' in word list".format(rangeSelection[0]))
                 exit(1)
 
             if len(rangeSelection) > 1:
                 self.activeRangeEnd = self.get_word_index(rangeSelection[1])
                 if self.activeRangeEnd < 0:
-                    print "ERROR: Unable to locate '{0}' in word list".format(rangeSelection[1])
+                    coutput.print_err("Unable to locate '{0}' in word list".format(rangeSelection[1]))
                     exit(1)
             else:
                 self.activeRangeEnd = len(self.wordList) - 1
@@ -258,23 +262,26 @@ class SpellingBee(object):
 
             self.activeWordIndexList = random.sample(xrange(0, self.word_count()), sampleSize)
 
-        if mode.lower() != "random":
+        if self.activeMode != "random":
             if self.activeRangeEnd >= len(self.wordList):
                 self.activeRangeEnd = len(self.wordList) - 1
 
-        self.activeWordAlternatives = SB_EMPTY_STRING
         self.activeWord = SB_EMPTY_STRING
-        
         self.activeEntry = SB_EMPTY_STRING
-        self.activeDefinition = []
-        self.activeAudioFile = SB_EMPTY_STRING
-        self.activeAudioFileWord = SB_EMPTY_STRING
-        self.activePronunciation = SB_EMPTY_STRING
+        self.activeDictEntry = None
 
         self.activeTestDate = SB_EMPTY_STRING
         self.activeTestScore = SB_EMPTY_STRING
         self.activeTestValuations = []
         self.activePracticeWords = []
+
+
+    def __del__(self):
+        _FUNC_NAME_ = "__del__"
+
+        # Close connection
+        self.connectionPool.clear()
+
 
     def word_count(self):
         return len(self.wordList)
@@ -288,15 +295,17 @@ class SpellingBee(object):
     def display_about(self):
         _FUNC_NAME_ = "display_about"
 
-        DEBUG_VAR="self.activeMode"
-        coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
+        coutput.print_watcher(SB_ERR_DEBUG, _FUNC_NAME_, 'self.activeMode')
 
-        print "Spelling Bee {0}".format(self.contestList)
+        if self.silentMode:
+            print "Spelling Bee {0} (Silent Mode)".format(self.contestList)
+        else:
+            print "Spelling Bee {0}".format(self.contestList)
 
-        if self.activeMode.lower() == "chapter":
+        if self.activeMode == "chapter":
             print "Word Count [{0}] Chapter [{1}/{2}] Words [{3}-{4}]".format(self.word_count(), self.activeChapter, self.chapter_count(), self.activeRangeStart + 1, self.activeRangeEnd + 1)
 
-        elif self.activeMode.lower() == "random":
+        elif self.activeMode == "random":
             print "Word Count [{0}] Random [{1}]".format(self.word_count(), self.active_word_count())
 
         else:
@@ -315,179 +324,209 @@ class SpellingBee(object):
                 break
         return resultIndex
 
+    def get_active_word_index(self, searchWord):
+        resultIndex = -1
+
+        wordIndex = self.get_word_index(searchWord)
+        if wordIndex > -1 and wordIndex in self.activeWordIndexList:
+            resultIndex = self.activeWordIndexList.index(wordIndex)
+
+        return resultIndex
+
     def lookup_dictionary_by_word(self, word):
         _FUNC_NAME_ = "lookup_dictionary_by_word"
 
-        DEBUG_VAR="self.wordList[0]"
-        coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
-
-        DEBUG_VAR="word"
-        coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
+        coutput.print_watcher(SB_ERR_DEBUG, _FUNC_NAME_, 'word')
 
         self.activeWordAlternatives = word.strip()
         activeWordAlternativesList = [w.strip() for w in self.activeWordAlternatives.split(SB_WORD_DELIMITER)]
-
-        DEBUG_VAR="activeWordAlternativesList"
-        coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
+        coutput.print_watcher(SB_ERR_DEBUG, _FUNC_NAME_, 'activeWordAlternativesList')
 
         self.activeWord = activeWordAlternativesList[0]
-      
-        DEBUG_VAR="self.activeWord"
-        coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
-        
-        # Setup connection and error logging
-        connectionPool = urllib3.PoolManager(10, headers=SB_USER_AGENT)
+        coutput.print_watcher(SB_ERR_DEBUG, _FUNC_NAME_, 'self.activeWord')
+       
+        # Setup error logging
         errorFileName = SB_DATA_DIR + SB_ERR_LOG
-        SB_ERR_DEFN_MISSING = False
         SB_ERR_CLIP_MISSING = False
         SB_ERR_CLIP_MISMATCH = False
 
-        # Check offline for dictionary entry
         self.activeEntry = SB_EMPTY_STRING
-        self.activeDefinition = []
+        self.activeDictEntry = None      
 
-        overrideDefnFileName = SB_DICT_OVERRIDE_DIR + SB_DICT_OVERRIDE_DEFN.format(WORD=self.activeWord).replace(" ", "_")
+        # Pass #1: Check primary source offline for word entry
+        coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "Pass #1: Check primary source offline for word entry")
         offlineEntryFileName = SB_DICT_OFFLINE_DIR + SB_DICT_OFFLINE_ENTR.format(WORD=self.activeWord).replace(" ", "_")
 
-        DEBUG_VAR="overrideDefnFileName"
-        coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
-
-        # Check for dictionary definition override
-        if os.path.isfile(overrideDefnFileName) and os.path.getsize(overrideDefnFileName) > 0:
-            self.activeEntry = unicode("[Dictionary Definition Override]", 'utf-8')
-            self.activeDefinition = cfile.read(overrideDefnFileName).splitlines()
-
-            DEBUG_VAR="self.activeEntry"
-            coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
-
-            DEBUG_VAR="self.activeDefinition"
-            coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
-
-        # Check primary source for dictionary entry
-        elif os.path.isfile(offlineEntryFileName) and os.path.getsize(offlineEntryFileName) > 100:
-            coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "offlineEntryFile size :: {0}".format(os.path.getsize(offlineEntryFileName)))
+        if os.path.isfile(offlineEntryFileName) and os.path.getsize(offlineEntryFileName) > 100:
+            coutput.print_watcher(SB_ERR_DEBUG, _FUNC_NAME_, 'os.path.getsize(offlineEntryFileName)')
+            
             self.activeEntry = cfile.read(offlineEntryFileName)
-            self.activeDefinition = cdict.parse_word_definition(self.activeWord, self.activeEntry)
+  
+            # Set active dictionary entry
+            self.activeDictEntry = cdictapi.DictionaryEntry(self.dictConfig, self.activeWord, self.activeEntry).simplified_word_entry
 
-            DEBUG_VAR="self.activeEntry"
-            coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
+            coutput.print_watcher(SB_ERR_DEBUG, _FUNC_NAME_, 'self.activeDictEntry')
 
-        else:
+        # Pass #2: Check primary source online for word entry
+        coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "Pass #2: Check primary source online for word entry")
+        if self.activeDictEntry is None:
             # Download dictionary entry
-            self.activeEntry = cdict.get_dictionary_entry(connectionPool, self.activeWord)
-
-            DEBUG_VAR="self.activeEntry"
-            coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
+            self.activeEntry = self.dictAssist.download_entry(self.connectionPool, self.activeWord)
 
             # Save dictionary entry offline
             cfile.write(offlineEntryFileName, self.activeEntry)
 
-            # Retrieve word definition
-            self.activeDefinition = cdict.parse_word_definition(self.activeWord, self.activeEntry)
+            # Set active dictionary entry
+            if os.path.isfile(offlineEntryFileName) and os.path.getsize(offlineEntryFileName) > 100:
+                self.activeDictEntry = cdictapi.DictionaryEntry(self.dictConfig, self.activeWord, self.activeEntry).simplified_word_entry
+    
+            coutput.print_watcher(SB_ERR_DEBUG, _FUNC_NAME_, 'self.activeDictEntry')
 
-        DEBUG_VAR="self.activeDefinition"
-        coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
+        # Pass #3A: Check for dictionary definition and respelling override
+        coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "Pass #3A: Check for dictionary definition and respelling override")
+        overrideDefnFileName = SB_DICT_OVERRIDE_DIR + SB_DICT_OVERRIDE_DEFN.format(WORD=self.activeWord).replace(" ", "_")
 
-        if len(self.activeDefinition) == 0:
-            SB_ERR_DEFN_MISSING = True
+        if os.path.isfile(overrideDefnFileName) and os.path.getsize(overrideDefnFileName) > 0:
+            coutput.print_watcher(SB_ERR_DEBUG, _FUNC_NAME_, 'overrideDefnFileName')
+            overrideSource = unicode("[Dictionary Definition Override]", 'utf-8')
+            self.activeEntry = overrideSource
 
-        # Check offline for word pronunciation
-        self.activeAudioFile = SB_EMPTY_STRING
-        self.activeAudioFileWord = SB_EMPTY_STRING
-        self.activePronunciation = SB_EMPTY_STRING
+            if self.activeDictEntry is None:
+                # Set active dictionary entry
+                self.activeDictEntry = cdictapi.DictionaryEntry(self.dictConfig, self.activeWord, self.activeEntry).simplified_word_entry
+            
+            # Override definition and respelling, if any
+            self.activeDictEntry.override_definitions(overrideSource, self.activeWord, cfile.read(overrideDefnFileName).splitlines())
+   
+            coutput.print_watcher(SB_ERR_DEBUG, _FUNC_NAME_, 'self.activeDictEntry')
 
-        overrideProncnFileName = SB_DICT_OVERRIDE_DIR + SB_DICT_OVERRIDE_CLIP.format(WORD=self.activeWord).replace(" ", "_")
+        # Pass #3B: Check for word list definition override
+        coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "Pass #3B: Check for word list definition override")
+        
+        override_definition = self.vocabList[self.get_word_index(self.activeWord)]
+        if override_definition is not None:
+            coutput.print_watcher(SB_ERR_DEBUG, _FUNC_NAME_, 'override_definition')
+            overrideSource = unicode("[Word List Definition Override]", 'utf-8')
+            self.activeEntry = overrideSource
+
+            if self.activeDictEntry is None:
+                # Set active dictionary entry
+                self.activeDictEntry = cdictapi.DictionaryEntry(self.dictConfig, self.activeWord, self.activeEntry).simplified_word_entry
+            
+            # Override definition
+            self.activeDictEntry.override_definitions(overrideSource, self.activeWord, [SB_SPL_SYMBOL + override_definition])
+   
+            coutput.print_watcher(SB_ERR_DEBUG, _FUNC_NAME_, 'self.activeDictEntry')
+
+        # Pass #4: Check primary source offline for word pronunciation
+        coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "Pass #4: Check primary source offline for word pronunciation")
         offlineProncnFileName = SB_DICT_OFFLINE_DIR + SB_DICT_OFFLINE_CLIP.format(WORD=self.activeWord).replace(" ", "_")
 
-        DEBUG_VAR="overrideProncnFileName"
-        coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
+        if os.path.isfile(offlineProncnFileName) and os.path.getsize(offlineProncnFileName) > 1000:
+            coutput.print_watcher(SB_ERR_DEBUG, _FUNC_NAME_, 'os.path.getsize(offlineProncnFileName)')
+            coutput.print_watcher(SB_ERR_DEBUG, _FUNC_NAME_, 'self.activeWord')
 
-        # Check for dictionary pronunciation override
+            offlineProncnURL = unicode("[Offline Dictionary Pronunciation]", 'utf-8')
+            offlineProncnForm = unicode("[Offline Dictionary Pronunciation Form]", 'utf-8')
+            offlineProncnSpell = unicode("[Offline Dictionary Pronunciation Spelling]", 'utf-8')
+
+            self.activeDictEntry.set_offline_pronunciation(offlineProncnURL, offlineProncnForm, offlineProncnSpell, offlineProncnFileName)
+
+            coutput.print_watcher(SB_ERR_DEBUG, _FUNC_NAME_, 'self.activeDictEntry')
+
+        # Pass #5: Check for dictionary pronunciation override
+        coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "Pass #5: Check for dictionary pronunciation override")
+        overrideProncnFileName = SB_DICT_OVERRIDE_DIR + SB_DICT_OVERRIDE_CLIP.format(WORD=self.activeWord).replace(" ", "_")
+        coutput.print_watcher(SB_ERR_DEBUG, _FUNC_NAME_, 'overrideProncnFileName')
+
         if os.path.isfile(overrideProncnFileName) and os.path.getsize(overrideProncnFileName) > 0:
-            self.activeAudioFile = overrideProncnFileName
-            self.activeAudioFileWord = self.activeWord
-            self.activePronunciation = SB_EMPTY_STRING
+            overrideProncnForm = self.activeWord
+            overrideProncnSpell = self.activeWord
 
-        # Check primary source for dictionary entry and pronunciation
-        elif os.path.isfile(offlineEntryFileName) and os.path.getsize(offlineEntryFileName) > 100 and os.path.isfile(offlineProncnFileName) and os.path.getsize(offlineProncnFileName) > 1000:
+            if self.activeDictEntry is None:
+                # Set active dictionary entry
+                self.activeDictEntry = cdictapi.DictionaryEntry(self.dictConfig, self.activeWord, self.activeEntry).simplified_word_entry
 
-            self.activeAudioFile = offlineProncnFileName
-        
-            coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "offlineProncnFile size :: {0}".format(os.path.getsize(offlineProncnFileName)))
-           
-            DEBUG_VAR="self.activeAudioFile"
-            coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
+            self.activeDictEntry.override_pronunciation(overrideProncnForm, overrideProncnSpell, overrideProncnFileName)
 
-            DEBUG_VAR="self.activeWord"
-            coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
+            coutput.print_watcher(SB_ERR_DEBUG, _FUNC_NAME_, 'self.activeDictEntry')
 
-            DEBUG_VAR="self.activeEntry"
-            coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
+        # Pass #6: Check primary source online for word pronunciation
+        coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "Pass #6: Check primary source online for word pronunciation")
 
-            # Retrieve pronunciation audio clip word form and filename
-            [wordClipForm, wordClipURL, wordClipPron] = cdict.parse_word_clip(self.activeWord, cfile.read(offlineEntryFileName))
-            self.activeAudioFileWord = wordClipForm
-            self.activePronunciation = wordClipPron
+        if self.activeDictEntry is not None and self.activeDictEntry.has_pronunciation() and self.activeDictEntry.has_pronunciation_audio() is False:
 
-            DEBUG_VAR="self.activeAudioFileWord"
-            coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(self.activeAudioFileWord)))
-            coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
+            # Download and save pronunciation audio offline
+            cfile.download(self.connectionPool, self.activeDictEntry.pronunciation.audio_url, offlineProncnFileName)
 
-        else:
-            # Retrieve pronunciation audio clip word form and filename
-            [wordClipForm, wordClipURL, wordClipPron] = cdict.parse_word_clip(self.activeWord, self.activeEntry)
+            if os.path.isfile(offlineProncnFileName) and os.path.getsize(offlineProncnFileName) > 1000:
+                onlineProncnURL = unicode("[Online Dictionary Pronunciation URL]", 'utf-8')
+                onlineProncnForm = unicode("[Online Dictionary Pronunciation Form]", 'utf-8')
+                onlineProncnSpell = unicode("[Online Dictionary Pronunciation Spelling]", 'utf-8')
 
-            # Save pronunciation offline
-            if wordClipURL == SB_EMPTY_STRING:
-                SB_ERR_CLIP_MISSING = True
-            else:
-                # Download audio clip
-                cfile.download(connectionPool, wordClipURL, offlineProncnFileName)
+                self.activeDictEntry.set_offline_pronunciation(onlineProncnURL, onlineProncnForm, onlineProncnSpell, offlineProncnFileName)
 
-                self.activeAudioFile = offlineProncnFileName
-                self.activeAudioFileWord = wordClipForm
-                self.activePronunciation = wordClipPron
-        
+                coutput.print_watcher(SB_ERR_DEBUG, _FUNC_NAME_, 'self.activeDictEntry')
+
+        # Check and log errors
         wordToken = coutput.tokenize(self.activeWord)
-        pronunciationToken = coutput.tokenize(self.activeAudioFileWord)
-       
-        if self.activeAudioFile != SB_EMPTY_STRING and wordToken != pronunciationToken:
-            SB_ERR_CLIP_MISMATCH = True
 
-        # Log errors
+        pronunciationToken = SB_EMPTY_STRING
+        if self.activeDictEntry is not None and self.activeDictEntry.has_pronunciation():
+            pronunciationToken = coutput.tokenize(self.activeDictEntry.pronunciation.spelling)
+
+        coutput.print_watcher(SB_ERR_DEBUG, _FUNC_NAME_, 'wordToken')
+        coutput.print_watcher(SB_ERR_DEBUG, _FUNC_NAME_, 'pronunciationToken')
+        coutput.print_watcher(SB_ERR_DEBUG, _FUNC_NAME_, 'self.activeDictEntry')
+        coutput.print_watcher(SB_ERR_DEBUG, _FUNC_NAME_, 'self.activeDictEntry.has_mispronunciation()')
+       
         errorText = unicode("ERROR:{0}:", 'utf-8').format(self.activeWord)
-        if SB_ERR_DEFN_MISSING:
+
+        if self.activeDictEntry is None or self.activeDictEntry.has_definitions() is False:
             errorText += unicode(">Definition Missing", 'utf-8')
-        if SB_ERR_CLIP_MISSING:
+        
+        if self.activeDictEntry is None or self.activeDictEntry.has_pronunciation() is False:
             errorText += unicode(">Audio Missing", 'utf-8')
-        if SB_ERR_CLIP_MISMATCH:
+        elif wordToken != pronunciationToken or (self.activeDictEntry is not None and self.activeDictEntry.has_mispronunciation()):
             errorText += unicode(">Audio Mismatch", 'utf-8')
         
         if errorText != unicode("ERROR:{0}:", 'utf-8').format(self.activeWord):
             errorText += unicode("\n", 'utf-8')
             cfile.append(errorFileName, errorText)
 
-        # Close connection
-        connectionPool.clear()
+        coutput.print_watcher(SB_ERR_DEBUG, _FUNC_NAME_, 'errorText')
+
 
     def lookup_dictionary_by_index(self, index):
         self.lookup_dictionary_by_word(self.wordList[index])
 
+
     def lookup_all_dictionaries_by_word(self, word):
         _FUNC_NAME_ = "lookup_all_dictionaries_by_word"
-        # Setup connection and error logging
-        connectionPool = urllib3.PoolManager(10, headers=SB_USER_AGENT)
-        cdictall.lookup_word(connectionPool, SB_AUDIO_OUTPUT, SB_REPEAT_COUNT, SB_REPEAT_DELAY, word)
-        # Close connection
-        connectionPool.clear()
+
+        cdictall.lookup_word(self.connectionPool, SB_AUDIO_OUTPUT, SB_REPEAT_COUNT, SB_REPEAT_DELAY, word)
+
+
+    def mask_active_word(self, text, mask_flag):
+        _FUNC_NAME_ = "mask_active_word"
+
+        if mask_flag:
+            return re.sub(self.activeWord, SB_MASK_SYMBOL * len(self.activeWord), text, flags=re.IGNORECASE)
+        else:
+            return text
+
        
     def print_word_definition(self):
-        if len(self.activeDefinition) == 0:
+        _FUNC_NAME_ = "print_word_definition"
+
+        if self.activeDictEntry is None or self.activeDictEntry.has_definitions() is False:
             coutput.print_err("Unable to lookup dictionary definition")
         else:
             # Print definitions
             definitionIndex = 0
-            for definition in self.activeDefinition:
+            for definition in self.activeDictEntry.definitions:
+                coutput.print_watcher(SB_ERR_DEBUG, _FUNC_NAME_, 'definition')
+                               
                 # Ignore comments and info lines with # prefix
                 if re.match(ur'^#', definition):
                     pass
@@ -495,59 +534,65 @@ class SpellingBee(object):
                     if definitionIndex >= SB_DEFINITION_COUNT:
                         break
 
-                    # Check for definitions that contain the word itself
-                    if SB_DEFINITION_HIDE_EXPLICIT:
-                        formattedDefinition = re.sub(self.activeWord, '*' * len(self.activeWord), definition, flags=re.IGNORECASE)
+                    # Mask definitions that contain the word itself and remove importance prefix "*"
+                    masked_definition = re.sub('^\*', SB_EMPTY_STRING, self.mask_active_word(definition, SB_DEFINITION_HIDE_EXPLICIT), flags=re.IGNORECASE)
 
-                    formattedDefinition = SB_LIST_BULLET + formattedDefinition
-                    print formattedDefinition
+                    # Check for override definitions from the word list prefixed with "*"
+                    if re.match(ur'^\*', definition):
+                        coutput.print_color('cyan', SB_SPL_BULLET + masked_definition )
+                    else:
+                        print SB_LIST_BULLET + masked_definition
+                    
                     definitionIndex += 1
 
             # Print info lines
-            for definition in self.activeDefinition:
+            for definition in self.activeDictEntry.definitions:
+                coutput.print_watcher(SB_ERR_DEBUG, _FUNC_NAME_, 'definition')
+
                 # Print info with #! prefix
-                if re.match(ur'^#!', definition):
-                    infoText=re.sub('^#!', SB_EMPTY_STRING, definition, flags=re.IGNORECASE)
 
-                    # Check for info lines that contain the word itself
-                    if SB_DEFINITION_HIDE_EXPLICIT:
-                        formattedInfoText = re.sub(self.activeWord, '*' * len(self.activeWord), infoText, flags=re.IGNORECASE)
+                # Ignore extraneous info lines
+                if definition.startswith(('#!Source:', '#!AudioURL:', '#!Meta:')):
+                    pass
+                elif re.match(ur'^#!', definition):
+                    infoText = re.sub('^#!', SB_EMPTY_STRING, definition, flags=re.IGNORECASE)
 
-                    coutput.print_color('cyan', infoText)
+                    # Mask info lines that contain the word itself
+                    coutput.print_color('cyan', self.mask_active_word(infoText, SB_DEFINITION_HIDE_EXPLICIT))
+
 
     def pronounce_word(self):
         _FUNC_NAME_ = "pronounce_word"
-        if self.activeAudioFile == SB_EMPTY_STRING:
+
+        coutput.print_watcher(SB_ERR_DEBUG, _FUNC_NAME_, 'self.activeDictEntry.has_pronunciation_audio()')
+
+        if self.activeDictEntry is None:
             coutput.print_err("Unable to lookup audio pronunciation")
         else:
-            DEBUG_VAR="self.activeWord"
-            coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(self.activeWord)))
-            coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
+            if self.activeDictEntry.has_respelling():            
+                coutput.print_color('cyan', 'Respelling: ' + self.activeDictEntry.respelling.text )
+            
+            if not self.silentMode:
+                if self.activeDictEntry.has_pronunciation_audio() is False:
+                    coutput.print_err("Unable to lookup audio pronunciation")
 
-            DEBUG_VAR="self.activeAudioFileWord"
-            coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(self.activeAudioFileWord)))
-            coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
+                else:
+                    keyWord = self.activeWord
 
-            wordToken = coutput.tokenize(self.activeWord)
-            pronunciationToken = coutput.tokenize(self.activeAudioFileWord)
+                    if self.activeDictEntry.has_pronunciation():
+                        entryWord = self.activeDictEntry.pronunciation.spelling
+                    else:
+                        entryWord = SB_EMPTY_STRING
 
-            if self.activePronunciation != SB_EMPTY_STRING:
-                coutput.print_color('cyan', 'Pronunciation: ' + self.activePronunciation )
+                    coutput.print_watcher(SB_ERR_DEBUG, _FUNC_NAME_, 'keyWord')
+                    coutput.print_watcher(SB_ERR_DEBUG, _FUNC_NAME_, 'entryWord')
+                   
+                    self.dictAssist.compare_word_form(keyWord, entryWord)
 
-            if wordToken != pronunciationToken:
-                coutput.print_warn("A different form of the word is being pronounced.")
-                for posPattern in SB_POS_REGEX_PATTERN:
+                    coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "Executing cfile.play")
+                    
+                    cfile.play(self.activeDictEntry.pronunciation.audio_file, SB_AUDIO_OUTPUT, SB_REPEAT_COUNT, SB_REPEAT_DELAY)
 
-                    DEBUG_VAR="posPattern['form']"
-                    coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(posPattern['form'])))
-                    coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
-
-                    if posPattern['regexPattern'].match(wordToken):
-                        coutput.print_tip("The {0} form ({1}) of the word is to be spelled.".format(posPattern['form'], posPattern['pattern']))
-                        break;
-
-            coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "Executing cfile.play")
-            cfile.play(self.activeAudioFile, SB_AUDIO_OUTPUT, SB_REPEAT_COUNT, SB_REPEAT_DELAY)
 
     def print_word_tip(self):
         overrideTipFileName = SB_DICT_OVERRIDE_DIR + SB_DICT_OVERRIDE_MSG.format(WORD=self.activeWord).replace(" ", "_")
@@ -557,6 +602,7 @@ class SpellingBee(object):
             activeTip = cfile.read(overrideTipFileName)
             coutput.print_tip(activeTip)
 
+
     def print_word_rule(self):
         # Check for word rules
         if self.ruleBook.has_key(self.activeWord.lower()):
@@ -564,9 +610,35 @@ class SpellingBee(object):
             for rule in self.ruleBook[self.activeWord.lower()]['Rule']:
                 coutput.print_color('green', SB_LIST_BULLET + rule)
 
-    def display_word_cue(self, title):
+
+    def print_pronunciation_key(self):
+        _FUNC_NAME_ = "print_pronunciation_key"
+
+        # Retrieve respelling override
+        respellText = SB_EMPTY_STRING
+        for override in self.activeDictEntry.definitions:
+            overrideRespell = re.search(ur"#!Respelling: (.*)", override)
+
+            if overrideRespell is not None:
+                respellText = overrideRespell.group(1)
+                break
+
+        # Retrieve respelling
+        if respellText == SB_EMPTY_STRING and self.activeDictEntry.has_respelling():
+            respellText = self.activeDictEntry.respelling.text
+
+        if respellText != SB_EMPTY_STRING:
+            print "Pronunciation Key:"
+            coutput.print_columnized_list(self.dictConfig.pronunciation_key(respellText), SB_KEY_COLUMN_COUNT)
+        else:
+            print "Pronunciation Guide:"
+            coutput.print_columnized_list(self.dictConfig.build_pronunciation_guide(), SB_GUIDE_COLUMN_COUNT)
+
+
+    def display_word_cue(self, title, testMode):
         _FUNC_NAME_ = "display_word_cue"
-        print title
+        coutput.print_color('green', title)
+
         coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "Executing self.print_word_definition")
         self.print_word_definition()
 
@@ -576,14 +648,17 @@ class SpellingBee(object):
         coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "Executing self.print_word_tip")
         self.print_word_tip()
 
-        coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "Executing self.print_word_rule")
-        self.print_word_rule()
+        if testMode.lower() != "test":
+            coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "Executing self.print_word_rule")
+            self.print_word_rule()
+
 
     def reset_test_result(self):
         self.activeTestDate = SB_EMPTY_STRING
         self.activeTestScore = SB_EMPTY_STRING
         self.activeTestValuations = []
         self.activePracticeWords = []
+
 
     def normalize_word(self, normWord, normMode):
         
@@ -614,6 +689,7 @@ class SpellingBee(object):
 
         return valuationWord
 
+
     def valuate_test_response(self, testResponse, testWords, testMode):
         valuationResponse = self.normalize_word(testResponse, testMode)
         valuationWords = [self.normalize_word(testWord, testMode) for testWord in testWords.split(SB_WORD_DELIMITER)]
@@ -627,15 +703,19 @@ class SpellingBee(object):
     
         return valuationResult
 
+
     def log_test_result(self, testDate, testScore):
         self.activeTestDate = testDate
         self.activeTestScore = testScore
 
+
     def log_practice_word(self, testWord):
         self.activePracticeWords.append(testWord)
 
+
     def log_test_valuation(self, testValuation):
         self.activeTestValuations.append(testValuation)
+
 
     def save_evaluation_practice_words(self, practiceMode, saveEnabled):
         _FUNC_NAME_ = "save_evaluation_practice_words"
@@ -659,15 +739,14 @@ class SpellingBee(object):
 
                 # Save practice words to practice file, if not already saved
                 for word in self.activePracticeWords:
-                    
-                    DEBUG_VAR="word"
-                    coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
+                    coutput.print_watcher(SB_ERR_DEBUG, _FUNC_NAME_, 'word')
 
                     if word not in currentPracticeWordList:
                         practiceFileText = practiceFileText + word + SB_NEWLINE
 
                 if practiceFileText != SB_EMPTY_STRING:
                     cfile.append(practiceFileName, practiceFileText)
+
 
     def display_evaluation_result(self, practiceMode, saveResultEnabled, savePracticeEnabled):
 
@@ -684,10 +763,10 @@ class SpellingBee(object):
         # Test header
         testStats = SB_NEWLINE + unicode("Spelling Bee {0}".format(self.contestList), 'utf-8')
 
-        if self.activeMode.lower() == "chapter":
+        if self.activeMode == "chapter":
             testStats += SB_NEWLINE + unicode("Word Count [{0}] Chapter [{1}/{2}] Words [{3}-{4}]".format(self.word_count(), self.activeChapter, self.chapter_count(), self.activeRangeStart + 1, self.activeRangeEnd + 1), 'utf-8')
 
-        elif self.activeMode.lower() == "random":
+        elif self.activeMode == "random":
             testStats += SB_NEWLINE + unicode("Word Count [{0}] Random [{1}]".format(self.word_count(), self.active_word_count()), 'utf-8')
 
         else:
@@ -749,18 +828,13 @@ def init_app():
     # Suspend input from stdin
     cinput.set_term_input(False)
 
+
 def exit_app():
     # Resume input from stdin
     cinput.set_term_input(True)
 
     print "\n\nThank you for practicing for Spelling Bee.\n"
     exit()
-
-def display_guide():
-    _FUNC_NAME_ = "display_guide"
-
-    print "Pronunciation Guide:"
-    coutput.print_columnized_list(cfile.read(SB_PRONUNCIATION_GUIDE).splitlines(), SB_GUIDE_COLUMN_COUNT)
 
 
 def display_help(runMode):
@@ -774,8 +848,8 @@ def display_help(runMode):
         print "\n{0} Keyboard Menu: {1}".format(runMode.title(), SB_PRACTICE_KEYBOARD_MENU)
 
 
-# todo: Implement goto feature to specify new start/stop words
 def run_practice(spellBee, practiceMode):
+    _FUNC_NAME_ = "run_practice"
 
     userPracticeMode = practiceMode.strip().lower()
 
@@ -796,10 +870,13 @@ def run_practice(spellBee, practiceMode):
 
         # Lookup word definition
         spellBee.lookup_dictionary_by_index(wordIndex)
+
         if userPracticeMode == "study":
-            spellBee.display_word_cue(SB_STUDY_WORD_DEFN_TITLE.format(INDEX=wordIndex + 1, WORD=spellBee.wordList[wordIndex]))
+            titleText = SB_STUDY_WORD_DEFN_TITLE.format(INDEX=wordIndex + 1, WORD=spellBee.wordList[wordIndex], SEQ=activeWordIndex + 1, COUNT=len(spellBee.activeWordIndexList))
         else:
-            spellBee.display_word_cue(SB_PRACTICE_WORD_DEFN_TITLE.format(INDEX=wordIndex + 1))
+            titleText = SB_PRACTICE_WORD_DEFN_TITLE.format(INDEX=wordIndex + 1)
+
+        spellBee.display_word_cue(titleText, userPracticeMode)
         userInput = cinput.get_keypress(SB_PROMPT_SYMBOL)
         
         while True:
@@ -813,29 +890,45 @@ def run_practice(spellBee, practiceMode):
                 break
             # [R]epeat current word
             elif userInput.lower() == "r":
-                if userPracticeMode == "study":
-                    spellBee.display_word_cue(SB_STUDY_WORD_DEFN_TITLE.format(INDEX=wordIndex + 1, WORD=spellBee.wordList[wordIndex]))
-                else:
-                    spellBee.display_word_cue(SB_PRACTICE_WORD_DEFN_TITLE.format(INDEX=wordIndex + 1))
+                spellBee.display_word_cue(titleText, userPracticeMode)
                 userInput = cinput.get_keypress(SB_PROMPT_SYMBOL)
             # Re[v]iew active word list
             elif userInput.lower() == "v":
                 print SB_EMPTY_STRING
                 spellBee.print_active_word_list()
+                display_help(userPracticeMode)
                 userInput = cinput.get_keypress(SB_PROMPT_SYMBOL)
-            # [S]how current word spelling
+            # [S]how current word spelling and dictionary entry
             elif userInput.lower() == "s":
-                spellBee.display_word_cue(SB_STUDY_WORD_DEFN_TITLE.format(INDEX=wordIndex + 1, WORD=spellBee.wordList[wordIndex]))
+                spellBee.display_word_cue(titleText, userPracticeMode)
+                coutput.print_color('cyan', "\nDictionary Entry:")
+                #print spellBee.activeDictEntry
+                for entryLine in spellBee.activeDictEntry.__unicode__().splitlines():
+                    print entryLine
+                display_help(userPracticeMode)
                 userInput = cinput.get_keypress(SB_PROMPT_SYMBOL)
+            # [G]oto to word
+            elif userInput.lower() == "g":
+                nextWord = cinput.get_input("\nEnter word to be jumped to: ")
+                nextIndex = spellBee.get_active_word_index(nextWord)                
+                if (nextIndex < 0) or (nextIndex >= len(spellBee.activeWordIndexList)):
+                    coutput.print_err("Unable to locate '{0}' in word list".format(nextWord))
+                    display_help(userPracticeMode)
+                    userInput = cinput.get_keypress(SB_PROMPT_SYMBOL)
+                else:
+                    activeWordIndex = nextIndex
+                    break
             # [L]ookup word definition and pronunciation
             elif userInput.lower() == "l":
-                userLookupWord = cinput.get_input("\nEnter word to be looked up: ")
-                spellBee.lookup_all_dictionaries_by_word(userLookupWord)
+                print "\nLookup feature under construction."
+                display_help(userPracticeMode)
+                #userLookupWord = cinput.get_input("\nEnter word to be looked up: ")
+                #spellBee.lookup_all_dictionaries_by_word(userLookupWord)
                 userInput = cinput.get_keypress(SB_PROMPT_SYMBOL)
-            # Display [g]uide
-            elif userInput.lower() == "g":
+            # Display pronunciation [k]ey
+            elif userInput.lower() == "k":
                 print SB_EMPTY_STRING
-                display_guide()
+                spellBee.print_pronunciation_key()
                 display_help(userPracticeMode)
                 userInput = cinput.get_keypress(SB_PROMPT_SYMBOL)
             # Display [h]elp and statistics
@@ -856,8 +949,10 @@ def run_practice(spellBee, practiceMode):
 def run_test(spellBee):
     _FUNC_NAME_ = "run_test"
 
+    userPracticeMode = "test"
+
     spellBee.display_about()
-    display_help("test")
+    display_help(userPracticeMode)
     userInput = cinput.get_keypress("\nReady for the test? Press any key when ready ... ")
 
     testDate = time.strftime('%a %d-%b-%Y %H:%M:%S')
@@ -868,7 +963,6 @@ def run_test(spellBee):
     testValuation = SB_EMPTY_STRING
 
     spellBee.reset_test_result()
-
     
     # Disable saving practice words if :
     # saving is disabled for test results, or
@@ -876,23 +970,25 @@ def run_test(spellBee):
     savePracticeWordsEnabled = SB_TEST_SAVE_PRACTICE
     if SB_TEST_SAVE_RESULT == False or 'practice' in spellBee.contestList.lower() or 'revision' in spellBee.contestList.lower() or '*' in spellBee.contestList:
         savePracticeWordsEnabled = False
-    coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "SB_TEST_SAVE_PRACTICE :: {0}".format(SB_TEST_SAVE_PRACTICE))
-    coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "savePracticeWordsEnabled :: {0}".format(savePracticeWordsEnabled))
+    coutput.print_watcher(SB_ERR_DEBUG, _FUNC_NAME_, 'SB_TEST_SAVE_PRACTICE')
+    coutput.print_watcher(SB_ERR_DEBUG, _FUNC_NAME_, 'savePracticeWordsEnabled')
 
     activeWordIndex = 0
 
     while True:
-        coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "activeWordIndexList :: {0}".format(spellBee.activeWordIndexList))
-        coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "activeWordIndex :: {0}".format(activeWordIndex))
+        coutput.print_watcher(SB_ERR_DEBUG, _FUNC_NAME_, 'spellBee.activeWordIndexList')
+        coutput.print_watcher(SB_ERR_DEBUG, _FUNC_NAME_, 'activeWordIndex')
+
         if (activeWordIndex < 0) or (activeWordIndex >= len(spellBee.activeWordIndexList)):
             break
 
         wordIndex = spellBee.activeWordIndexList[activeWordIndex]
-        coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "wordIndex :: {0}".format(wordIndex))
+        coutput.print_watcher(SB_ERR_DEBUG, _FUNC_NAME_, 'wordIndex')
 
         # Lookup word definition
         spellBee.lookup_dictionary_by_index(wordIndex)
-        spellBee.display_word_cue(SB_PRACTICE_WORD_DEFN_TITLE.format(INDEX=wordIndex + 1))
+        titleText = SB_PRACTICE_WORD_DEFN_TITLE.format(INDEX=wordIndex + 1, SEQ=activeWordIndex + 1, COUNT=len(spellBee.activeWordIndexList))
+        spellBee.display_word_cue(titleText, userPracticeMode)
         userResponse = cinput.get_input("Enter spelling: ")
 
         # E[x]it test
@@ -903,18 +999,18 @@ def run_test(spellBee):
         elif userResponse.lower() == "r":
             continue
 
-        # Display [g]uide
-        elif userResponse.lower() == "g":
+        # Display pronunciation [k]ey
+        elif userResponse.lower() == "k":
             print SB_EMPTY_STRING
-            display_guide()
-            display_help("test")
+            spellBee.print_pronunciation_key()
+            display_help(userPracticeMode)
             continue
 
         # Display [h]elp and statistics
         elif userResponse.lower() == "h":
             print SB_EMPTY_STRING
             spellBee.display_about()
-            display_help("test")
+            display_help(userPracticeMode)
             continue
 
         else:
@@ -951,14 +1047,16 @@ def run_test(spellBee):
     spellBee.log_test_result(testDate, str(testCorrectCount) + "/" + str(testTotalCount))
     print "\nYour test is complete. Displaying results..."
     
-    spellBee.display_evaluation_result('test', SB_TEST_SAVE_RESULT, savePracticeWordsEnabled)
+    spellBee.display_evaluation_result(userPracticeMode, SB_TEST_SAVE_RESULT, savePracticeWordsEnabled)
 
 
 def run_revision(spellBee):
     _FUNC_NAME_ = "run_revision"
 
+    userPracticeMode = "revise"
+
     spellBee.print_active_word_list()
-    display_help("revise")
+    display_help(userPracticeMode)
     userInput = cinput.get_keypress("\nReady to revise? Press any key when ready ... ")
 
     testDate = time.strftime('%a %d-%b-%Y %H:%M:%S')
@@ -973,17 +1071,19 @@ def run_revision(spellBee):
     activeWordIndex = 0
 
     while True:
-        coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "activeWordIndexList :: {0}".format(spellBee.activeWordIndexList))
-        coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "activeWordIndex :: {0}".format(activeWordIndex))
+        coutput.print_watcher(SB_ERR_DEBUG, _FUNC_NAME_, 'activeWordIndexList')
+        coutput.print_watcher(SB_ERR_DEBUG, _FUNC_NAME_, 'activeWordIndex')
+
         if (activeWordIndex < 0) or (activeWordIndex >= len(spellBee.activeWordIndexList)):
             break
 
-        wordIndex = spellBee.activeWordIndexList[activeWordIndex]
-        coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "wordIndex :: {0}".format(wordIndex))
+        wordIndex = spellBee.activeWordIndexList[activeWordIndex]        
+        coutput.print_watcher(SB_ERR_DEBUG, _FUNC_NAME_, 'wordIndex')
 
         # Lookup word definition
         spellBee.lookup_dictionary_by_index(wordIndex)
-        spellBee.display_word_cue(SB_STUDY_WORD_DEFN_TITLE.format(INDEX=wordIndex + 1, WORD=spellBee.activeWordAlternatives))
+        titleText = SB_STUDY_WORD_DEFN_TITLE.format(INDEX=wordIndex + 1, WORD=spellBee.activeWordAlternatives, SEQ=activeWordIndex + 1, COUNT=len(spellBee.activeWordIndexList))
+        spellBee.display_word_cue(titleText, userPracticeMode)
         userResponse = cinput.get_keypress("Enter response: ")
 
         # E[x]it test
@@ -996,18 +1096,18 @@ def run_revision(spellBee):
             spellBee.print_active_word_list()
             continue
 
-        # Display [g]uide
-        elif userResponse.lower() == "g":
+        # Display pronunciation [k]ey
+        elif userResponse.lower() == "k":
             print SB_EMPTY_STRING
-            display_guide()
-            display_help("revise")
+            spellBee.print_pronunciation_key()
+            display_help(userPracticeMode)
             continue
 
         # Display [h]elp and statistics
         elif userResponse.lower() == "h":
             print SB_EMPTY_STRING
             spellBee.display_about()
-            display_help("revise")
+            display_help(userPracticeMode)
             continue
 
         # Process correct response
@@ -1051,7 +1151,7 @@ def run_revision(spellBee):
     spellBee.log_test_result(testDate, str(testCorrectCount) + "/" + str(testTotalCount))
     print "\nYour revision is complete. Displaying results..."
     
-    spellBee.display_evaluation_result('revise', SB_TEST_SAVE_RESULT, True)
+    spellBee.display_evaluation_result(userPracticeMode, SB_TEST_SAVE_RESULT, True)
 
 
 def run_error_scan(spellBee):
@@ -1090,22 +1190,24 @@ argParser.add_argument("runMode", type=str, choices=['study', 'practice', 'test'
 argParser.add_argument("contestList", type=str, help="is the word list identifier for the contest in YYYY[-language][-challenge] format")
 argParser.add_argument("mode", type=str, choices=['chapter', 'count', 'word', 'random'], nargs='?', default='count', help="is chapter, count, word or random")
 argParser.add_argument("selection", type=str, nargs='?', default='1', help="is the chapter number, word index range, word range or random sample size")
+argParser.add_argument("-s", "--silent", help="run in silent mode, without pronunciation", action="store_true")
 args = argParser.parse_args()
 
-# Setup Spelling Bee word list
-spellBee = SpellingBee(args.runMode, args.contestList, args.mode, args.selection)
+# Setup Spelling Bee word list and run mode
+spellBee = SpellingBee(args.runMode, args.contestList, args.mode, args.selection, args.silent)
+spellBeeMode = args.runMode.lower()
 
 try:
     init_app()
 
     # Run Spelling Bee assistant in practice, test or scan mode
-    if args.runMode.lower() == "study" or args.runMode.lower() == "practice":
-        run_practice(spellBee, args.runMode.lower())
-    elif args.runMode.lower() == "test":
+    if spellBeeMode == "study" or spellBeeMode == "practice":
+        run_practice(spellBee, spellBeeMode)
+    elif spellBeeMode == "test":
         run_test(spellBee)
-    elif args.runMode.lower() == "revise":
+    elif spellBeeMode == "revise":
         run_revision(spellBee)
-    elif args.runMode.lower() == "scan":
+    elif spellBeeMode == "scan":
         run_error_scan(spellBee)
 
     exit_app()
@@ -1113,7 +1215,8 @@ try:
 except Exception as e:
     # Logs the error appropriately
     logging.error(traceback.format_exc())
-    print "\nERROR: " + traceback.format_exc()
+    #print "\nERROR: " + traceback.format_exc()
+    coutput.print_err(traceback.format_exc())
 
     # Resume input from stdin
     cinput.set_term_input(True)
