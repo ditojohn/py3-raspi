@@ -1,450 +1,450 @@
-big
-get
-old
-hen
-now
-fell
-barn
-step
-too
-find
-cape
-eat
-take
-shed
-how
-ride
-wall
-baby
-note
-hunt
-slid
-made
-show
-into
-spots
-ring
-such
-most
-here
-gate
-mine
-deep
-glow
-love
-coin
-stone
-them
-plane
-stay
-coal
-was
-sunny
-toes
-soon
-nice
-going
-door
-clams
-kitten
-garden
-cord
-arms
-west
-team
-skim
-belly
-hire
-wink
-move
-aid
-rose
-deck
-bead
-hurt
-grins
-leaf
-spurs
-elm
-foot
-bank
-paws
-oak
-drive
-alone
-frogs
-dew
-paste
-unkind
-person
-nearly
-lower
-walk
-obey
-winner
-pilot
-fresh
-roof
-flying
-bitter
-south
-stack
-panda
-slumber
-gall
-wishes
-missing
-pretend
-nodded
-change
-once
-zone
-clasp
-boxcar
-roar
-graze
-pesky
-return
-fetch
-thorn
-fancy
-rinse
-vanish
-escape
-alien
-nutmeg
-glinting
-radio
-wheels
-darling
-hutch
-awful
-muster
-padlock
-welcome
-platform
-spiral
-rafters
-illness
-tablet
-wailing
-blanket
-thrilling
-jacket
-rambling
-harvest
-agog
-shudder
-cartoon
-dither
-rodents
-compost
-lizard
-voice
-cosmic
-liberty
-pirate
-dumplings
-promise
-excellent
-cheddar
-insect
-scale
-crept
-speak
-carving
-oval
-purse
-mossy
-cattle
-offer
-hairpin
-clipper
-marsh
-shabby
-hushed
-manner
-scraped
-impact
-breeze
-standoff
-narrow
-lazily
-primers
-marbles
-tennis
-world
-kettle
-shelves
-crumpled
-mailboxes
-perhaps
-nannies
-button
-alley
-sprinkle
-complete
-diaper
-transporting
-lukewarm
-violet
-castle
-bicycle
-village
-promptly
-matron
-produce
-horrid
-invitation
-faucet
-enormous
-canal
-shilling
-halter
-basting
-hornet
-Viking
-chapel
-pouted
-aspect
-rotating
-crooked
-warmth
-craggy
-Icelandic
-temple
-engraved
-newlyweds
-protested
-amusing
-cinders
-abroad
-superb
-Norse
-custody
-sullen
-Bollywood
-clambering
-strident
-severely
-manure
-intersect
-slobbery
-valuables
-expensive
-Venice
-breakfast
-salvation
-unison
-diagram
-spinster
-grocery
-pastures
-neglected
-receptions
-energetic
-plantations
-decent
-survival
-disguise
-undesirable
-tonic
-enlisted
-tomes
-levied
-bookmobile
-nursery
-shortage
-precise
-roundabout
-handiwork
-balloonist
-improvise
-altitude
-sparsely
-musician
-practically
-testament
-simulate
-disengage
-Mohawk
-exterior
-scenery
-opponent
-allowance
-committee
-bulletin
-hoarsely
-automated
-subdivision
-heralded
-appointed
-regents
-infraction
-Pacific
-affirmation
-cipher; cypher
-administration
-geometry
-consecutive
-scavenger
-defensiveness
-vegetation
-sconces
-Cyclops
-aerospace
-correctional
-segregation
-instantaneous
-nausea
-Chesapeake
-atoll
-miracle
-callous
-grandiose
-dexterity
-barrette
-cordial
-alacrity
-marmalade
-orchids
-despondency
-composure
-jauntily
-Hispaniola
-quantum
-calamine
-exasperation
-sophomore
-reprobate
-annoyance
-paralysis
-chimpanzee
-peroxide
-amputation
-conspiracy
-sinewy
-flabbergasted
-boisterously
-linoleum
-tapirs
-repugnance
-impeccable
-contagious
-stevedores
-commendable
-incessant
-ricochet
-tribulations
-azalea
-fluorescent
-reservoir
-truculently
-generalissimo
-vociferous
-merengue
-claustrophobic
-Methuselah
-entrepreneurs
-monsieur
-pièce de résistance
-proviso
-dragoons
-gargoyle
-anecdote
-brigands
-mandible
-crampon
-Sherpa
-malign
-boroughs
-monomania
-taxidermy
-piteously
-strenuous
-intimation
-conundrum
-atrocity
-voluminous
-propaganda
-conspicuous
-premonition
-memorandum
-pastrami
-germinate
-parenthetical
-crematoria
-massacres
-petulance
-facilitate
-extenuation
-incarcerated
-appendectomy
-subterranean
-financiers
-treacherous
-orthopedic; orthopaedic
-sphinx
-lama
-celerity
-acacias
-Seminole
-hallucinations
-endeavor; endeavour
-labyrinthine
-excruciating
-lichenous
-chandeliers
-uncoquettish
-tempestuous
-Pyrenees
-interpolated
-cypress
-disquisition
-translucent
-annexation
-expeditionaries
-bilious
-interstices
-hermetically
-mythos
-cupolas
-grotesque
-pulmonary
-frontispiece
-succulent
-clandestine
-pestiferous
-requisites
-pitons
-incongruous
-variegated
-lassitude
-avocations
-raillery
-sanguine
-tête-à-tête
-mitochondria
-putrefaction
-concierge
-gauss
-connubial
-unpropitious
-caravel
-millinery
-coppice
-pecuniary
-expatiated
-supercilious
-formaldehyde
-vicissitudes
-oologist
-auspices
-panegyric
-cabochon
-verdigris
-rhododendron
-Kilimanjaro
-coquelicot
-ichthyosaurus
-cicerone
+big|(adjective) large in size or amount.
+get|(verb) to obtain a thing through your own effort.
+old|(adjective) aged or worn.
+hen|(noun) a female chicken.
+now|(adverb) at the present time.
+fell|(verb) dropped suddenly and not by choice.
+barn|(noun) a large building used on a farm to keep animals or food for animals.
+step|(noun) one of the flat parts that makes up of a flight of stairs.
+too|(adverb) in addition : also.
+find|(verb) to come upon (something) by searching or effort.
+cape|(noun) a piece of clothing that is worn around the neck and hangs loosely down the back.
+eat|(verb) to take food into your mouth and swallow it.
+take|(verb) to bring with you from one place to another.
+shed|(verb) to naturally lose a part or body covering (such as hair, skin or leaves).
+how|(adverb) in what manner or way.
+ride|(verb) to sit and be carried on the back of an animal that you control.
+wall|(noun) a vertical part of a building used to define and divide space.
+baby|(noun) a very young child.
+note|(noun) a short informal letter.
+hunt|(verb) to try to find or get especially by careful search or effort.
+slid|(verb) coasted or glided over a surface.
+made|(verb) caused to happen or exist : created.
+show|(verb) to cause or permit to be seen.
+into|(preposition) toward the inside of something.
+spots|(plural noun) small parts or areas of a surface that are different from the main surface.
+ring|(noun) a small usually metal circle often set with a gem and worn on the finger.
+such|(adjective) of a very great degree or quality.
+most|(adjective) the greatest number of.
+here|(adverb) in or at this place.
+gate|(noun) the frame or door that closes an opening in a wall, fence or other barrier.
+mine|(pronoun) that which belongs to me.
+deep|(adjective) having a large distance from the highest point to the bottom.
+glow|(verb) to shine with light or become lit up.
+love|(verb) to feel great affection for (someone).
+coin|(noun) a usually flat, round piece of metal made by the government for use as money.
+stone|(noun) a piece of rock.
+them|(pronoun) those persons or things.
+plane|(noun) a machine for flying that has fixed wings and an engine.
+stay|(verb) to remain somewhere or with someone instead of leaving.
+coal|(noun) a black or brownish black mineral that is easily burned and is used for fuel.
+was|(verb) existed.
+sunny|(adjective) full of natural light.
+toes|(plural noun) the separate parts at the end of your feet.
+soon|(adverb) at a time very close to now.
+nice|(adjective) pleasing or enjoyable.
+going|(verb) leaving.
+door|(noun) a solid piece of material that can be swung or slid open or shut to allow people to enter or leave a building, room, car or other space.
+clams|(plural noun) shellfish that have shells with two parts, live in sand or mud, and that can be eaten.
+kitten|(noun) a young cat.
+garden|(noun) an area of ground that is used to grow herbs, fruits, flowers or vegetables.
+cord|(noun) a small rope or string.
+arms|(plural noun) the two long parts of your body between your shoulders and your wrists.
+west|(noun) the direction toward the left when you're facing north.
+team|(noun) a group of people who participate together in the same work or activity.
+skim|(verb) to read, study, deal with or examine casually and rapidly.
+belly|(noun) the front part of your body below your ribs.
+hire|(verb) to give someone a job in exchange for pay.
+wink|(verb) to quickly open and shut one eye as a way to communicate something.
+move|(verb) to change your home or location.
+aid|(verb) to help.
+rose|(noun) a flower that is usually red, white, pink or yellow and that grows on a plant that usually has thorns.
+deck|(noun) a flat structure that is built next to a house and that has no roof or walls.
+bead|(noun) a small often round piece of stone, glass, wood or other material that has a hole in it so it can be hung on a string or wire.
+hurt|(adjective) physically or emotionally injured.
+grins|(verb) smiles widely.
+leaf|(noun) the part of a plant that grows from the stem, is usually flat and green, and that makes food for the plant.
+spurs|(plural noun) U-shaped tools that are either pointed or end in spinning disks and that are worn on the heel of a rider and used to urge on or manage his or her horse.
+elm|(noun) a flowering tree with pointed, jagged leaves.
+foot|(noun) a unit of length equal to 12 inches.
+bank|(noun) a small container for holding saved money.
+paws|(plural noun) the clawed feet of a four-legged animal (like a dog or cat).
+oak|(noun) the tough, hard, durable wood of a particular type of tree.
+drive|(verb) to operate and steer a motor vehicle.
+alone|(adjective) away from other people or things.
+frogs|(plural noun) smooth-skinned, web-footed, tailless, leaping animals that lives mostly in the water.
+dew|(noun) drops of water that form on cool surfaces outside at night.
+paste|(verb) to stick things together using a substance made for this purpose.
+unkind|(adjective) harsh, cruel.
+person|(noun) an individual human being.
+nearly|(adverb) very close to but not completely : almost.
+lower|(adjective) reaching upward less than other things : not as high.
+walk|(verb) to move along on foot.
+obey|(verb) to do what a person or a rule tells you to do.
+winner|(noun) a person who has gained victory especially in games and sports.
+pilot|(noun) a person who flies or is able to fly an airplane.
+fresh|(adjective) newly produced, gathered or made.
+roof|(noun) the outside cover on top of a building or home.
+flying|(noun) travel by air.
+bitter|(adjective) having a strong taste that is not sweet.
+south|(noun) the direction to the right when you're facing east.
+stack|(noun) a usually neat pile or heap.
+panda|(noun) a large black-and-white mammal from China that looks like a bear.
+slumber|(noun) sleep.
+gall|(noun) extreme confidence expressed in an impolite way.
+wishes|(plural noun) things you ask for or really want.
+missing|(adjective) not able to be found.
+pretend|(verb) to make believe.
+nodded|(verb) moved your head quickly up and down as a sign of agreement or as a greeting.
+change|(verb) to make different.
+once|(adverb) one time and no more.
+zone|(noun) a region or area set off or that is different from surrounding areas.
+clasp|(noun) a device that can be opened and closed and that is used to hold two different things or two parts of something together.
+boxcar|(noun) a section of a train with a roof, four walls and sliding doors that is used to transport goods.
+roar|(noun) the deep loud cry of some wild beasts.
+graze|(verb) to feed on grass.
+pesky|(adjective) annoying, irritating or troublesome.
+return|(verb) to go back or come back again (as to a place, person or condition).
+fetch|(verb) to go and get.
+thorn|(noun) a short, hard, sharp-pointed and leafless branch on a plant.
+fancy|(adjective) not plain or ordinary.
+rinse|(verb) to clean by dipping into water.
+vanish|(verb) to completely disappear.
+escape|(verb) to get away from something harmful.
+alien|(noun) a being from another planet.
+nutmeg|(noun) a hard, rounded seed that is widely used as a spice.
+glinting|(verb) sparkling.
+radio|(noun) a device that receives wireless signals and converts them to sound.
+wheels|(plural noun) round frames that attach to a shaft on which they turn.
+darling|(noun) a person you love very much.
+hutch|(noun) a pen or coop for an animal : cage.
+awful|(adjective) extremely unpleasant, disagreeable or objectionable.
+muster|(verb) to bring together : collect.
+padlock|(noun) a type of secure fastener with a sliding part that can be opened or closed so that the entire device hangs from it.
+welcome|(noun) a friendly greeting or reception given to a person when he or she arrives.
+platform|(noun) a flat surface that is usually higher than the floor or ground around it.
+spiral|(adjective) winding around a center point and slowly moving away from or getting closer to it.
+rafters|(plural noun) the long, usually sloping pieces of heavy wood that support a roof.
+illness|(noun) an unhealthy condition of the body or mind.
+tablet|(noun) a flat, rectangular computing device that is usually controlled by a touch screen.
+wailing|(verb) crying out in sadness.
+blanket|(noun) a piece of warm fabric used as a bed covering.
+thrilling|(adjective) exciting.
+jacket|(noun) a type of long-sleeved outer garment.
+rambling|(adjective) straying from subject to subject.
+harvest|(noun) the amount of any natural product that is gathered.
+agog|(adjective) full of intense interest or extreme excitement.
+shudder|(verb) to shake or tremble with fear or cold.
+cartoon|(noun) a movie or show made from a series of drawings or computer graphics.
+dither|(verb) to hesitate in choosing or act uncertain.
+rodents|(plural noun) small, gnawing mammals that have upper teeth adapted for cutting.
+compost|(noun) a mix of usually decayed organic material (such as leaves and grass) used to make soil better.
+lizard|(noun) any relatively long-bodied reptile with scaly skin, short legs and a tapering tail.
+voice|(noun) the ability to speak.
+cosmic|(adjective) relating to the universe in contrast to earth alone.
+liberty|(noun) the quality or state of being free.
+pirate|(noun) a robber on the high seas.
+dumplings|(plural noun) small balls of dough cooked by boiling or steaming.
+promise|(noun) a statement that you will do or not do something specific.
+excellent|(adjective) very good.
+cheddar|(noun) a hard white, yellow or orange smooth-textured cheese.
+insect|(noun) one of many small, invertebrate, segmented animals with six legs and often wings.
+scale|(noun) a collection of musical pitches arranged in ascending or descending order.
+crept|(verb) went timidly or cautiously or so as to escape notice or attention.
+speak|(verb) to utter words : talk.
+carving|(noun) a design or figure made by cutting (something) with deliberate care or practiced precision.
+oval|(adjective) having the shape of an egg.
+purse|(noun) a receptacle used to carry money and often other small objects.
+mossy|(adjective) covered with a downy, spore-producing plant or something like it.
+cattle|(plural noun) domesticated animals with four feet that are kept on farms or ranches usually for meat or milk.
+offer|(noun) something presented for acceptance.
+hairpin|(noun) a fastener to hold the thin threadlike outgrowths of the skin on your head in place.
+clipper|(noun) a fast, full-rigged sailing ship with long slender lines, an overhanging bow, tall masts and a large sail area.
+marsh|(noun) a tract of soft wet land : swamp.
+shabby|(adjective) threadbare and faded from wear : appearing outworn.
+hushed|(adjective) free of noise or agitation : calm.
+manner|(noun) the mode or method in which something is done or happens : way, mode, fashion.
+scraped|(verb) damaged or injured the surface of something by contact with a rough surface.
+impact|(noun) a forceful contact, collision or onset : the degree or concentration of force in a collision.
+breeze|(noun) a light, gentle soft-blowing wind.
+standoff|(noun) tie, draw, deadlock.
+narrow|(adjective) not as wide as usual or as expected.
+lazily|(adverb) in a manner marked by lack of activity.
+primers|(plural noun) usually small introductory books on a specific subject.
+marbles|(plural noun) little balls made of a hard substance (as glass) typically ranging from about 1/2 inch to about 1 inch in diameter and used in various games.
+tennis|(noun) a game played by two players or pairs of players with rackets and a ball on a court divided by a low net.
+world|(noun) the earth with all its inhabitants and all things upon it.
+kettle|(noun) a metallic vessel used for boiling liquids.
+shelves|(plural noun) flat pieces of wood or other material fastened horizontally at a distance from the floor (as on a wall or in a frame) that are used to hold objects.
+crumpled|(verb) pressed or twisted into folds or wrinkles.
+mailboxes|(plural noun) closed containers at or near dwellings that hold the postal material (such as letters) of the people who live there.
+perhaps|(adverb) possibly but not certainly : maybe.
+nannies|(plural noun) children's nurses or caregivers.
+button|(noun) a small device that is secured to an article (as of clothing or upholstery) that works as a fastener by passing it through a hole or loop.
+alley|(noun) a passageway between buildings.
+sprinkle|(verb) to scatter in drops or particles.
+complete|(verb) to bring something to an end often in a finished or perfected state.
+diaper|(noun) a basic garment for infants consisting of absorbent material (such as cloth) drawn up between the legs and fastened at the waist.
+transporting|(verb) transferring, carrying or moving from one person or place to another.
+lukewarm|(adjective) neither cold nor hot : tepid.
+violet|(noun) a small-flowered plant of a genus of usually spring-blooming flowers that have leafy stems and purple, yellow or white flowers.
+castle|(noun) a large fortified building often surrounded by a moat.
+bicycle|(noun) a vehicle that has two wheels one behind the other, a steering handle, a seat and pedals, which are used to propel it.
+village|(noun) a small cluster of houses and other buildings (as stores and churches) forming a unit distinct from the surrounding countryside.
+promptly|(adverb) at once : immediately, quickly.
+matron|(noun) a married woman who is usually older and has considerable social position or some other special prestige.
+produce|(noun) agricultural products (as fresh fruits and vegetables).
+horrid|(adjective) inspiring disgust : nasty.
+invitation|(noun) a written or verbal request to be present or participate.
+faucet|(noun) a fixture for drawing a liquid from a pipe or other vessel.
+enormous|(adjective) marked by extraordinarily great size, number, degree or significance.
+canal|(noun) an artificial waterway designed for navigation or for draining or irrigating land.
+shilling|(noun) a former British monetary unit that was equal to 12 pence or 1/20 pound.
+halter|(noun) a rope or strap with or without a part that encircles the head that is used to lead or tie up a horse or other animal.
+basting|(verb) moistening foods with liquid (such as pan drippings) while they are cooking to prevent the food from drying out and to add flavor.
+hornet|(noun) any of the larger social wasps that are vigorous strong-flying insects with powerful stings.
+Viking|(noun) one of the pirate Northmen who plundered the coasts of Europe in the 8th to 10th centuries.
+chapel|(noun) a private place of worship.
+pouted|(verb) showed displeasure by thrusting out the lips or wearing a sullen expression.
+aspect|(noun) a position facing a particular direction : exposure.
+rotating|(verb) performing something in turn : alternating in a series.
+crooked|(adjective) bent : twisted.
+warmth|(noun) gentle heat.
+craggy|(adjective) full of steep, rugged, rocky natural high grounds.
+Icelandic|(adjective) relating to a language of the people from an island near the Arctic Ocean southeast of Greenland.
+temple|(noun) a building dedicated to the worship of a deity.
+engraved|(verb) cut upon (something, such as wood or metal) with a carving instrument in order to form an inscription or image.
+newlyweds|(plural noun) people recently married.
+protested|(verb) objected to.
+amusing|(adjective) pleasantly entertaining.
+cinders|(plural noun) ashes : the incombustible residue of something burnt.
+abroad|(adverb) beyond the boundaries of a country.
+superb|(adjective) of the highest quality.
+Norse|(adjective) of or relating to ancient Scandinavia or the language of its inhabitants.
+custody|(noun) protection, care, maintenance and tuition : guardianship.
+sullen|(adjective) gloomily or resentfully silent.
+Bollywood|(noun) the motion-picture industry in India.
+clambering|(verb) moving by or as if by catching hold with the hands and feet : crawling, climbing.
+strident|(adjective) marked by insistent, discordant, harsh or grating sound.
+severely|(adverb) in a manner that is strict in judgment, discipline or government.
+manure|(noun) animal waste from stables and barnyards that is used to supply nutrients to soil.
+intersect|(verb) to divide something by passing through or across it : cross.
+slobbery|(adjective) marked by drooling or allowing saliva to fall or dribble from the mouth.
+valuables|(plural noun) things of worth usually of the nature of personal effects.
+expensive|(adjective) characterized by high price or cost.
+Venice|(geographical entry) city and port in northeastern Italy.
+breakfast|(noun) the first meal of the day.
+salvation|(noun) the source, cause or means of preservation.
+unison|(adverb) in precise and perfect agreement — used with "in."
+diagram|(noun) a drawing or design that explains rather than represents.
+spinster|(noun) a woman who seems unlikely to marry.
+grocery|(noun) the store or place of business of a retail dealer in foods and household supplies.
+pastures|(plural noun) lands that are used for the grazing of animals or are suitable for such use.
+neglected|(adjective) not properly or sufficiently attended to or cared for.
+receptions|(plural noun) social gatherings often for the purpose of extending a ceremonious or formal welcome.
+energetic|(adjective) vigorously active.
+plantations|(plural noun) usually large estates in a tropical or subtropical region that are generally cultivated by unskilled or semiskilled labor under central direction.
+decent|(adjective) fairly good but not excellent.
+survival|(noun) the continuation of life or existence in the presence of or despite difficult conditions.
+disguise|(noun) unfamiliar or uncharacteristic style of dress worn to conceal one's identity.
+undesirable|(adjective) unwanted, objectionable.
+tonic|(noun) something that invigorates, restores, refreshes or stimulates.
+enlisted|(adjective) of, relating to, for, or constituting the part of a military or naval force ranked below commissioned officers and warrant officers.
+tomes|(plural noun) books that are often large or scholarly.
+levied|(verb) imposed or collected (as a tax or tribute) by legal process or by authority : exacted.
+bookmobile|(noun) a truck that serves as a traveling library.
+nursery|(noun) a child's bedroom.
+shortage|(noun) not enough of something that is required : deficit.
+precise|(adjective) lacking anything vague, unclear or uncertain.
+roundabout|(adjective) not following a straight line or course.
+handiwork|(noun) work done personally : personal or individual achievement.
+balloonist|(noun) someone who operates a bag that is filled with heated air or a gas lighter than air so as to rise and float in the atmosphere and that usually carries a suspended load (such as a gondola with passengers).
+improvise|(verb) to compose, recite or sing especially in verse or to play on an instrument or act without preparation.
+altitude|(noun) the vertical elevation of an object above a given level (such as a foundation, the ground or sea level).
+sparsely|(adverb) in a thinly scattered manner : scantily.
+musician|(noun) someone who is skilled at incorporating pleasing, expressive, or intelligible combinations of vocal or instrumental tones into a structured, continuous composition.
+practically|(adverb) nearly, almost.
+testament|(noun) a written document a person creates to declare their intent as to the disposal of their estate and effects after their death : will.
+simulate|(verb) to give the appearance or effect of : imitate.
+disengage|(verb) to loosen or detach from something clung to.
+Mohawk|(noun) a hairstyle with a narrow center strip of upright hair and the sides of the head shaved.
+exterior|(adjective) suitable for use on outside surfaces (as of a house).
+scenery|(noun) the array of impressive natural prospects and imposing features of a particular place.
+opponent|(noun) an adversary : a foe.
+allowance|(noun) an amount of money that is given in reimbursement and is to be used for personal or household expenses.
+committee|(noun) a group of people delegated to consider, investigate, or act on and usually to report on some matter or business.
+bulletin|(noun) a brief public notice concerning a matter of marked current interest and usually issuing from an authoritative source.
+hoarsely|(adverb) in a rough or harsh-sounding manner : gratingly.
+automated|(verb) converted to operation by mechanical or electronic devices that take the place of human labor.
+subdivision|(noun) a tract of land surveyed and divided into lots for purposes of sale.
+heralded|(verb) greeted especially with enthusiasm : hailed.
+appointed|(verb) assigned, designated or set apart by authority.
+regents|(plural noun) people who govern kingdoms when the sovereigns are not able to govern because they are too young or ill or are away.
+infraction|(noun) a violation by failure to follow, observe or obey.
+Pacific|(adjective) of or relating to the ocean extending from western North America and western South America to eastern Asia and Australia.
+affirmation|(noun) an act that confirms, validates or asserts something as true : a positive assertion.
+cipher; cypher|(noun) a method of transforming a text in order to conceal its meaning by substituting or rearranging letters.
+administration|(noun) performance of executive duties : management.
+geometry|(noun) a branch of mathematics that deals with the measurement, properties, and relationships of points, lines, angles, surfaces and solids.
+consecutive|(adjective) one right after the other often with small intervening intervals.
+scavenger|(noun) an organism that typically feeds on refuse or carrion.
+defensiveness|(noun) the quality or state of having or showing a tendency to react aggressively to any real or imagined criticism.
+vegetation|(noun) plant life or total plant cover (as of an area, forest or prairie).
+sconces|(plural noun) ornamental electric light fixtures for a wall that look like bracket candlesticks or groups of candlesticks.
+Cyclops|(noun) one of a race of giants in Greek mythology with a single eye in the middle of the forehead.
+aerospace|(adjective) of or relating to the earth's atmosphere and beyond, to vehicles used in that region or the manufacture of such vehicles, or to travel in that region.
+correctional|(adjective) dealing with the treatment of offenders through a program involving custody, parole and probation.
+segregation|(noun) the separation of a group of people based on their race, class, or ethnic group by such means as restricting where they live, the people with whom they interact, and which schools they can attend.
+instantaneous|(adjective) done, occurring or acting without any perceptible duration of time.
+nausea|(noun) a sensation of stomach discomfort usually associated with an urge to retch or vomit.
+Chesapeake|(geographical entry) city in southeastern Virginia south of Norfolk.
+atoll|(noun) a coral reef that appears above the sea as a circular coral island.
+miracle|(noun) an accomplishment or occurrence so outstanding or unusual as to seem beyond human capability or endeavor.
+callous|(adjective) feeling no sympathy for others : without regard for the feelings or welfare of others : indifferent to the suffering of others.
+grandiose|(adjective) characterized by magnificence, by pretense and pomp or arrogance, or by absurd exaggeration.
+dexterity|(noun) skill and ease in using the hands.
+barrette|(noun) a clip used to hold hair in place.
+cordial|(adjective) showing warm and often hearty friendliness, favor or approval.
+alacrity|(noun) cheerful readiness : eagerness.
+marmalade|(noun) a soft clear jelly with pieces or slices of fruit and fruit rind.
+orchids|(plural noun) plants of a family of herbaceous plants that have bulbous or thickened roots and extremely complex showy flowers.
+despondency|(noun) condition of feeling extreme depression.
+composure|(noun) calmness especially in frame of mind or in bearing or appearance : self-possession.
+jauntily|(adverb) in a light or carefree manner.
+Hispaniola|(geographical entry) island in the Caribbean Sea that is divided between Haiti and the Dominican Republic.
+quantum|(noun) one of the very small increments or parcels into which many forms of energy are subdivided.
+calamine|(noun) a powder that consists of zinc oxide and ferric oxide that is used in lotions and skin treatments.
+exasperation|(noun) noticeable irritation or annoyance.
+sophomore|(noun) a student in the second year at a college or a secondary school.
+reprobate|(verb) to disapprove of.
+annoyance|(noun) a source of irritation.
+paralysis|(noun) a state of powerlessness or inactivity.
+chimpanzee|(noun) an ape from Africa that resembles humans and is smaller than the gorilla.
+peroxide|(noun) a binary compound containing a relatively high proportion of oxygen.
+amputation|(noun) a cutting off.
+conspiracy|(noun) an illegal plan to destroy a person or group.
+sinewy|(adjective) having tendons.
+flabbergasted|(verb) overwhelmed with shock, surprise or wonder.
+boisterously|(adverb) rowdily.
+linoleum|(noun) a floor covering made by laying on a burlap or canvas backing a mixture of solidified linseed oil and various solid particles and usually pigments.
+tapirs|(plural noun) plant-eating mammals from tropical American and southeastern Asia that have a heavy, sparsely hairy body and short flexible trunk.
+repugnance|(noun) strong dislike, distaste or antipathy.
+impeccable|(adjective) flawless.
+contagious|(adjective) communicable by contact.
+stevedores|(plural noun) those who work at or are responsible for the loading or unloading of a ship in port.
+commendable|(adjective) worthy of praise.
+incessant|(adjective) unceasing.
+ricochet|(noun) a glancing rebound or skipping (as of a flat stone thrown along the surface of water).
+tribulations|(plural noun) distresses or sufferings resulting from oppression, persecution, affliction or sometimes contact with the physical environment.
+azalea|(noun) a plant with deciduous leaves and funnel-shaped flowers.
+fluorescent|(adjective) producing light by a substance of electromagnetic radiation.
+reservoir|(noun) a place where water is collected and kept in quantity for use when wanted.
+truculently|(adverb) in a cruel or fierce manner.
+generalissimo|(noun) the chief commander of an army.
+vociferous|(adjective) marked by or given to ready vehement insistent outcry.
+merengue|(noun) a popular Dominican and Haitian ballroom dance.
+claustrophobic|(adjective) inclined to abnormal dread of being in closed or narrow spaces.
+Methuselah|(noun) a person of great age.
+entrepreneurs|(plural noun) people who own and manage a business.
+monsieur|(noun) mister.
+pièce de résistance|(noun) the showpiece of a collection.
+proviso|(noun) an article or clause (as in a statute, contract or grant) that introduces a condition, qualification or limitation.
+dragoons|(plural noun) 17th- and 18th-century soldiers who rode on horseback.
+gargoyle|(noun) a spout that is often in the shape of a grotesque animal and projects from a roof gutter to throw rainwater clear of a building.
+anecdote|(noun) a short story about an interesting situation.
+brigands|(plural noun) bandits.
+mandible|(noun) jaw.
+crampon|(noun) a steel frame with spikes that is attached to a boot with straps for use in climbing on ice and snow.
+Sherpa|(noun) a member of a Tibetan people living on the high southern slopes of the Himalayas and skilled in mountain climbing.
+malign|(verb) to utter injuriously misleading or deliberately and damagingly false reports about.
+boroughs|(plural noun) medieval groups of houses forming towns.
+monomania|(noun) extreme or excessive concentration on a single object or idea.
+taxidermy|(noun) the art of preparing lifelike representations of animals by stuffing the skin.
+piteously|(adverb) in a manner deserving mercy or compassion.
+strenuous|(adjective) arduous : rigorous.
+intimation|(noun) announcement, notification.
+conundrum|(noun) a puzzle or problem that is usually intricate and difficult to solve.
+atrocity|(noun) a savagely brutal or cruel deed.
+voluminous|(adjective) having or marked by great amount, bulk, mass or quantity.
+propaganda|(noun) the spreading of ideas, information, or rumor for the purpose of either helping or injuring an institution, cause, or person.
+conspicuous|(adjective) undesirably noticeable.
+premonition|(noun) anticipation of an event without conscious reason.
+memorandum|(noun) a usually brief informal communication typically written for interoffice circulation.
+pastrami|(noun) a highly seasoned smoked beef prepared especially from shoulder cuts.
+germinate|(verb) to begin to grow.
+parenthetical|(adjective) enclosed in both of the curved marks used in writing and printing to enclose text.
+crematoria|(plural noun) buildings containing furnaces for reducing (a dead body) to ashes by the action of fire.
+massacres|(plural noun) mass killings.
+petulance|(noun) the quality or state of being insolent or rude in speech or behavior.
+facilitate|(verb) to make easier or less difficult.
+extenuation|(noun) partial justification.
+incarcerated|(verb) imprisoned.
+appendectomy|(noun) the surgical removal of a narrow tube found in the abdomen.
+subterranean|(adjective) functioning, operating or suitable for operating beneath the surface of the earth.
+financiers|(plural noun) people who invest a lot of money in a business.
+treacherous|(adjective) characterized by usually hidden dangers, hazards or perils.
+orthopedic; orthopaedic|(adjective) marked by or affected with a deformity, disorder or injury of the skeleton and associated structures.
+sphinx|(noun) a monster in Greek mythology having typically a lion’s body, wings, and the head and bust of a woman.
+lama|(noun) a priest or monk of Tibetan Buddhism.
+celerity|(noun) speed.
+acacias|(plural noun) plants from warm regions that have white or yellow flowers.
+Seminole|(noun) a Muskogean people.
+hallucinations|(plural noun) perceptions of objects with no reality.
+endeavor; endeavour|(verb) to try very hard to do something.
+labyrinthine|(adjective) like a structure full of intricate passageways that make it difficult to find the way from the interior to the entrance or from the entrance to the center.
+excruciating|(adjective) so intense as to cause great pain or anguish.
+lichenous|(adjective) resembling a complex plantlike organism made up of alga and a fungus growing on a solid surface (such as a rock or the bark of trees).
+chandeliers|(plural noun) lighting fixtures suspended from the ceiling with two or more arms bearing lights.
+uncoquettish|(adjective) not trifling : sincere.
+tempestuous|(adjective) of, involving or resembling a furious storm.
+Pyrenees|(geographical entry) mountains along the French-Spanish border from the Bay of Biscay to the Gulf of Lion.
+interpolated|(verb) inserted words into a text.
+cypress|(noun) any of a genus of cone-bearing, evergreen trees and shrubs with usually scalelike, overlapping leaves and reddish to brown bark that often peels or flakes off in strips or scales.
+disquisition|(noun) a complex essay or discussion that serves to explain or analyze a topic.
+translucent|(adjective) transparent.
+annexation|(noun) the act of uniting a country or other territory into the domain of another state.
+expeditionaries|(plural noun) people who go on a journey, voyage or excursion for a specific purpose.
+bilious|(adjective) marked by disordered liver function.
+interstices|(plural noun) crevices.
+hermetically|(adverb) in a manner that prevents entry or change.
+mythos|(noun) a story invented as a veiled explanation of a truth.
+cupolas|(plural noun) rounded vaults raised on a circular or other base and forming a roof or a ceiling.
+grotesque|(adjective) departing markedly from the natural, the expected or the typical (as by distortion, exaggeration) : atypical.
+pulmonary|(adjective) of, relating to or associated with the lungs.
+frontispiece|(noun) an illustration that falls before the title page of a book or magazine.
+succulent|(adjective) full of juice : juicy.
+clandestine|(adjective) done in secrecy.
+pestiferous|(adjective) causing annoyance, irritation or vexation.
+requisites|(plural noun) things that are required or necessary.
+pitons|(plural noun) usually iron spikes, wedges or pegs that are driven into fissures or cracks into rock or ice so as to serve as a support for climbers, and that often have an eye at one end through which safety ropes may be passed.
+incongruous|(adjective) characterized by lack of harmony, consistency or compatibility with one another.
+variegated|(adjective) marked with different colors or tints in spots, streaks or stripes.
+lassitude|(noun) fatigue.
+avocations|(plural noun) hobbies.
+raillery|(noun) good-natured ridicule : mockery.
+sanguine|(adjective) marked by eager hopefulness : ardently or confidently optimistic.
+tête–à–tête|(noun) a private conversation between two people.
+mitochondria|(plural noun) round cellular organelles that are found outside the nucleus, produce energy for the cell, and are rich in fats, proteins and enzymes.
+putrefaction|(noun) the decomposition of organic matter.
+concierge|(noun) an attendant at the entrance of a building : a doorkeeper.
+gauss|(noun) the centimeter-gram-second electromagnetic unit of magnetic induction.
+connubial|(adjective) of or relating to marriage.
+unpropitious|(adjective) not favorably disposed : not graciously inclined : not benevolent.
+caravel|(noun) a small sailing vessel of the 15th and 16th centuries.
+millinery|(noun) the business or work of one who designs, makes, trims or sells women's hats.
+coppice|(noun) a thicket, grove or growth of small trees that are cut on a short rotation.
+pecuniary|(adjective) taking the form of or consisting of money.
+expatiated|(verb) spoke or wrote at length or in great detail.
+supercilious|(adjective) arrogantly superior : haughty : disdainful.
+formaldehyde|(noun) a very reactive organic compound that is used chiefly as a disinfectant and preservative.
+vicissitudes|(plural noun) changes in condition (as of wealth, prosperity or happiness).
+oologist|(noun) a collector of birds' eggs.
+auspices|(plural noun) protection.
+panegyric|(noun) a speech or writing expressing praise.
+cabochon|(noun) a gem or bead that has been polished but not cut to enhance beauty.
+verdigris|(noun) a green or bluish deposit especially of copper carbonates formed on copper, brass or bronze surfaces.
+rhododendron|(noun) any of various plants of a genus of the same name with persistent leathery leaves and bell-shaped flowers.
+Kilimanjaro|(geographical entry) a volcanic mountain in Tanzania near the border of Kenya whose central peak is the highest point in Africa.
+coquelicot|(noun) an annual red-flowered poppy.
+ichthyosaurus|(noun) a reptile of a genus of Mesozoic marine reptiles having a fish-like body, an elongated snout and limbs modified into paddles.
+cicerone|(noun) a guide who leads sightseers to places or objects of interest (as a museum or a monument).

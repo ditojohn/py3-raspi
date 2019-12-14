@@ -1,450 +1,450 @@
-bat
-sock
-yam
-peep
-candy
-pull
-bark
-melt
-sky
-lucky
-smug
-vote
-truck
-blob
-tank
-napkin
-good
-dress
-store
-apart
-thing
-all-star
-five
-jelly
-tiger
-fuzzy
-trace
-broom
-frame
-hidden
-navy
-glass
-copycat
-plus
-down
-goldfish
-cheese
-problem
-cranny
-grandma
-patch
-erase
-tuba
-curly
-soup
-towel
-only
-sailor
-blue
-which
-rare
-pamper
-dojo
-chair
-forget
-arch
-bedrock
-satin
-dizzy
-solo
-passport
-habits
-cream
-regular
-x-ray
-teacher
-splashy
-Ping-Pong
-attic
-brunch
-hallway
-truth
-quack
-connect
-newbie
-husband
-April
-exam
-reward
-caramel
-trademark
-Velcro
-atlas
-motto
-frothy
-puddle
-zilch
-length
-canopy
-surefire
-tractor
-jersey
-sofa
-likable; likeable
-hinge
-dozen
-people
-future
-cough
-balm
-gusto
-marlin
-o'clock
-upshot
-barter
-hefty
-glimmer
-jackpot
-warning
-sonar
-garlic
-forum
-plaza
-silent
-domino
-naysayer
-around
-glance
-curries
-layover
-splendid
-random
-zinger
-Band-Aid
-eyebrow
-atomic
-native
-watchdog
-dearly
-clutch
-polar
-impostor; imposter
-tirade
-field
-postpone
-ocean
-parade
-coward
-error
-owlishly
-barrel
-kiwi
-beagle
-acre
-bawl
-euro
-tomorrow
-wrinkle
-crumb
-dough
-rattler
-medley
-difficult
-flattery
-drench
-bonkers
-seldom
-mustang
-fringe
-calico
-mutiny
-blossom
-magma
-snippet
-grumbling
-mineral
-scarlet
-granola
-umpire
-Americana
-nimble
-trinket
-shoehorn
-aloha
-pedigree
-hubbub
-several
-galaxy
-torrent
-announcer
-beverage
-waist
-valiant
-thigh
-everglades
-summary
-atrium
-truce
-masterpiece
-emerald
-nonfiction
-platoon
-junior
-kangaroo
-excuse
-astronaut
-lyrics
-breadwinner
-worrywart
-cymbals
-dispel
-phrasing
-coffee
-dwindled
-median
-soprano
-tropical
-catalog; catalogue
-lactose
-diploma
-smidge
-tarnish
-fondant
-cyberspace
-prowess
-measly
-origin
-trellis
-autumn
-variety
-moxie
-parable
-chemistry
-splurge
-balderdash
-hodgepodge
-swollen
-diagonal
-superlative
-macaw
-Victorian
-fulfilling
-columnist
-bewilder
-hammock
-squander
-curfew
-absurd
-hoity-toity
-whiff
-nurture
-vicinity
-wharf
-eerily
-lavender
-gauze
-mirthful
-beret
-evaporation
-vigorously
-boycott
-impulse
-winsome
-alternate
-ottoman
-entertain
-anorak
-documentary
-jargon
-gratis
-sympathy
-paragon
-festooned
-tonsils
-mogul
-udon
-frequently
-pomposity
-marathon
-polemic
-casserole
-platinum
-mundane
-alpaca
-billiards
-cyclone
-Scrooge
-genteel
-collude
-guardian
-mosaic
-personnel
-tapioca
-electrode
-modular
-quagmire
-enunciate
-melodramatic
-epoxy
-chortle
-WYSIWYG
-yurt
-banquet
-escarpment
-zealous
-décor
-revelation
-vague
-cumulus
-montage
-query
-maximum
-territory
-nationalism
-latency
-obscure
-Gemini
-fundamental
-badger
-alfresco
-sustainable
-tarmac
-approximate
-hypnotic
-tranquil
-synthetic
-organelle
-maverick
-infrastructure
-caftan; kaftan
-résumé
-cylindrical
-hubris
-pathogen
-carnitas
-stagflation
-esoteric
-pinnacle
-molasses
-contentious
-acoustic
-supine
-tenement
-philharmonic
-quid pro quo
-iambic
-legislature
-spectacles
-methodology
-umbrage
-diametrically
-commandeer
-proprietary
-Celsius
-migraine
-cartouches
-resilience
-pancetta
-braille
-gibbous
-germane
-augment
-serpentine
-jurisdiction
-languish
-acetone
-plaintiff
-reciprocate
-laceration
-inclement
-generosity
-arboreal
-ramifications
-excursion
-olfactory
-adhesion
-par excellence
-shoji
-ostensibly
-appositive
-soirée
-effusive
-impervious
-Sanskrit
-espadrille
-patrician
-estuary
-frigate
-commodious
-machination
-quasar
-corollary
-inimical
-garrulous
-tarantula
-mazel tov; mazal tov
-esplanade
-smorgasbord
-mawkish
-temerity
-nascent
-phoenix
-buoyancy
-melee
-ciao
-schnitzel
-porcelain
-evanescent
-acquiesce
-pharaoh
-gossamer
-deciduous
-nanotechnology
-basilica
-solstice
-conglomerate
-turpitude
-fungible
-desertification
-anemone
-oubliette
-sakura
-xenophobic
-gargantuan
-corsair
-idiosyncratic
-vituperative
-Orwellian
-bossa nova
-pachyderm
-vainglorious
-hegemony
-echelon
-larynx
-concatenate
-arpeggio
-obelisk
-sanctimonious
-force majeure
-tungsten
-auriferous
-pulchritude
-de rigueur
-nunchaku
-guttural
-interlocutor
-joule
-freesia
-susurration
-potpourri
-leitmotif; leitmotiv
-Chihuahua
-ecclesiastical
-cozen
-insouciance
-jai alai
-desiccate
-Iroquois
-cheongsam
-eleemosynary
+bat|(noun) a usually wooden piece of sports equipment used to hit a ball.
+sock|(noun) a piece of clothing that covers the foot and is worn inside a shoe.
+yam|(noun) a sweet potato with brown skin and usually orange flesh.
+peep|(noun) a weak, high sound like a chirp or a squeak.
+candy|(noun) a sweet food made with sugar and often flavoring (such as chocolate) and filling.
+pull|(verb) to hold onto something and move it toward yourself or toward the direction you are going.
+bark|(verb) to make a short loud explosive sound (like a dog).
+melt|(verb) to change from a solid to a liquid because of heat.
+sky|(noun) the space surrounding the earth.
+lucky|(adjective) having good fortune.
+smug|(adjective) marked by belief in one's own superiority, virtue and respectability.
+vote|(verb) to give a formal opinion in response to a proposed decision.
+truck|(noun) a vehicle built for moving things in its own frame.
+blob|(noun) a small drop or lump of something thick and wet.
+tank|(noun) a large container for holding liquid.
+napkin|(noun) a piece of fabric or paper used during a meal to wipe your lips or hands.
+good|(adjective) correct, proper or right.
+dress|(verb) to put clothes on.
+store|(noun) a place where things are available to buy.
+apart|(adverb) away from one another.
+thing|(noun) an object whose name is not said or not known.
+all-star|(adjective) made up of the best performers or participants.
+five|(adjective) being one more than four.
+jelly|(noun) a soft food made by boiling sugar and fruit juice.
+tiger|(noun) a large, wild cat that lives in Asia and usually has orange fur with black stripes.
+fuzzy|(adjective) looking furry, soft or fluffy.
+trace|(verb) to copy something (such as a drawing) by putting a see-through piece of paper over it and following the lines.
+broom|(noun) a brush on a long handle that is used for sweeping.
+frame|(noun) an open structure used for holding and supporting something.
+hidden|(adjective) out of sight : concealed.
+navy|(noun) a dark blue with gray and purple tones.
+glass|(noun) a hard, brittle and usually transparent substance used to make windows, drinking vessels and other items.
+copycat|(noun) a person who imitates or adopts another person's ideas, style or behavior.
+plus|(preposition) increased by.
+down|(adverb) from a higher place to a lower place.
+goldfish|(noun) a small usually yellow or orange fish that is often kept in ponds or fish tanks.
+cheese|(noun) the curd of milk that has been pressed and ripened for use as a food.
+problem|(noun) something that is a source of difficulty, trouble or worry.
+cranny|(noun) a small space that is easy to overlook and is a likely place to hide something.
+grandma|(noun) the female parent of either of your parents.
+patch|(noun) a piece used to mend or cover a hole or a weak spot.
+erase|(verb) to remove written letters or figures by rubbing or scraping.
+tuba|(noun) a large, low-pitched brass musical instrument.
+curly|(adjective) twisting into round or curved shapes.
+soup|(noun) a liquid food made with broth that often contains pieces of meat, fish, pasta or vegetables.
+towel|(noun) a rectangular piece of absorbent cloth or paper for wiping or drying.
+only|(adjective) alone in a class or category.
+sailor|(noun) a person who works on the crew of a boat or ship.
+blue|(adjective) having the color of the clear sky or the deep sea.
+which|(adjective) being what one or ones out of a group.
+rare|(adjective) not occurring or appearing very often : unusual.
+pamper|(verb) to treat with a lot of care and attention.
+dojo|(noun) a school for training in judo, karate or other martial arts.
+chair|(noun) a seat for one person that usually has four legs and a back.
+forget|(verb) to not be able to think of or remember.
+arch|(noun) a typically curved structure that goes over the top of and supports an opening (as in a wall).
+bedrock|(noun) the solid stone that is under the ground and soil.
+satin|(noun) a smooth fabric with a shiny front and dull back.
+dizzy|(adjective) feeling like your head is spinning and you might fall.
+solo|(noun) a piece of music played or sung by a single person.
+passport|(noun) an identification document that is issued to a citizen of a country that is used to allow the person to leave and come back to that country.
+habits|(plural noun) normal repeated behaviors.
+cream|(noun) the thick part of milk that contains butterfat.
+regular|(adjective) not showing change in occurrence, practice or habit.
+x-ray|(verb) to examine, treat or photograph with powerful invisible rays that make it possible to see inside things (such as the human body).
+teacher|(noun) a person who helps another learn a subject or a skill.
+splashy|(adjective) showy in a way that attracts attention.
+Ping-Pong|(trademark) a game played on a table with wooden paddles and a small plastic ball: table tennis.
+attic|(noun) a room or storage space just below the roof of a building.
+brunch|(noun) a meal served usually in the late morning.
+hallway|(noun) the area inside the entrance of a building.
+truth|(noun) the real state of things : fact.
+quack|(noun) the sound a duck makes or an imitation of it.
+connect|(verb) to join, fasten or link (two or more) things together.
+newbie|(noun) a person who has recently started a particular activity: a beginner.
+husband|(noun) a married man.
+April|(noun) the fourth month of the year.
+exam|(noun) a test given by a teacher to show how much a student has learned over a period of time.
+reward|(noun) something that is given for a service provided or an achievement reached.
+caramel|(noun) a light brown color.
+trademark|(noun) a name or symbol that is used to identify a maker's products and that can legally only be used by its owner.
+Velcro|(trademark) – used for a closure made from fabric with small hooks that sticks to another piece of the same fabric.
+atlas|(noun) a book of maps.
+motto|(noun) a short phrase or sentence that expresses a guiding principle for a person or group.
+frothy|(adjective) full of foam or light bubbles.
+puddle|(noun) a small, shallow pool of water and especially of muddy or dirty water.
+zilch|(noun) nothing.
+length|(noun) the distance from end to end.
+canopy|(noun) a covering usually for shelter or protection.
+surefire|(adjective) certain to succeed : dependable.
+tractor|(noun) a usually four-wheeled vehicle used mainly on farms to pull or drive equipment.
+jersey|(noun) a soft knitted fabric used for making clothing.
+sofa|(noun) a couch usually with arms and a back that is often able to be made into a bed.
+likable; likeable|(adjective) having pleasant qualities : easy to enjoy.
+hinge|(noun) a jointed piece on which a swinging part (like a door or a lid) turns.
+dozen|(noun) a group of 12.
+people|(plural noun) human beings in general.
+future|(noun) time that is to come.
+cough|(verb) to force air from the lungs suddenly with a loud noise.
+balm|(noun) a healing ointment.
+gusto|(noun) enthusiastic enjoyment or delight.
+marlin|(noun) a big fish that lives in the ocean and that people catch for sport.
+o'clock|(adverb) according to the clock.
+upshot|(noun) outcome.
+barter|(verb) to trade goods or services for other things rather than using money.
+hefty|(adjective) impressively large.
+glimmer|(noun) a small amount or degree : a faint trace.
+jackpot|(noun) an unexpected success or reward.
+warning|(noun) a notice, bulletin or signal that serves to caution of the approach of danger.
+sonar|(noun) a device used for finding underwater objects by using reflected sound waves.
+garlic|(noun) the bulb of a plant related to the onion that has a strong smell and taste, is composed of smaller bulbs called cloves, and is used in cooking.
+forum|(noun) a place where open discussion can happen.
+plaza|(noun) a public square in a city or town.
+silent|(adjective) not making noise : completely quiet.
+domino|(noun) a flat rectangular block the face of which is divided into two equal parts that are blank or bear from one to six dots, and that is used to play a game.
+naysayer|(noun) one who denies, refuses or opposes.
+around|(adverb) approximately, about.
+glance|(noun) a quick look.
+curries|(plural noun) foods that are seasoned with a blend of ground spices.
+layover|(noun) a temporary stop in a journey.
+splendid|(adjective) excellent, praiseworthy.
+random|(adjective) lacking or seeming to lack a regular plan, purpose or pattern.
+zinger|(noun) a quick and witty comment that criticizes or insults someone.
+Band-Aid|(trademark) a small bandage.
+eyebrow|(noun) the arch or ridge over the eye, or the covering of hair growing on it.
+atomic|(adjective) of or relating to the smallest particles of an element.
+native|(adjective) born in a particular place or country.
+watchdog|(noun) a dog that is trained to guard property.
+dearly|(adverb) with affection : fondly.
+clutch|(verb) to hold onto something tightly with your hand.
+polar|(adjective) of, relating to or near the north pole or the south pole.
+impostor; imposter|(noun) a person who tricks others by pretending to be someone else.
+tirade|(noun) a long speech marked by harsh language : rant.
+field|(noun) an area, category or division of work or study.
+postpone|(verb) to hold back to a later time : defer, delay.
+ocean|(noun) the salt water that covers nearly three fourths of the surface of the earth.
+parade|(noun) a public procession : the movement of people or things in order.
+coward|(noun) someone who is easily intimidated or frightened.
+error|(noun) an act or statement that is not correct.
+owlishly|(adverb) in a manner resembling or suggesting an owl.
+barrel|(noun) a round container that usually has curved sides, that is taller than it is wide, and that has a flat top and bottom.
+kiwi|(noun) a bird from New Zealand that cannot fly and that has weak wings and a long bill.
+beagle|(noun) a small hunting dog with short legs and smooth fur that is often black, brown and white.
+acre|(noun) any of various units of land area.
+bawl|(verb) cry out loudly and without restraint : yell.
+euro|(noun) the common notes and coins used by most countries of the European Union.
+tomorrow|(adverb) on or for the day after today.
+wrinkle|(noun) a slight fold formed on a surface of a smooth substance : crease.
+crumb|(noun) a tiny piece of food.
+dough|(noun) a mixture of flour and other ingredients that is kneaded or rolled and then baked.
+rattler|(noun) a New World pit viper that has a series of horned interlocking joints at the end of the tail which make short sharp noises when vibrated.
+medley|(noun) a performance blending together a series of songs or other musical pieces.
+difficult|(adjective) hard to do : not easy.
+flattery|(noun) praise that is excessive or not sincere.
+drench|(verb) to make completely wet.
+bonkers|(adjective) as if broken in mind.
+seldom|(adverb) not often.
+mustang|(noun) the small strong wild horse of western North America descended from horses brought in by the Spaniards.
+fringe|(noun) a decorative border of hanging threads or strips.
+calico|(noun) a blotched or spotted animal.
+mutiny|(noun) refusal to obey authority or orders.
+blossom|(noun) the usually colorful flower of a seed plant.
+magma|(noun) hot liquid rock below the earth's surface.
+snippet|(noun) a small part, piece or thing; specifically : a brief quotable passage.
+grumbling|(verb) complaining in a low voice.
+mineral|(noun) a substance (such as diamond, gold or quartz) that is naturally formed and is not of plant or animal origin.
+scarlet|(noun) any of various bright reds.
+granola|(noun) rolled oats mixed with other ingredients (such as brown sugar, raisins, coconut and nuts) and eaten for breakfast or as a snack.
+umpire|(noun) an official in a sport who rules on the plays.
+Americana|(plural noun) materials concerning or characteristic of America.
+nimble|(adjective) marked by quick light movement : agile.
+trinket|(noun) a small ornament (as a jewel or ring).
+shoehorn|(verb) to force into a small, narrow or insufficient space : squeeze.
+aloha|(noun) love, affection, kindness — often used to express greeting or farewell.
+pedigree|(noun) a list showing the line of ancestors for a person or animal.
+hubbub|(noun) a noisy confusion of sound.
+several|(adjective) being more than two in number but not very many.
+galaxy|(noun) one of billions of large systems of stars that make up the universe.
+torrent|(noun) a raging flood or outpouring.
+announcer|(noun) a person who introduces television or radio programs and gives information.
+beverage|(noun) a liquid for drinking.
+waist|(noun) the part of the body between the chest and hips.
+valiant|(adjective) showing courage : brave
+thigh|(noun) the part of the leg from the hip to the knee.
+everglades|(plural noun) swampy grasslands at least seasonally covered by slowly moving water.
+summary|(noun) a short restatement of the main points.
+atrium|(noun) a square hall from which other rooms open and which is often used as a sitting room.
+truce|(noun) an agreement between opponents to stop fighting for a period of time.
+masterpiece|(noun) a supreme intellectual or artistic achievement ; specifically : a work that marks the high point of a person's creativity.
+emerald|(noun) a highly prized gemstone of rich green color.
+nonfiction|(noun) writing that is about facts or real events (rather than novels or stories).
+platoon|(noun) a unit of soldiers consisting of two or more squads led by a lieutenant.
+junior|(adjective) designed for or done by young people, especially adolescents.
+kangaroo|(noun) a marsupial from Australia that moves by hopping on its strong rear legs.
+excuse|(noun) a reason given to justify a fault, mistake or defect.
+astronaut|(noun) a traveler in interplanetary space.
+lyrics|(plural noun) the words of a song.
+breadwinner|(noun) a family member whose wages pay for the household's expenses.
+worrywart|(noun) a person who worries too much or who worries for no reason.
+cymbals|(plural noun) large brass plates that make a clashing sound when struck together or hit with a drumstick.
+dispel|(verb) clear away : make something go away.
+phrasing|(noun) style of expression : wording.
+coffee|(noun) a drink made from the roasted and ground seeds of certain trees or shrubs that have cherrylike fruits.
+dwindled|(verb) became steadily less : diminished in size, amount or quality.
+median|(noun) a value that falls in the middle of a list of values arranged from smallest to largest, or which is the average of the two middle values if there is no one middle number.
+soprano|(noun) the highest voice part in four-part harmony.
+tropical|(adjective) of, relating to, occurring in or used in the region near the equator.
+catalog; catalogue|(noun) a pamphlet or book that contains a list of items arranged systematically often with other related matter.
+lactose|(noun) a type of sugar that is found in milk.
+diploma|(noun) a document that records that a person has completed a course or graduated from a school.
+smidge|(noun) a small amount.
+tarnish|(verb) to become dull, discolored or stained in appearance.
+fondant|(noun) a creamy sugar preparation that is used as a basis for candies or icings.
+cyberspace|(noun) the online world of computer networks and the Internet.
+prowess|(noun) extraordinary ability : excellence.
+measly|(adjective) contemptibly small.
+origin|(noun) ancestry : parentage.
+trellis|(noun) a frame made of crossing pieces of wood that is used as a screen or as a support for climbing plants.
+autumn|(noun) the season comprising the months of September, October and November — called also “fall.”
+variety|(noun) the quality or state of having numerous forms or types.
+moxie|(noun) audacity, nerve.
+parable|(noun) a short story that teaches a moral or religious lesson.
+chemistry|(noun) a science that deals with the composition, structure and properties of substances and transformations that they undergo.
+splurge|(verb) to indulge in some unusual activity, expense, pleasure or luxury.
+balderdash|(noun) nonsense : empty talk or discourse.
+hodgepodge|(noun) a mixture or medley of different things.
+swollen|(adjective) distended or puffed up, as by disease or injury.
+diagonal|(adjective) running across from corner to corner.
+superlative|(adjective) surpassing all others.
+macaw|(noun) a large long-tailed parrot that has bright, showy feathers and lives in Central and South America.
+Victorian|(adjective) relating to or typical of the art, letters or taste during Queen Victoria's reign.
+fulfilling|(verb) carrying out or accomplishing.
+columnist|(noun) a person who writes a regular newspaper feature or conducts a radio or television program similar to a feature.
+bewilder|(verb) to confuse.
+hammock|(noun) a swinging couch or bed usually made of netting or canvas and hanging by cords from supports at each end.
+squander|(verb) to spend extravagantly or foolishly : throw away.
+curfew|(noun) the hour at which persons (such as juveniles, military personnel, or other specified types) must be off the streets or at which businesses or places of assembly must be closed.
+absurd|(adjective) extremely silly, foolish or unreasonable : completely ridiculous.
+hoity-toity|(adjective) affecting superiority : haughty and patronizing.
+whiff|(noun) an inhalation of odor, smoke, gas or vapor.
+nurture|(verb) to further the development of : promote the growth of : foster.
+vicinity|(noun) a surrounding area or district.
+wharf|(noun) a structure built at the water's shore so that ships can load and unload cargo and passengers.
+eerily|(adverb) mysteriously or weirdly.
+lavender|(noun) a fragrant mint plant with narrow leaves and spikes of lilac-purple flowers.
+gauze|(noun) a loosely woven cotton fabric used to bandage wounds.
+mirthful|(adjective) full of gladness or merriment.
+beret|(noun) a soft flat hat that is usually woolen and has no visor.
+evaporation|(noun) the change by which a liquid is turned into a gas or a substance that consists of very small drops mixed with the air.
+vigorously|(adverb) forcefully, actively or energetically.
+boycott|(verb) combine against someone or something in a policy of absence of relations for economic or political reasons.
+impulse|(noun) a sudden spontaneous desire to do something.
+winsome|(adjective) causing joy or pleasure : agreeable, pleasant.
+alternate|(verb) take or do in turns.
+ottoman|(noun) an overstuffed footstool.
+entertain|(verb) to cause the time to pass pleasantly : amuse.
+anorak|(noun) a hooded jacket or pullover made of heavy windproof fabric.
+documentary|(noun) a film or television presentation that is factual.
+jargon|(noun) the technical language of specialists or workers in a particular activity or area of study.
+gratis|(adverb) without charge : free.
+sympathy|(noun) the feeling of being sensitive to or affected by someone else's emotions, experiences or especially sorrows.
+paragon|(noun) a model of excellence or perfection.
+festooned|(verb) suspended in a decorative chain hanging typically in a curve between two points.
+tonsils|(plural noun) a pair of masses of spongy tissue that lie one on each side of the throat.
+mogul|(noun) a dominant person in a particular business or field.
+udon|(noun) a Japanese noodle made from wheat flour.
+frequently|(adverb) at short intervals.
+pomposity|(noun) a self-important demeanor, speech or action.
+marathon|(noun) a footrace that is usually 26.2 miles in length.
+polemic|(adjective) of, relating to or of the nature of a controversial discussion or argument.
+casserole|(noun) a type of food cooked and served in a dish made of earthenware, glass or metal usually having a cover.
+platinum|(adjective) of, relating to, or made of a heavy, expensive silver metallic element that is difficult to melt and is often used in electronic devices and jewelry.
+mundane|(adjective) characterized by human affairs, concerns, and activities that are often practical, immediate, temporary and ordinary.
+alpaca|(noun) a South American animal like a llama with fine long woolly hair.
+billiards|(plural noun) any of several games played on a table by hitting balls into one another or into pockets using a long stick.
+cyclone|(noun) a storm with very high winds that rotate around a center of low atmospheric pressure.
+Scrooge|(noun) a person that hates to spend money.
+genteel|(adjective) not vulgar or rude : polite.
+collude|(verb) to connive with another : conspire, plot.
+guardian|(noun) a person who is legally appointed to the care of another person or another person's property.
+mosaic|(adjective) of or relating to a colored surface pattern or picture made of inlaid tile, marble or glass.
+personnel|(plural noun) individuals of a particular (as professional or occupational) group.
+tapioca|(noun) a preparation of cassava starch processed and used as a thickening agent in liquid foods, such as pudding, soups or juicy pies.
+electrode|(noun) a conductor used to establish electrical contact with a nonmetallic portion of a circuit.
+modular|(adjective) capable of being easily joined to or arranged with other parts or units.
+quagmire|(noun) a complex situation that is hard to get out of.
+enunciate|(verb) to pronounce words or sounds clearly.
+melodramatic|(adjective) extremely or overly emotional.
+epoxy|(noun) any of various sticky, flexible resins that usually become rigid when heated, are resistant to chemicals, and are often used in coatings and adhesives.
+chortle|(noun) a sound expressing pleasure or joy.
+WYSIWYG|(noun) a display on a computer that shows the exact appearance of a printed document.
+yurt|(noun) a circular domed tent of skins or felt used by Mongol nomads of Siberia.
+banquet|(noun) an elaborate meal attended by many people usually to celebrate a special event.
+escarpment|(noun) a long cliff or steep slope separating two flat or slightly sloped areas.
+zealous|(adjective) filled with passionate support for a person or a cause.
+décor|(noun) arrangement of accessories in interior ornamentation.
+revelation|(noun) something that is revealed : disclosure.
+vague|(adjective) not clearly expressed.
+cumulus|(noun) a cloud form with a flat base and rounded outlines that often looks like a mountain.
+montage|(noun) a quick sequence of images in a film or television program that develop a single theme, suggest a state of mind or bridge a time lapse.
+query|(noun) a request for information.
+maximum|(noun) the greatest quantity or value attainable in a given case.
+territory|(noun) a geographical area belonging to or controlled by a political authority.
+nationalism|(noun) a feeling characterized by an exaltation of one country above all others, and an emphasis on loyalty to and the promotion of one country as opposed to other countries.
+latency|(noun) the state or period of living and developing in a host without producing symptoms : incubation period.
+obscure|(adjective) difficult to understand : not clear.
+Gemini|(plural noun) the third sign of the zodiac.
+fundamental|(adjective) basic : underlying.
+badger|(verb) harass or pester someone in an attempt to confuse, annoy or wear down.
+alfresco|(adjective) open-air.
+sustainable|(adjective) capable of lasting for a long time without interruption, weakening, or losing in power or quality.
+tarmac|(noun) a road or runway made of asphalt.
+approximate|(adjective) near to correctness or accuracy : nearly exact.
+hypnotic|(adjective) tending to produce sleep.
+tranquil|(adjective) free from disturbance or turmoil : quiet, peaceful.
+synthetic|(adjective) produced by artificial processes : man-made.
+organelle|(noun) a specialized part of a cell performing functions like the organs of many-celled animals.
+maverick|(noun) a member of any group who refuses to follow the rules or traditions of the group.
+infrastructure|(noun) the underlying foundation or basic framework (as of an organization or a system).
+caftan; kaftan|(noun) an ankle-length coatlike garment with very long sleeves.
+résumé|(noun) a brief account of one's education and professional experience.
+cylindrical|(adjective) relating to or shaped like a tube.
+hubris|(noun) arrogance.
+pathogen|(noun) a specific cause of disease (such as a type of bacteria or virus).
+carnitas|(plural noun) small pieces of meat (especially pork) that are fried or roasted until crisp.
+stagflation|(noun) continual increases in the costs of goods and services combined with low demand for those goods and services and relatively high unemployment.
+esoteric|(adjective) difficult to understand.
+pinnacle|(noun) a high top of a hill or mountain.
+molasses|(noun) thick brown syrup made from raw sugar.
+contentious|(adjective) marked by a wearisome tendency to disputes.
+acoustic|(adjective) of or relating to sound or to the sense of hearing.
+supine|(adjective) lying on the back or with the face upward.
+tenement|(noun) a single room or set of rooms for use by one resident or family : an apartment.
+philharmonic|(noun) a musical concert or musical organization (as a society or orchestra).
+quid pro quo|(noun) something that is given to or done for you in return for something you have given to or done for someone else.
+iambic|(adjective) relating to or consisting of a unit of rhythm usually of one unstressed syllable followed by one stressed syllable.
+legislature|(noun) an organized group of people with the authority to make or change laws.
+spectacles|(plural noun) glasses.
+methodology|(noun) a set of methods, procedures and rules employed by a science, art or discipline.
+umbrage|(noun) displeasure : resentment : annoyance.
+diametrically|(adverb) completely : utterly.
+commandeer|(verb) to take arbitrary or forcible possession of.
+proprietary|(adjective) made and marketed by a person or persons having the exclusive right to manufacture and sell.
+Celsius|(adjective) relating to the international thermometric scale on which 0 is the freezing point and 100 is the boiling point of water.
+migraine|(noun) a severe headache that usually affects one side of the head, is often accompanied by nausea, and is followed by sleep.
+cartouches|(plural noun) oval or oblong figures (as on ancient Egyptian monuments) enclosing a sovereign's name.
+resilience|(noun) the ability to recover from or adjust easily to misfortune or change.
+pancetta|(noun) unsmoked bacon used in Italian cuisine.
+braille|(noun) a system of writing for the blind that uses letters represented by raised dots.
+gibbous|(adjective) seen with more than half but not all of the visible surface lit up — used of a moon or planet.
+germane|(adjective) relating to a subject in an appropriate way : pertinent.
+augment|(verb) enlarge or increase in size, amount or degree.
+serpentine|(adjective) winding or turning one way and another.
+jurisdiction|(noun) the area within which authority may be exercised.
+languish|(verb) to lose strength or animation : fade.
+acetone|(noun) a volatile fragrant flammable liquid used chiefly as a solvent.
+plaintiff|(noun) one who commences a personal action suit or lawsuit to obtain a remedy for an injury to one’s rights.
+reciprocate|(verb) return in kind or degree : repay.
+laceration|(noun) a wound made by tearing or rending roughly.
+inclement|(adjective) of weather: harsh, rough or stormy.
+generosity|(noun) the quality of being willing to give money and other valuable things to others.
+arboreal|(adjective) inhabiting or frequenting trees.
+ramifications|(plural noun) resulting developments : consequences.
+excursion|(noun) a usually brief trip for pleasure.
+olfactory|(adjective) of, relating to or connected with the sense of smell.
+adhesion|(noun) steady or firm attachment to a person, party, principle or idea : adherence.
+par excellence|(adjective) being the best of its kind.
+shoji|(noun) a paper screen serving as a wall, partition or sliding door.
+ostensibly|(adverb) to all outward appearances.
+appositive|(adjective) relating to a grammatical construction where one noun or noun phrase follows another noun or noun phrase but refers to the same person or thing.
+soirée|(noun) an evening party or reception.
+effusive|(adjective) expressing unrestrained emotion.
+impervious|(adjective) not allowing entrance or passage through : impenetrable.
+Sanskrit|(noun) an ancient language that is the classical language of India and of Hinduism.
+espadrille|(noun) a sandal with a fabric upper and a flexible often rope sole.
+patrician|(adjective) of, relating to or characteristic of gentle or noble birth or of breeding and cultivation.
+estuary|(noun) a water passage where the tide meets the current of a stream.
+frigate|(noun) a warship that is smaller than a cruiser and larger than a destroyer.
+commodious|(adjective) large or roomy and convenient.
+machination|(noun) a scheme or subtle maneuver intended to accomplish some end.
+quasar|(noun) a bright celestial object that resembles a star, is extremely distant from earth and has a huge energy output.
+corollary|(noun) a proposition that follows one just demonstrated and that requires no additional proof.
+inimical|(adjective) viewing with disfavor: hostile.
+garrulous|(adjective) loquacious : talkative.
+tarantula|(noun) a large hairy spider that is capable of biting but is not significantly poisonous to humans.
+mazel tov; mazal tov|(interjection) — used among Jewish people to express congratulations.
+esplanade|(noun) a level open stretch of paved or grassy ground often designed for walking or driving.
+smorgasbord|(noun) a buffet offering a variety of foods and dishes.
+mawkish|(adjective) falsely or immaturely sentimental.
+temerity|(noun) unreasonable or foolhardy contempt of danger or opposition.
+nascent|(adjective) emerging : beginning to exist.
+phoenix|(noun) a legendary bird that is consumed in fire by its own act and then rises from its own ashes.
+buoyancy|(noun) the tendency to float on the surface of a liquid or in a fluid.
+melee|(noun) a confused fight, contest or struggle between individuals.
+ciao|(interjection) — used conventionally as an utterance at meeting or parting.
+schnitzel|(noun) a seasoned and garnished veal cutlet.
+porcelain|(noun) a hard, white, delicate ceramic substance that is fired at a high temperature, and is used especially for table and ornamental goods.
+evanescent|(adjective) lasting a very short time : fleeting.
+acquiesce|(verb) to accept something or comply with something passively or by not arguing.
+pharaoh|(noun) a ruler of ancient Egypt.
+gossamer|(noun) a fine filmy substance consisting of fragments or strands of cobweb often seen floating in air or caught on grass or bushes.
+deciduous|(adjective) falling off or shed at the end of the growing period, after blooming, during certain seasons, or at certain stages of development.
+nanotechnology|(noun) the art of manipulating atoms and molecules especially to build extremely small devices (such as robots).
+basilica|(noun) an oblong building with a wide central hall flanked by colonnaded aisles or porticoes and ending in a semicircular wall.
+solstice|(noun) one of the two points on the path of the sun at which its distance from the celestial equator is greatest and which is reached by the sun each year about June 22nd and December 23rd.
+conglomerate|(noun) a corporation that acquires other companies whose activities are unrelated to the corporation's primary activity.
+turpitude|(noun) a base or vile way of thinking or acting : depravity.
+fungible|(adjective) capable of being used in place of each other : interchangeable.
+desertification|(noun) the process of becoming an area of dry land with few plants and little rainfall.
+anemone|(noun) a brightly colored sea animal that resembles a flower and has a cluster of tentacles around the mouth.
+oubliette|(noun) a dungeon with an opening only at the top and often a concealed pit below the floor.
+sakura|(noun) a type of ornamental cherry hybrid developed in Japan that bears white or pink fragrant flowers.
+xenophobic|(adjective) characterized by fear and hatred of anything strange or foreign, especially people.
+gargantuan|(adjective) of tremendous size or volume : gigantic.
+corsair|(noun) a pirate of any kind or period.
+idiosyncratic|(adjective) marked by a peculiar way of behaving, being or thinking.
+vituperative|(adjective) containing or characterized by wordy abuse.
+Orwellian|(adjective) relating to or suggestive of George Orwell or his writings; especially : relating to or suggestive of his novel 1984.
+bossa nova|(noun) music resembling the samba with jazz passages.
+pachyderm|(noun) one of a group of hoofed mammals usually having a thick skin (such as an elephant or rhinoceros).
+vainglorious|(adjective) marked by excessive pride in one's achievements : boastful.
+hegemony|(noun) preponderant influence or authority (as of a government or state) : domination.
+echelon|(noun) a level (as of leadership or responsibility) in an organization or field of activity.
+larynx|(noun) the upper part of the respiratory passage of air-breathing vertebrates with the glottis above it and continuous below with the trachea.
+concatenate|(verb) link together : unite in a series or chain.
+arpeggio|(noun) production of the tones of a chord in succession rather than at the same time.
+obelisk|(noun) an upright, four-sided pillar that gradually tapers as it rises and terminates in a pyramid.
+sanctimonious|(adjective) displaying high-mindedness in order to impress.
+force majeure|(noun) an event or effect that cannot reasonably be anticipated or controlled.
+tungsten|(noun) a gray-white hard metal that is used in its pure form mainly for electrical purposes (such as for thin wires used in light bulbs).
+auriferous|(adjective) gold-bearing — used of gravels and rocks.
+pulchritude|(noun) physical beauty.
+de rigueur|(adjective) required by fashion, etiquette or custom especially among sophisticated or informed persons : proper.
+nunchaku|(noun) a Japanese weapon made of two sticks with one end of each joined by rawhide, cord or chain.
+guttural|(adjective) being a speech sound that is formed in the throat.
+interlocutor|(noun) a person who takes part in a dialogue or conversation.
+joule|(noun) a unit of measurement that represents absolute meter-kilogram-second unit of work or energy.
+freesia|(noun) a sweet-scented plant of the iris family with narrow tubular red, white or yellow flowers.
+susurration|(noun) a whispering sound : a murmur.
+potpourri|(noun) a jar of flower petals mixed with spices and used for scent or perfume.
+leitmotif; leitmotiv|(noun) a dominant recurring theme.
+Chihuahua|(noun) a very small round-headed large-eared short-coated dog reputed to predate Aztec civilization.
+ecclesiastical|(adjective) of or suitable for use in a church or church service.
+cozen|(verb) to deceive by artful persuasion or tricky dishonesty : cheat.
+insouciance|(noun) an attitude of not worrying about what others think of your work or behavior.
+jai alai|(noun) a ball game played on a large walled court by two or four players who wear long curved wicker baskets strapped to their wrists.
+desiccate|(verb) to dry up or cause to dry up.
+Iroquois|(adjective) of, relating to, or characteristic of Native American people comprising a confederacy of the Cayuga, Mohawk, Oneida, Onondaga and Seneca.
+cheongsam|(noun) a dress of southern Chinese origin with a slit skirt and a mandarin collar.
+eleemosynary|(adjective) of or relating to charity : philanthropic.
