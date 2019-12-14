@@ -1,6 +1,6 @@
 Japanese;long a is spelled as ei;reiki,geisha,issei,kibei,nisei,sensei
 Japanese;long a at end of word is spelled as e;yosenabe,urushiye
-Japanese;long e at end of word is spelled as i;Kabuki,odori,hibachi,origami,tsunami,wasabi,zori,Meiji,Romaji,dashi,kanji,awabi,odori,tatami,sashimi,chorogi,fuji,haori,koji,obi,randori,shikii,torii,shogi,sukiyaki,urushi,gi,surimi,sushi,tamari,teriyaki,umami,yakitori
+Japanese;long e at end of word is spelled as i;Kabuki,hibachi,origami,tsunami,wasabi,zori,Meiji,Romaji,dashi,kanji,awabi,odori,tatami,sashimi,chorogi,fuji,haori,koji,obi,randori,shikii,torii,shogi,sukiyaki,urushi,gi,surimi,sushi,tamari,teriyaki,umami,yakitori
 Japanese;long e at end of word is spelled as e;Kamikaze,momme,mume
 Japanese;long i is spelled as ai;bonsai,yamamai,mai,samurai,banzai,haikai,shintai,aikido,kaiseki
 Japanese;long o is spelled as o;mikado,pachinko,koto,miso,odori,genro,gyokuro,judo,kendo,mondo,sumo,tenno,dojo,zendo,gingko

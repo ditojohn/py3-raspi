@@ -1,0 +1,27 @@
+Latin;root word ab meaning to move away;abstract,abstain,aversion
+Latin;root word acer/acri meaning bitter;acrid,acrimony,exacerbate
+Latin;root word audi meaning hear;audible,audience,auditorium
+Latin;root word bene meaning good;benefit,benign,benefactor
+Latin;root word brev meaning short;abbreviate,brief
+Latin;root word circ meaning round;circus,circulate
+Latin;root word dict meaning say;dictate,edict,dictionary
+Latin;root word duc meaning lead/make;deduce,produce,educate
+Latin;root word fund meaning bottom;founder,foundation,funding
+Latin;root word gen meaning to birth;gene,generate,generous
+Latin;root word hab meaning to have;ability,exhibit,inhabit
+Latin;root word jur meaning law;jury,justice,justify
+Latin;root word lev meaning to lift;levitate,elevate,leverage
+Latin;root word log/logue meaning thought;logic,apologize,analogy
+Latin;root word luc/lum meaning light;lucid,illuminate,translucent
+Latin;root word manu meaning hand;manual,manicure,manipulate
+Latin;root word mis/mit meaning send;missile,transmit,permit
+Latin;root word omni meaning all;omnivorous,omnipotent,omniscent
+Latin;root word pac meaning peace;pacify,pacific,pacifist
+Latin;root word port meaning carry;export,import,important
+Latin;root word quit meaning silent/restive;tranquil,requiem,acquit
+Latin;root word scrib/script meaning to write;script,proscribe,describe
+Latin;root word sens meaning to feel;sensitive,sentient,resent
+Latin;root word terr meaning earth;terrain,territory,extraterrestrial
+Latin;root word tim meaning to fear;timid,timorous
+Latin;root word vac meaning empty;vacuum,vacate,evacuate
+Latin;root word vid/vis meaning to see;video,vivid,invisible

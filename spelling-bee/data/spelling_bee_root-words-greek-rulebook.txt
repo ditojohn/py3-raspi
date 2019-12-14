@@ -1,0 +1,25 @@
+Greek;root word anti meaning against;antibacterial,antidote,antithesis
+Greek;root word ast(e)r meaning star;asteroid,astronomy,astronaut
+Greek;root word aqu meaning water;aquarium,aquatic,aqualung
+Greek;root word auto meaning self;automatic,automate,autobiograph
+Greek;root word biblio meaning book;bibliography,bibliophile
+Greek;root word bio meaning life;biography,biology,biodegradable
+Greek;root word chrome meaning color;monochromatic,phytochrome
+Greek;root word chrono meaning time;chronic,synchronize,chronicle
+Greek;root word doc meaning teach;document,docile,doctrinal
+Greek;root word dyna meaning power;dynasty,dynamic,dynamite
+Greek;root word geo meaning earth;geography,geology,geometry
+Greek;root word gno meaning to know;agnostic,acknowledge
+Greek;root word graph meaning write;autograph,graphic,demographic
+Greek;root word hydr meaning water;dehydrate,hydrant,hydropower
+Greek;root word kinesis meaning movement;kinetic,photokinesis
+Greek;root word logos meaning word/study;astrology,biology,theologian
+Greek;root word narc meaning sleep;narcotic,narcolepsy
+Greek;root word path meaning feel;empathy,pathetic,apathy
+Greek;root word phil meaning love;philosophy,bibliophile,philanthropy
+Greek;root word phon meaning sound;microphone,phonograph,telephone
+Greek;root word photo meaning light;photograph,photocopy,photon
+Greek;root word schem meaning plan;scheme,schematic
+Greek;root word syn meaning together/with;synthetic,photosynthesis
+Greek;root word tele meaning far;telescope,telepathy,television
+Greek;root word tropos meaning turning;heliotrope,tropical

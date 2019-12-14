@@ -1,0 +1,111 @@
+French;\äd\ at ends is spelled as ade (suffix meaning act, action or process);facade,glissade,levade,saccade
+French;\äzh\ at ends is spelled as age (suffix meaning act, action or process);garage,camouflage,sabotage,espionage,maquillage
+French;\mäⁿ\ at ends is spelled as ment (suffix meaning act, action or process);denouement
+French;\yu̇r\ at ends is spelled as ure (suffix meaning act, action or process);demure
+French;\ə(r)d\ at ends is spelled as ard (suffix meaning one who does);palliard,coward
+French;\(y)u̇r\ at ends is spelled as eur (masc. suffix meaning one who does);entrepreneur
+French;\ə(r)z\ at ends is spelled as euse (fem. suffix meaning one who does);entrepreneuse
+French;\yā\ at ends is spelled as ier, similar to Eng. -er (suffix meaning one who does);douanier
+French;\ēst\ at ends is spelled as iste (suffix meaning one who does);bouquiniste
+French;\el\ at ends is spelled as elle (diminutive form);mademoiselle,belle,jumelle
+French;\et\ at ends is commonly spelled as ette, similar to Eng. -et (diminutive form);banquette,layette,fanchonette
+French;Exception: \et\ (alt. pron. \ā\) at ends is occasionally spelled as et;baronet,bayonet,flageolet
+French;\im\ at the beginning preceding -b-, -p-, and often -m- (prefix meaning in);embroil
+French;\ˌän\ at the beginning is spelled as en (prefix meaning in);entourage
+French;\ēf\ at ends is spelled as if (adj. suffix similar to Eng. -ive);motif
+French;\(ə-)rē\ at ends is spelled as erie (suffix similar to Eng. -ery);camaraderie
+French;\a(a)ə\ at ends is spelled as aire;millionaire;billionaire;doctrinaire;solitaire
+French;\sh\ at beginning or in the middle is spelled as ch;chaise,chablis,machine
+French;\sh\ at ends is spelled as che;guilloche,affiche,brioche,panache,quiche
+French;\k\ at ends is mostly spelled as que;unique,clique,antique,roque,fantasque
+French;\g\ at ends is spelled as gue;vogue,intrigue,plague
+French;\əl\ at ends is spelled as el;camel,cancel,enamel
+French;\wäz\ at ends is spelled as oise;bourgeoise,vichyssoise
+French;\n|y\ is spelled as gn;beignet,chignon,champignon,espagnole
+French;\n'wä\ is spelled as gnoi;baignoire,peignoir
+French;\il\ (alt. pron. \ē\) at ends is spelled as ille;coquille,aiguille,quadrille
+French;\ü\ is mostly spelled as ou;bouquet,froufrou,loupe,boudoir,boutique
+French;\(y)ü\ at ends is usually spelled as u;menu,tutu,parvenu
+French;\ēœ̅\ at ends is occasionally spelled as ieu;camaieu,condrieu,lieutenant,purlieu,lieu
+French;\ä\ in any stems (-age, -ade) is spelled as a;garage,facade,esplanade
+French;\ä\ in the middle is mostly spelled as a;brouhaha
+French;\ä\ at ends could be spelled as -as or -at;patas,galuchat
+French;\ä\ could be spelled as o, if it has passed through another language or has a root in it;mondial,longeron,bonification
+French;\ä\ could be spelled as e, in the beginning;entrepot,entente
+French;\äⁿ\ in the middle is mostly spelled as an;chanteur
+French;\äⁿ\ in the beginning is mostly spelled as en- or em-;embonpoint,entree,rendezvous
+French;\äⁿ\ is occasionally spelled as ans, ens or emps, mostly at ends;dedans,guetapens,contretemps
+French;\äⁿ\ is occasionally spelled as ent or ant, mostly at ends;petillant,rapprochement,denouement
+French;\a\ if alone in the beginning is spelled as a;affiche,agiotage,douanier,patois
+French;\aⁿ\ is usually spelled as in (or ins at ends for plural);incroyable,singerie,poussin
+French;\aⁿ\ at ends is occasionally spelled as ain;copain
+French;\ā\ is uncommonly spelled as aies (only 1 word);brais
+French;\ā\ at ends is uncommonly spelled as ait;intrait
+French;\ā\ is uncommonly spelled as es (only 2 words);demesne,fresnel
+French;\ā\ is uncommonly spelled as ed;passepied
+French;\ā\ is uncommonly spelled as ez (only 4 words);oyez,suivez,gardez,chez,rendezvous
+French;\ā\ is uncommonly spelled as eil (only 1 word);soleil
+French;\ā\ is occasionally spelled as ay;roundelay,mayhem
+French;\ā\ is occasionally spelled as ais;Français
+French;\ā\ is commonly spelled as e;ebauchoir
+French;\ā\ at ends is commonly spelled as et or é;camouflet,attaché,bouquet
+French;\ā\ at ends is most commonly spelled as ee;curvée
+French;\ā\ in the middle is commonly spelled as ai;capitaine
+French;\e\ is commonly spelled as e;greffier,dentelle,guetapens,bersagliere,email
+French;\e\ is uncommonly spelled as ai;japonaiserie,prairie,chaise
+French;\ē\ in the beginning or middle is mostly spelled as i;intrigue,unique
+French;\ē\ at ends is commonly spelled as ie;bijouterie,boulangerie
+French;\ē\ at ends is occasionally spelled as is, it, or ix;glacis,esprit,prix
+French;\ē\ (alt. pron. \il\) at ends is uncommonly spelled as ille;cheville
+French;\ē\ at ends is rarely spelled as ee;marquee
+French;\ə̇\ is mostly spelled as i;tirasse
+French;\ə̇\ is spelled as e mostly with "re" or "en" in the beginning;redan,enarme
+French;\i\ is mostly spelled as i, with very few exceptions;vrille,bivouac
+French;Exception: \i\ is spelled as ie;tierceron
+French;\ī\ (alt. pron. \āl\) at ends is mostly spelled as aille;canaille
+French;\ī\ at ends is occasionally spelled as ail;serail,email
+French;\ī\ in the middle is commonly spelled as aill;medaillon,paillard,maillot
+French;\ī\ in the middle is spelled as i, if passed through another language;diorama,bolide
+French;\ō\ in the middle is mostly spelled as o;rissole,croquette,volant,volage
+French;\ō\ at ends is spelled as ot or os;jacqueminot,bibelot,cachepot,apropos,maillot
+French;\ō\ at ends is commonly spelled as eau;plateau,bateau,bureau,jambeau,rouleau
+French;\ō\ (alt. pron. \ō(z)\) at ends is commonly spelled as eaux, if plural;ciseaux,bateaux,jambeaux
+French;\ō\ in the beginning mostly, or middle occasionally is spelled as au;aubade,aubergine,saucisson
+French;\ōⁿ\ at ends and in the middle is only spelled as on;garçon,floraison,demimondaine,livraison,chapon,brouillon,Malmaison
+French;\ȯ\ is mostly spelled as o;oriflamme,lorgnette
+French;\ȯ\ is rarely spelled as au;gaufrette
+French;\ü\ is mostly spelled as ou;froufrou,tourlourou,bouffon,douanier,rendezvous,rouleau
+French;\ü\ in the middle is spelled as u;prunelle,luminaire
+French;\ü\ at ends is rarely spelled as oup or oux;coup,roux
+French;\ü\ at ends mostly or in the middle is spelled as ieu;purlieu,lieutenant,bondieuserie
+French;\u̇\ is spelled as u, if in the stem -ure;demure,tournure
+French;\u̇\ is spelled as ou, if not in the stem -ure;pourboire,tournure
+French;\ᵫ\ at ends is mostly spelled as u;impromptu,tendu,battu,bruyere
+French;\ᵫ\ at ends is occasionally spelled as ue;bevue,tenue
+French;\yü\ in the middle or beginning is mostly spelled as u;punaise,cubeb
+French;\yü\ at ends is occasionally spelled as ue;conspue,revue
+French;\ə\ is occasionally spelled as oeu;voeu,oeuvre
+French;\ə\ is spelled as eu in the stem -eur;entrepreneur
+French;\ə\ could be spelled as a, e, i, o, or u (guessed using process of elimination);galette,profiterole,salinelle,bourbon,chalumeau,guetapens
+French;\wä\ is commonly spelled as oi;étoile,voiture,grimoire,patois
+French;\wä\ at ends is commonly spelled as oise;nicoise,bourgeoise
+French;\wä\ at ends is commonly spelled as oir;mouchoir,boudoir,devoir,polissoir
+French;\t\ is mostly spelled as t;tirade
+French;\t\ is occasionally spelled as tt, especially with stem -ette;morette,croquette
+French;\t\ is occasionally spelled as th;cinematheque,thonnier
+French;\s\ is mostly spelled as s;sotie
+French;\s\ is occasionally spelled as ss, esp. with stem -esse;faiblesse
+French;\s\ is occasionally spelled as ç;garçon,limaçon,soupçon
+French;\s\ is spelled as c before e, i or i, as in Eng.;avocet
+French;\z\ is mostly spelled as s, esp. with stems like -euse or -ise;blase,masseuse,assise,chaise
+French;\z\ is occasionally spelled as z;Bonnaz
+French;\f\ is spelled as f, esp. from Latin;friseur,confiture
+French;\f\ is spelled as ph, esp. from Greek;physique,dauphin
+French;\k\ is rarely spelled as k, as in Latin;kinkajou
+French;\k\ in the middle or beginning is mostly spelled as c, as in Latin;carcajou,coterie,raclette
+French;\k\ at ends is commonly spelled as que, esp. with stem -ique;unique,calanque
+French;\k\ in the middle is spelled as qu;croquembouche,brodequin
+French;\zh\ is spelled as j, esp. before a, o, or u;jacquerie,jongleur
+French;\zh\ is spelled as g, esp. before e or in stems like -age and -gère;garage,fougère,gelinotte
+French;\g\ (hard g) is spelled as gu, esp. before e and i;beguine,guichet,guetapens
+French;\g\ (hard g) is spelled as g, esp. when not before e and i;gourmandise

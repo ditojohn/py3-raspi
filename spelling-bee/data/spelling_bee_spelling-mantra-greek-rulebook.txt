@@ -1,0 +1,64 @@
+Greek;\ä\ in roots is mostly spelled as o, esp. in the middle as connecting vowel;holochroal,ombrophobous
+Greek;\ä\ at ends is mostly spelled as os;benthos
+Greek;\ä\ is also spelled as a, esp. in classical words;polemarch
+Greek;\a\ is mostly spelled as a;Panglossian,rheostat
+Greek;\a\ is occasionally spelled as ag, usually precedes \m\;diaphragm
+Greek;\ā\ is mostly spelled as a;macron,ergasia
+Greek;\ā\ at ends is also spelled as e, esp. in classical words;koine,agape
+Greek;\e\ is commonly spelled as e;nephograph,meristem,eccyclema,errhine
+Greek;\e\ is uncommonly spelled as eg or oe;phlegm,oesophagostome
+Greek;\ē\ is uncommonly spelled as oe or ae;synoecy,phaeochrous
+Greek;\ē\ (alt. pron. \ī\) is also spelled as ei;gorgoneian
+Greek;\ē\ in the middle is commonly spelled as e;demegoric,eccyclema,demos
+Greek;\ē\ at ends is commonly spelled as e, esp. in classical words;arche,hypallage,sophrosyne
+Greek;\ē\ at ends is also spelled as y, esp. meaning state or condition;synastry
+Greek;\ə̇\ is most commonly spelled as i, esp. with endings -isis, -esis, and -ysis;archimage;telesis
+Greek;\ə̇\ is commonly spelled as e;zetetic
+Greek;\ə̇\ is also spelled as y;oxytocia
+Greek;\i\ is most commonly spelled as i or y, identified based on root words;philomath,bradycardia,tachycardia,sophrosyne,chryselephantine
+Greek;\ī\ is most commonly spelled as i, esp. in roots;biology,isogoge,xanthochroi,errhine
+Greek;\ī\ is commonly spelled y;dynamics,stylobate
+Greek;\ī\ is also spelled as ei;apeiron
+Greek;\ī\ is uncommonly spelled as ai;aithochroi
+Greek;\ō\ is most commonly spelled as o, also connecting vowel;polemoscope,isagoge,demos
+Greek;\ȯ\ is commonly spelled as o or au, identified from the roots;psychorrhagy,tautochrone,porphyrogenite
+Greek;\ü\ is commonly spelled as u;kudos
+Greek;\ü\ is also spelled as eu, if after \y\ or \s\ sound;proseuche,pseudonymn
+Greek;\ü\ is occasionally spelled as ou;moussaka,souvlaki
+Greek;\yü\ in the beginning is commonly spelled as eu;euphemism,eulogy,ageusia
+Greek;\yü\ is commonly spelled as u, esp. in the middle;cumatophyte
+Greek;\yu̇\ is spelled as u, when it does occur rarely;basileus
+Greek;\ə\ is most commonly spelled as o, esp. as connective vowel;hippodrome,sophrosyne
+Greek;\ə\ in the beginning is commonly spelled as a;megaron,isagoge
+Greek;\ə\ is occasionally spelled as e, i or u;ergodic,rhytidome,xenodocheum
+Greek;\yə\ in the beginning is spelled as eu;eureka
+Greek;\yə\ after c (pron. \k\) is spelled as u;Hercules
+Greek;\k\ is mostly spelled as ch, esp. in roots;stichos,ochlocracy,xanthochroi,chryselephantine
+Greek;\k\ is also spelled as c, when not before e, i or y, also in a couple of roots;ochlocracy,acrolect,eccyclema
+Greek;\k\ is rarely spelled as k, esp. in pure Greek;akropodion,agathokakological,omphaloskepsis
+Greek;\f\ is commonly spelled as ph;philosophy,metaphrast,morosoph,sophrosyne,porphyrogenite,omphaloskepsis
+Greek;\j\ is commonly spelled as g, not before an a, o or u;hegemony,gyroscope,porphyrogenite,isagoge
+Greek;\th\ is commonly spelled as th;hypothalamus,xanthochroi
+Greek;\th\ in the beginning is uncommonly spelled as phth;phthirophagous,phthisis
+Greek;\t\ is commonly spelled as t, esp. in the middle;terpsichore,meiotic
+Greek;\t\ in the beginning or middle is also spelled as pt;pteron,apterous,aptyalism,ptyalagogue
+Greek;\t\ in the beginning is rarely spelled as ct;ctetology
+Greek;\n\ is commonly spelled as n;nostalgia,endergonic
+Greek;\n\ in the beginning is also spelled as mn;mnemonic
+Greek;\n\ in the beginning is also spelled as pn;pneumatic
+Greek;\n\ in the beginning is also spelled as gn;gnosis
+Greek;\n\ in the beginning is also spelled as cn;cnidarian
+Greek;\r\ is most commonly spelled as rh, esp. in roots;rhinoceros,rhabdomancy
+Greek;\r\ is also spelled as r;thorax
+Greek;\r\ in the middle or end is occasionally spelled as rrh, esp. ending with -rrhexis or -rrhaphy;enterorrhexis,herniorrhaphy,hemorrhage,myrrh,catarrh,parrhesia,errhine
+Greek;\s\ is most commonly spelled as s, esp. ending in -sis;halisteresis,sophrosyne
+Greek;\s\ could be spelled as c, identified by roots;cymotrichous,eccyclema
+Greek;\s\ in the beginning could be spelled as ps, identified by roots;psychology,pseudonym,psammoma
+Greek;\s\ is occasionally spelled as sc, esp. passing through Latin;sciamachy
+Greek;\s\ is rarely spelled as ss, identified by roots;perissodactyl
+Greek;\z\ in the beginning is commonly spelled as x, identified by roots;xylophone,xenophobia,xanthophyll,xanthochroi
+Greek;\z\ in the beginning is occasionally spelled as z, identified by roots like zymo and zo;zoology
+Greek;\z\ in the middle is commonly spelled as s, identified by roots;chloasma,melasma,plasmodiasis
+Greek;\z\ in the middle is rarely spelled as sth;asthma
+Greek;\z\ in the middle is rarely spelled as z;diazoma
+Greek;\zh\ at ends is commonly spelled as s, esp. ending in -sia;ambrosia,parrhesia,ectasia
