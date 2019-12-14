@@ -30,7 +30,6 @@ proj() {
 		echo ""
 		cd ${PROJ_ROOT}/${project}
 		. "${PROJ_ROOT}/${project}/project_setup.cfg"
-		ls
 	fi
 }
 
