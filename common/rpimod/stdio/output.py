@@ -20,25 +20,26 @@ import re
 import logging
 
 # Set to True to turn debug messages on
+#ERR_DEBUG = True
 ERR_DEBUG = False
 
 # Display a list as evenly spaced columns
 OUT_MARGIN_WIDTH = 4                                    # set margin width to 4 characters
 
-CHR_NEWLINE = unicode("\n", 'utf-8')
-CHR_EMPTY_STRING = unicode("", 'utf-8')
-CHR_WORD_DELIMITER = unicode(";", 'utf-8')
+CHR_NEWLINE = "\n"
+CHR_EMPTY_STRING = ""
+CHR_WORD_DELIMITER = ";"
 
 
 def visual_len(word):
     visual_word = unicodedata.normalize('NFKD', word).encode('ASCII', 'ignore')
     # Add back special characters to determine final visual length
     rlen = len(visual_word)
-    rlen = rlen + word.count(u'ˈ') + word.count(u'ˌ')
-    rlen = rlen + word.count(u'ə') + word.count(u'ᵊ')
-    rlen = rlen + word.count(u'œ') + word.count(u'ᵫ')
-    rlen = rlen + word.count(u'ŋ')
-    rlen = rlen + word.count(u'•') + word.count(u'√')
+    rlen = rlen + word.count('ˈ') + word.count('ˌ')
+    rlen = rlen + word.count('ə') + word.count('ᵊ')
+    rlen = rlen + word.count('œ') + word.count('ᵫ')
+    rlen = rlen + word.count('ŋ')
+    rlen = rlen + word.count('•') + word.count('√')
     
     return rlen
 
@@ -74,8 +75,8 @@ def print_columnized_list(elementList, numCols):
 
     for row in columnizedList:
         for col in row:
-            print col,
-        print ""
+            print(col, end=' ')
+        print("")
 
 def print_columnized_slice(elementList, sliceIndexList, numCols):
     slicedList = []
@@ -85,33 +86,35 @@ def print_columnized_slice(elementList, sliceIndexList, numCols):
     print_columnized_list(slicedList, numCols)
 
 def multiline_text(elementList):
-    textList = u""
+    textList = ""
 
     for index, item in enumerate(elementList):
         if index == 0:
             textList = item
         else:
-            textList = textList + u"\n" + item
+            textList = textList + "\n" + item
 
     return textList
 
 def coalesce(*args):
     for arg in args:
-        if arg != u"":
+        if arg != "":
             return arg
 
     return None
 
 def normalize(word):
+    _FUNC_NAME_ = "normalize"
     wordToken = word
-    wordToken = unicode(unicodedata.normalize('NFKD', wordToken).encode('ASCII', 'ignore'), 'utf-8')
+    wordToken = unicodedata.normalize('NFKD', wordToken)
    
     return wordToken
 
 def tokenize(word):
+    _FUNC_NAME_ = "tokenize"
+
     wordToken = word
-    #wordToken = re.sub('[^a-zA-Z]', SB_EMPTY_STRING, wordToken.lower())
-    wordToken = unicode(unicodedata.normalize('NFKD', wordToken.lower()).encode('ASCII', 'ignore'), 'utf-8')
+    wordToken = unicodedata.normalize('NFKD', wordToken.lower())
     wordToken = re.sub('[- ]', CHR_EMPTY_STRING, wordToken)
    
     return wordToken
@@ -183,11 +186,11 @@ def get_term_color (textColor, backgroundColor, effect):
 def print_color (color, msg):
 
     if isinstance(msg, str):
-        msgText = unicode(msg, 'utf-8')
+        msgText = msg
     else:
         msgText = msg
 
-    print unicode("{colorOn}{text}{colorOff}", 'utf-8').format(colorOn=get_term_color(color, 'normal', 'normal'), text=msgText, colorOff=get_term_color('normal', 'normal', 'normal'))
+    print("{colorOn}{text}{colorOff}".format(colorOn=get_term_color(color, 'normal', 'normal'), text=msgText, colorOff=get_term_color('normal', 'normal', 'normal')))
 
 def print_err (msg):
     print_color ('red', 'ERROR: ' + msg)

@@ -7,51 +7,7 @@
 # Date        : 2015/12/03
 #--------------------------------------------------------------------------------------------------
 
-import sys, termios, time
-#--------------------------------------------------------------------------------------------------
-# Class       : _Getch
-# Function    : Gets a single character from standard input.  Does not echo to the screen.
-# Reference   : http://code.activestate.com/recipes/134892-getch-like-unbuffered-character-reading-from-stdin/
-# Usage       : import rpi2lib.stdio.input as INPUT
-#               userInput = INPUT.getch.impl()
-#--------------------------------------------------------------------------------------------------
-
-class _Getch:
-    """Gets a single character from standard input.  Does not echo to the screen."""
-    def __init__(self):
-        try:
-            self.impl = _GetchWindows()
-        except ImportError:
-            self.impl = _GetchUnix()
-
-    def __call__(self): return self.impl()
-
-
-class _GetchUnix:
-    def __init__(self):
-        import tty, sys
-
-    def __call__(self):
-        import sys, tty, termios
-        fd = sys.stdin.fileno()
-        old_settings = termios.tcgetattr(fd)
-        try:
-            tty.setraw(sys.stdin.fileno())
-            ch = sys.stdin.read(1)
-        finally:
-            termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
-        return ch
-
-
-class _GetchWindows:
-    def __init__(self):
-        import msvcrt
-
-    def __call__(self):
-        import msvcrt
-        return msvcrt.getch()
-
-getch = _Getch()
+import sys, termios, time, getch
 
 def set_term_echo(fd, enabled):
     # Save current terminal attributes
@@ -74,16 +30,16 @@ def set_term_input(enabled):
 
 def get_keypress(prompt):
     time.sleep(0.05)                                     # Sleep to allow pending I/O operations to complete
+    print(prompt, end='', flush=True)
     set_term_input(True)
-    print prompt ,
-    userKeypress = getch()
+    userKeypress = getch.getch()
     set_term_input(False)
-    print ""
+    print("")
     return userKeypress
 
 def get_input(prompt):
     time.sleep(0.05)                                     # Sleep to allow pending I/O operations to complete    
     set_term_input(True)
-    userInput = raw_input(prompt).strip()
+    userInput = input(prompt).strip()
     set_term_input(False)
     return userInput

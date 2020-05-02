@@ -2,7 +2,7 @@
 alias off="sudo poweroff"
 alias py="sudo python"
 
-export REPO_NAME=raspi
+export REPO_NAME=py3-raspi
 
 if [ -d "$HOME/projects/${REPO_NAME}" ] ; then
     

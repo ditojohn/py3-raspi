@@ -15,7 +15,7 @@ from bs4 import BeautifulSoup
 
 sys.path.insert(0, "..")
 import common.rpimod.stdio.output as coutput
-import dictionaryapi as cdict
+import common.rpimod.wordproc.dict.dictionaryapi as cdict
 
 
 # Set to True to turn debug messages on
@@ -30,16 +30,16 @@ class DictionaryConfig(cdict.DictionaryConfig):
     def __init__(self):
 
         # Configuration Attributes
-        self.name = u"Merriam-Webster's Collegiate Dictionary"
-        self.pronunciation_guide_file = u"data/mwcollegiatepronguide.txt"
-        self.entry_url_format = u"http://www.dictionaryapi.com/api/v1/references/collegiate/xml/{WORD}?key={KEY}"
-        self.audio_url_format = u"http://media.merriam-webster.com/soundc11/{FOLDER}/{CLIP}"
-        self.illustration_url_format = u"https://www.merriam-webster.com/art/dict/{CLIP}.htm"
-        self.entry_extension = u".xml"
-        self.audio_extension = u".wav"
-        self.illustration_extension = u".bmp"
-        self.api_key = u"cbbd4001-c94d-493a-ac94-7268a7e41f6f"
-        self.parser = u"lxml"
+        self.name = "Merriam-Webster's Collegiate Dictionary"
+        self.pronunciation_guide_file = "data/mwcollegiatepronguide.txt"
+        self.entry_url_format = "http://www.dictionaryapi.com/api/v1/references/collegiate/xml/{WORD}?key={KEY}"
+        self.audio_url_format = "http://media.merriam-webster.com/soundc11/{FOLDER}/{CLIP}"
+        self.illustration_url_format = "https://www.merriam-webster.com/art/dict/{CLIP}.htm"
+        self.entry_extension = ".xml"
+        self.audio_extension = ".wav"
+        self.illustration_extension = ".bmp"
+        self.api_key = "cbbd4001-c94d-493a-ac94-7268a7e41f6f"
+        self.parser = "lxml"
         self.pronunciation_guide = self.build_pronunciation_guide()
         self.element_match_patterns = {}
 
@@ -51,7 +51,7 @@ class DictionaryConfig(cdict.DictionaryConfig):
         coutput.print_watcher(MOD_ERR_DEBUG, _FUNC_NAME_, 'coutput.normalize(key_word)')
 
         #return self.entry_url_format.format(WORD=key_word, KEY=self.api_key).replace(u" ", u"%20")
-        return self.entry_url_format.format(WORD=coutput.normalize(key_word), KEY=self.api_key).replace(u" ", u"%20")
+        return self.entry_url_format.format(WORD=coutput.normalize(key_word), KEY=self.api_key).replace(" ", "%20")
 
 
 class DictionaryEntry(cdict.DictionaryEntry):
@@ -62,10 +62,10 @@ class DictionaryEntry(cdict.DictionaryEntry):
         if url_fragment == cdict.DICT_UNICODE_EMPTY_STR:
             return url_fragment
         else:
-            number_prefix_match = re.search(ur'^([0-9]+)', url_fragment)
-            special_prefix_match = re.search(ur'^(gg|bix)', url_fragment)
+            number_prefix_match = re.search(r'^([0-9]+)', url_fragment)
+            special_prefix_match = re.search(r'^(gg|bix)', url_fragment)
             if number_prefix_match:
-                prefix = u"number"
+                prefix = "number"
             elif special_prefix_match:
                 prefix = special_prefix_match.group(1)
             else:
@@ -129,7 +129,7 @@ class DictionaryEntry(cdict.DictionaryEntry):
         # Accepts <pr> element as input
         
         elementText = element.get_text().strip()
-        elementText = u"\\{0}\\".format(elementText)
+        elementText = "\\{0}\\".format(elementText)
         respelling = cdict.WordRespelling(elementText, self.config.name)
         respelling.form = word_form
         respelling.spelling = word_form.replace('*', '')
@@ -196,11 +196,11 @@ class DictionaryEntry(cdict.DictionaryEntry):
             for subElement in subElements:
                 subElementText = subElement.get_text().strip()
 
-                subElementText = re.sub(ur'called also', u'- called also', subElementText, flags=re.UNICODE)
-                subElementText = re.sub(ur'[ ]+—[ ]+(compare).*', u'', subElementText, flags=re.UNICODE)
-                subElementText = re.sub(ur'^[ ]*:[ ]*', u'', subElementText, flags=re.UNICODE)
-                subElementText = re.sub(ur'[ ]*:[ ]*', u'; ', subElementText, flags=re.UNICODE)
-                subElementText = re.sub(ur'[\n ]+', u' ', subElementText, flags=re.UNICODE)
+                subElementText = re.sub(r'called also', '- called also', subElementText, flags=re.UNICODE)
+                subElementText = re.sub(r'[ ]+—[ ]+(compare).*', '', subElementText, flags=re.UNICODE)
+                subElementText = re.sub(r'^[ ]*:[ ]*', '', subElementText, flags=re.UNICODE)
+                subElementText = re.sub(r'[ ]*:[ ]*', '; ', subElementText, flags=re.UNICODE)
+                subElementText = re.sub(r'[\n ]+', ' ', subElementText, flags=re.UNICODE)
                 dtElementText = subElementText
 
                 if dtElementText != cdict.DICT_UNICODE_EMPTY_STR:
@@ -226,7 +226,7 @@ class DictionaryEntry(cdict.DictionaryEntry):
             
             if subelement.name == 'cl':
                 subElementText = subelement.get_text().strip()
-                subElementText = re.sub(ur' of$', u'', subElementText, flags=re.UNICODE)
+                subElementText = re.sub(r' of$', '', subElementText, flags=re.UNICODE)
                 wordInfl.functional_label = subElementText
             elif subelement.name == 'ct':
                 wordInfl.senses.extend(self.build_senses(subelement))
@@ -239,7 +239,7 @@ class DictionaryEntry(cdict.DictionaryEntry):
         _FUNC_NAME_ = "DictionaryEntry.set_word_entries"
 
         soup = BeautifulSoup(self.entry_raw_text, self.config.parser)
-        nameFilter = re.compile(ur'(hw|fl|pr|et|sound|def|cx|art)')
+        nameFilter = re.compile(r'(hw|fl|pr|et|sound|def|cx|art)')
 
         for entry in soup.find_all('entry'):
             """
@@ -318,20 +318,20 @@ class DictionaryEntry(cdict.DictionaryEntry):
                     winf.spelling = elementText.replace('*', '')
 
                     if element.name == 'ure':
-                        winf.functional_label = u"undefined run-on entry"
+                        winf.functional_label = "undefined run-on entry"
                     elif element.name == 'drp':
-                        winf.functional_label = u"defined run-on phrase"
+                        winf.functional_label = "defined run-on phrase"
                     elif element.name == 'va':
-                        winf.functional_label = u"variant form"
+                        winf.functional_label = "variant form"
 
                 for element in miscElement.find_all(['il', 'sound', 'pr', 'def']):
 
-                    DEBUG_VAR = u"element.name"
-                    coutput.print_debug(MOD_ERR_DEBUG, _FUNC_NAME_, u"{0} :: {1}".format(DEBUG_VAR, eval(DEBUG_VAR)))
+                    DEBUG_VAR = "element.name"
+                    coutput.print_debug(MOD_ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, eval(DEBUG_VAR)))
 
                     elementText = element.get_text().strip()
-                    DEBUG_VAR = u"elementText"
-                    coutput.print_debug(MOD_ERR_DEBUG, _FUNC_NAME_, u"{0} :: {1}".format(DEBUG_VAR, eval(DEBUG_VAR)))
+                    DEBUG_VAR = "elementText"
+                    coutput.print_debug(MOD_ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, eval(DEBUG_VAR)))
 
                     if element.name == 'il':
                         winf.functional_label = elementText

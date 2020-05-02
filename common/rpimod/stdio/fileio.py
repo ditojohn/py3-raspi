@@ -16,7 +16,9 @@ import glob
 import codecs
 import pygame
 import re
+import logging
 from pydub.utils import mediainfo
+from datetime import datetime
 
 sys.path.insert(0, "../../..")
 import common.rpimod.stdio.output as coutput
@@ -29,6 +31,9 @@ import common.rpimod.stdio.output as coutput
 #ERR_DEBUG = True
 ERR_DEBUG = False
 
+################################################################
+# File handlers
+################################################################
 
 def download(connectionPool, sourceURL, targetFileName):
     _FUNC_NAME_ = "download"
@@ -52,15 +57,28 @@ def read(inputFileName):
 
 def write(outputFileName, outputText):
     outputFile = codecs.open(outputFileName, mode='w', encoding='utf-8')
-    outputFile.write(outputText)
+    print(outputText, file=outputFile)
     outputFile.close()
 
 
 def append(outputFileName, outputText):
     outputFile = codecs.open(outputFileName, mode='a', encoding='utf-8')
-    outputFile.write(outputText)
+    print(outputText, file=outputFile)
     outputFile.close()
 
+
+def log(outputFileName, outputEntry, outputText=None):
+    outputFile = codecs.open(outputFileName, mode='a', encoding='utf-8')
+    logText="{}: {}".format(datetime.now(), outputEntry)
+    print(logText, file=outputFile)
+    if outputText is not None:
+        print(outputText, file=outputFile)
+    outputFile.close()
+
+
+################################################################
+# Multimedia handlers
+################################################################
 
 def set_audio_output(audioOutput):
     if audioOutput.lower() == 'hdmi':
@@ -141,7 +159,7 @@ def stream_wav(sourceURL, audioOutput):
     # http://people.csail.mit.edu/hubert/pyaudio/#examples
     # http://stackoverflow.com/questions/33320218/get-an-audio-file-with-http-get-and-then-play-it-in-python-3-tts-in-python-3
 
-    from urllib import urlopen
+    from urllib.request import urlopen
     import wave
     import pyaudio
 
@@ -167,6 +185,36 @@ def stream_wav(sourceURL, audioOutput):
     p.terminate()
 
     set_audio_output('auto')
+
+
+################################################################
+# Log handlers
+#
+# References:
+# https://docs.python-guide.org/writing/logging/
+# https://www.loggly.com/ultimate-guide/python-logging-basics/
+# https://realpython.com/python-logging/
+# https://docs.python.org/3/library/logging.html
+# https://docs.python.org/3/library/logging.html#logrecord-attributes
+#
+# Usage:
+# logger = setup_logger('first_logger', 'first_logfile.log')
+# logger.info('This is just info message')
+################################################################
+
+#logFormatter = logging.Formatter('%(levelname)s:%(asctime)s [%(module)s:%(funcname)s:%(processName)s] %(message)s')
+logFormatter = logging.Formatter('%(levelname)s:%(asctime)s [%(module)s:%(processName)s] %(message)s')
+
+def setup_logger(logName, logFile, logLevel=logging.INFO):
+
+    logHandler = logging.FileHandler(logFile)        
+    logHandler.setFormatter(logFormatter)
+
+    logger = logging.getLogger(logName)
+    logger.setLevel(logLevel)
+    logger.addHandler(logHandler)
+
+    return logger
 
 
 ########################################################################
