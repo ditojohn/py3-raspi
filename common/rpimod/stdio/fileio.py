@@ -14,7 +14,6 @@ import uuid
 import time
 import glob
 import codecs
-import pygame
 import re
 import logging
 from pydub.utils import mediainfo
@@ -22,6 +21,9 @@ from datetime import datetime
 
 sys.path.insert(0, "../../..")
 import common.rpimod.stdio.output as coutput
+
+os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
+import pygame
 
 ################################################################
 # Internal variables
