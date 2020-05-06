@@ -57,7 +57,7 @@ import common.rpimod.wordproc.dict.mwcollegiateapi as cdictapi
 SB_ERR_DEBUG = False
 
 ################################################################
-# Spelling Bee Configuration variables
+# Configuration variables
 ################################################################
 
 SB_CHAPTER_SIZE = 50
@@ -76,18 +76,28 @@ SB_TEST_MODE = "easy"                                           # Available test
 SB_TEST_SAVE_RESULT = True
 SB_TEST_SAVE_PRACTICE = True
 
-SB_DATA_DIR = "data/"
-SB_STUDY_DIR = "data/study/"
 SB_USER_AGENT = {'user-agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.116 Safari/537.36'}
 
 ################################################################
-# Internal variables
+# Application Directories
 ################################################################
 
-SB_ERR_LOG = "log/spelling_bee_errors.log"
-SB_TEST_LOG = "log/spelling_bee_tests.log"
-SB_CURRENT_TEST_LOG = "log/spelling_bee_current_test.log"
-SB_REVISION_LOG = "log/spelling_bee_revision.log"
+SB_DATA_DIR = "data/"
+SB_STUDY_DIR = SB_DATA_DIR + 'study/'
+SB_LOG_DIR = SB_DATA_DIR + 'log/'
+SB_DICT_OFFLINE_DIR = SB_DATA_DIR + 'dict/'
+SB_DICT_OVERRIDE_DIR = SB_DICT_OFFLINE_DIR + 'override/'
+
+SB_APP_DIR_LIST = [SB_DATA_DIR, SB_STUDY_DIR, SB_LOG_DIR, SB_DICT_OFFLINE_DIR, SB_DICT_OVERRIDE_DIR]
+
+################################################################
+# Application Files
+################################################################
+
+SB_ERR_LOG = SB_LOG_DIR + "spelling_bee_errors.log"
+SB_TEST_LOG = SB_LOG_DIR + "spelling_bee_tests.log"
+SB_CURRENT_TEST_LOG = SB_LOG_DIR + "spelling_bee_current_test.log"
+SB_REVISION_LOG = SB_LOG_DIR + "spelling_bee_revision.log"
 
 SB_RULEBOOK_MULTI_FILES = SB_DATA_DIR + "spelling_bee_*rulebook.txt"
 
@@ -96,14 +106,16 @@ SB_PRACTICE_MULTI_FILES = SB_STUDY_DIR + "spelling_bee_{WORD_FILE_PATTERN}.txt"
 
 SB_PRACTICE_WORD_FILE = "spelling_bee_practice_{LISTID}.txt"
 
-SB_DICT_OFFLINE_DIR = SB_DATA_DIR + 'dict/'
 SB_DICT_OFFLINE_ENTR = "sb_{WORD}.xml"
 SB_DICT_OFFLINE_CLIP = "sb_{WORD}.wav"
 
-SB_DICT_OVERRIDE_DIR = SB_DATA_DIR + 'dict/override/'
 SB_DICT_OVERRIDE_DEFN = "sb_{WORD}.dat"
 SB_DICT_OVERRIDE_CLIP = "sb_{WORD}.mp3"
 SB_DICT_OVERRIDE_MSG = "sb_{WORD}.msg"
+
+################################################################
+# Internal variables
+################################################################
 
 SB_LIST_BULLET = '• '
 SB_SPL_BULLET = '✱ '
@@ -177,6 +189,9 @@ class SpellingBee(object):
 
         # Setup connection pool
         self.connectionPool = urllib3.PoolManager(10, headers=SB_USER_AGENT)
+
+        # Setup application directories
+        cfile.make_directory(SB_APP_DIR_LIST)
 
         # Setup rulebook for advanced techniques
         wordFileDir = SB_RULEBOOK_MULTI_FILES
@@ -364,7 +379,6 @@ class SpellingBee(object):
         coutput.print_watcher(SB_ERR_DEBUG, _FUNC_NAME_, 'self.activeWord')
        
         # Setup error logging
-        errorFileName = SB_DATA_DIR + SB_ERR_LOG
         SB_ERR_CLIP_MISSING = False
         SB_ERR_CLIP_MISMATCH = False
 
@@ -528,7 +542,7 @@ class SpellingBee(object):
         
         if errorText != "ERROR:{0}:".format(self.activeWord):
             errorText += "\n"
-            cfile.append(errorFileName, errorText)
+            cfile.append(SB_ERR_LOG, errorText)
 
         coutput.print_watcher(SB_ERR_DEBUG, _FUNC_NAME_, 'errorText')
 
@@ -865,6 +879,7 @@ class SpellingBee(object):
 
 
     def display_evaluation_result(self, practiceMode):
+        _FUNC_NAME_ = "display_evaluation_result"
 
         if practiceMode.lower() == "test":
             testHeader  = "=============== Start of Test Log ==============="
@@ -1266,7 +1281,7 @@ def run_error_scan(spellBee):
         activeWordIndex += 1
     
     displayText = str("\nError scan is complete. All errors are logged to {0}{1}", 'utf-8')
-    print(displayText.format(SB_DATA_DIR, SB_ERR_LOG))
+    print(displayText.format(SB_LOG_DIR, SB_ERR_LOG))
     
 
 ################################################################

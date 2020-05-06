@@ -16,6 +16,7 @@ import glob
 import re
 import logging
 from datetime import datetime
+from pathlib import Path
 
 sys.path.insert(0, "../../..")
 import common.rpimod.stdio.output as coutput
@@ -37,6 +38,13 @@ ERR_DEBUG = False
 ################################################################
 # File handlers
 ################################################################
+
+def make_directory(directoryList):
+    _FUNC_NAME_ = "make_directory"
+
+    for directory in directoryList:
+        Path(directory).mkdir(parents=True, exist_ok=True)
+
 
 def download(connectionPool, sourceURL, targetFileName):
     _FUNC_NAME_ = "download"
