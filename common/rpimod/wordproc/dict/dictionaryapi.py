@@ -344,6 +344,14 @@ class SimplifiedWordEntry(object):
         else:
             return True
 
+    def has_pronunciation_audio_url(self):
+        if not self.has_pronunciation():
+            return False
+        elif self.pronunciation.audio_url == DICT_UNICODE_EMPTY_STR:
+            return False
+        else:
+            return True
+
     def has_mispronunciation(self):
         _FUNC_NAME_ = "SimplifiedWordEntry.has_mispronunciation"
 
