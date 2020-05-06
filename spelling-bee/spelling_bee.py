@@ -863,19 +863,15 @@ class SpellingBee(object):
     def reset_current_test_result(self):
         _FUNC_NAME_ = "reset_current_test_result"
 
-        currResultFileName = SB_DATA_DIR + SB_CURRENT_TEST_LOG
-        
         if self.enableSaveResults:
-            cfile.write(currResultFileName, self.get_current_test_context())
+            cfile.write(SB_CURRENT_TEST_LOG, self.get_current_test_context())
 
 
     def save_current_test_result(self, valuation):
         _FUNC_NAME_ = "save_current_test_result"
 
-        currResultFileName = SB_DATA_DIR + SB_CURRENT_TEST_LOG
-
         if self.enableSaveResults:
-            cfile.append(currResultFileName, valuation)
+            cfile.append(SB_CURRENT_TEST_LOG, valuation)
 
 
     def display_evaluation_result(self, practiceMode):
@@ -884,12 +880,12 @@ class SpellingBee(object):
         if practiceMode.lower() == "test":
             testHeader  = "=============== Start of Test Log ==============="
             testTrailer = "================ End of Test Log ================"
-            testFileName = SB_DATA_DIR + SB_TEST_LOG
+            testFileName = SB_TEST_LOG
 
         elif practiceMode.lower() == "revise":
             testHeader  = "=============== Start of Revision Log ==============="
             testTrailer = "================ End of Revision Log ================"
-            testFileName = SB_DATA_DIR + SB_REVISION_LOG
+            testFileName = SB_REVISION_LOG
      
         # Test header
         testStats = SB_NEWLINE + self.get_current_test_context()
@@ -983,22 +979,30 @@ def run_practice(spellBee, practiceMode):
     activeWordIndex = 0
 
     while True:
+
+        coutput.print_watcher(SB_ERR_DEBUG, _FUNC_NAME_, 'activeWordIndex')
+        coutput.print_watcher(SB_ERR_DEBUG, _FUNC_NAME_, 'len(spellBee.activeWordIndexList)')
         if (activeWordIndex < 0) or (activeWordIndex >= len(spellBee.activeWordIndexList)):
             break
 
         wordIndex = spellBee.activeWordIndexList[activeWordIndex]
+        coutput.print_watcher(SB_ERR_DEBUG, _FUNC_NAME_, 'wordIndex')
 
         # Lookup word definition
+        coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "Executing self.lookup_dictionary_by_index")
         spellBee.lookup_dictionary_by_index(wordIndex)
 
         if userPracticeMode == "study":
             titleText = SB_STUDY_WORD_DEFN_TITLE.format(INDEX=wordIndex + 1, WORD=spellBee.wordList[wordIndex], SEQ=activeWordIndex + 1, COUNT=len(spellBee.activeWordIndexList))
         else:
-            titleText = SB_PRACTICE_WORD_DEFN_TITLE.format(INDEX=wordIndex + 1)
+            titleText = SB_PRACTICE_WORD_DEFN_TITLE.format(INDEX=wordIndex + 1, SEQ=activeWordIndex + 1, COUNT=len(spellBee.activeWordIndexList))
 
+        coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "Executing self.display_word_cue")
         spellBee.display_word_cue(titleText, userPracticeMode)
+
+        coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "Prompting for user keypress")
         userInput = cinput.get_keypress(SB_PROMPT_SYMBOL).lower()
-        
+
         while True:
             # Move to [n]ext word
             if userInput == "n":
