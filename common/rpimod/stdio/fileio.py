@@ -13,17 +13,18 @@ import sys
 import uuid
 import time
 import glob
-import codecs
 import re
 import logging
-from pydub.utils import mediainfo
 from datetime import datetime
 
 sys.path.insert(0, "../../..")
 import common.rpimod.stdio.output as coutput
 
+import codecs
+from pydub.utils import mediainfo
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 import pygame
+
 
 ################################################################
 # Internal variables
@@ -76,6 +77,14 @@ def log(outputFileName, outputEntry, outputText=None):
     if outputText is not None:
         print(outputText, file=outputFile)
     outputFile.close()
+
+
+def delete(fileName):
+    try:
+        os.remove(fileName)
+    except OSError as e:            # this would be "except OSError, e:" before Python 2.6
+        if e.errno != errno.ENOENT: # errno.ENOENT = no such file or directory
+            raise                   # re-raise exception if a different error occured
 
 
 ################################################################
@@ -133,27 +142,21 @@ def play(fileName, audioOutput, loopCount, loopDelaySec):
     set_audio_output('auto')
 
 
-def delete(fileName):
-    try:
-        os.remove(fileName)
-    except OSError as e:            # this would be "except OSError, e:" before Python 2.6
-        if e.errno != errno.ENOENT: # errno.ENOENT = no such file or directory
-            raise                   # re-raise exception if a different error occured
-
-
-def delete_temp():
-    for tempFileName in glob.glob("dlfile_ts*_rnd*.tmp"):
-        delete(tempFileName)
-
-
 def play_url(connectionPool, sourceURL, audioOutput, loopCount, loopDelay):
+    _FUNC_NAME_ = "play_url"
+
+    coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "Executing set_audio_output")
+    set_audio_output(audioOutput)
+
     if '.mp3' in sourceURL or '.wav' in sourceURL:
         tempFileName = "dlfile_ts{TIMESTAMP}_rnd{RAND}.tmp".format(TIMESTAMP=time.strftime("%Y%m%d%H%M%S"), RAND=str(uuid.uuid4()))
         download(connectionPool, sourceURL, tempFileName)
         play(tempFileName, audioOutput, loopCount, loopDelay)
-        delete_temp()
+        delete(tempFileName)
     else:
-        coutput.print_color('red', 'ERROR: Unable to play audio from ' + sourceURL)
+        coutput.print_err("ERROR: Unable to play audio from " + sourceURL)
+
+    set_audio_output('auto')
 
 
 def stream_wav(sourceURL, audioOutput):
