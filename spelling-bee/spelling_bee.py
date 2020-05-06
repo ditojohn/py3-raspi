@@ -600,7 +600,7 @@ class SpellingBee(object):
                     coutput.print_color('cyan', self.mask_active_word(word, infoText, SB_DEFINITION_HIDE_EXPLICIT))
 
 
-    def pronounce_word(self, word, dictEntry):
+    def pronounce_word(self, word, dictEntry, fileMode):
         _FUNC_NAME_ = "pronounce_word"
 
         coutput.print_watcher(SB_ERR_DEBUG, _FUNC_NAME_, 'dictEntry.has_pronunciation_audio()')
@@ -618,7 +618,7 @@ class SpellingBee(object):
                 coutput.print_color('cyan', 'Respelling: ' + dictEntry.respelling.text )
             
             if not self.silentMode:
-                if dictEntry.has_pronunciation_audio() is False:
+                if dictEntry.has_pronunciation_audio() is False and dictEntry.has_pronunciation_audio_url() is False:
                     coutput.print_err("Unable to lookup pronunciation")
 
                 else:
@@ -633,10 +633,13 @@ class SpellingBee(object):
                     coutput.print_watcher(SB_ERR_DEBUG, _FUNC_NAME_, 'entryWord')
                    
                     self.dictAssist.compare_word_form(keyWord, entryWord)
-
-                    coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "Executing cfile.play")
                     
-                    cfile.play(dictEntry.pronunciation.audio_file, SB_AUDIO_OUTPUT, SB_REPEAT_COUNT, SB_REPEAT_DELAY)
+                    if fileMode is True:
+                        coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "Executing cfile.play")
+                        cfile.play(dictEntry.pronunciation.audio_file, SB_AUDIO_OUTPUT, SB_REPEAT_COUNT, SB_REPEAT_DELAY)
+                    else:
+                        coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "Executing cfile.play_url")
+                        cfile.play_url(self.connectionPool, dictEntry.pronunciation.audio_url, SB_AUDIO_OUTPUT, SB_REPEAT_COUNT, SB_REPEAT_DELAY)
 
 
     def print_word_tip(self, word):
@@ -689,7 +692,7 @@ class SpellingBee(object):
         self.print_word_definition(self.activeWord, self.activeDictEntry)
 
         coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "Executing self.pronounce_word")
-        self.pronounce_word(self.activeWord, self.activeDictEntry)
+        self.pronounce_word(self.activeWord, self.activeDictEntry, True)
 
         coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "Executing self.print_word_tip")
         self.print_word_tip(self.activeWord)
@@ -711,13 +714,21 @@ class SpellingBee(object):
         try:
             entryData = self.dictAssist.download_entry(self.connectionPool, word)
             dictEntry = cdictapi.DictionaryEntry(self.dictConfig, word, entryData).simplified_word_entry
+        
+            if dictEntry.source == SB_EMPTY_STRING:
+                coutput.print_err("Unable to lookup dictionary entry for " + word)
+            else:    
+                coutput.print_color('green', title)
 
-            coutput.print_color('green', title)
-            for entryLine in dictEntry.__unicode__().splitlines():
-                print(entryLine)
+                for entryLine in dictEntry.__unicode__().splitlines():
+                    print(entryLine)
 
-            if testMode.lower() != "test":
-                self.print_word_rule(word)
+                if testMode.lower() != "test":
+                    self.print_word_rule(word)
+
+                coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "Executing self.pronounce_word")
+                print(SB_EMPTY_STRING)
+                self.pronounce_word(word, dictEntry, False)
 
         except:
             coutput.print_err("Unable to lookup dictionary entry while offline")
