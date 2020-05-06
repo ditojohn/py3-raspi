@@ -1290,3 +1290,12 @@ sudo python3 spelling_bee.py test 2016-004-french-challenge
 sudo python3 spelling_bee.py revise 2016-004-french-challenge
 sudo python3 spelling_bee.py scan 2016-004-french-challenge
 '''
+
+########################################################################
+# Checkin Commands
+########################################################################
+'''
+git status
+git add <filename>
+git commit -m "<comment>"
+git push "https://<user>:<pwd>@github.com/<user>/<repo>.git" master
