@@ -118,7 +118,7 @@ SB_REVISE_KEYBOARD_MENU = "[Y]es [N]o [R]epeat Re[v]iew [K]ey [H]elp E[x]it"
 
 SB_STUDY_WORD_DEFN_TITLE = "\nDefinition of word #{INDEX} ({WORD}) [{SEQ}/{COUNT}]:"
 SB_PRACTICE_WORD_DEFN_TITLE = "\nDefinition of word #{INDEX} [{SEQ}/{COUNT}]:"
-SB_LOOKUP_WORD_DEFN_TITLE = "\nDefinition of {WORD}:"
+SB_LOOKUP_WORD_DEFN_TITLE = "\nDictionary entry for {WORD}:"
 
 SB_ERR_CLIP_MISSING = False
 SB_ERR_CLIP_MISMATCH = False
@@ -529,24 +529,24 @@ class SpellingBee(object):
         cdictall.lookup_word(self.connectionPool, SB_AUDIO_OUTPUT, SB_REPEAT_COUNT, SB_REPEAT_DELAY, word)
 
 
-    def mask_active_word(self, text, mask_flag):
+    def mask_active_word(self, word, text, mask_flag):
         _FUNC_NAME_ = "mask_active_word"
 
         if mask_flag:
-            return re.sub(self.activeWord, SB_MASK_SYMBOL * len(self.activeWord), text, flags=re.IGNORECASE)
+            return re.sub(word, SB_MASK_SYMBOL * len(word), text, flags=re.IGNORECASE)
         else:
             return text
 
        
-    def print_word_definition(self):
+    def print_word_definition(self, word, dictEntry):
         _FUNC_NAME_ = "print_word_definition"
 
-        if self.activeDictEntry is None or self.activeDictEntry.has_definitions() is False:
+        if dictEntry is None or dictEntry.has_definitions() is False:
             coutput.print_err("Unable to lookup dictionary definition")
         else:
             # Print definitions
             definitionIndex = 0
-            for definition in self.activeDictEntry.definitions:
+            for definition in dictEntry.definitions:
                 coutput.print_watcher(SB_ERR_DEBUG, _FUNC_NAME_, 'definition')
                                
                 # Ignore comments and info lines with # prefix
@@ -557,7 +557,7 @@ class SpellingBee(object):
                         break
 
                     # Mask definitions that contain the word itself and remove importance prefix "*"
-                    masked_definition = re.sub('^\*', SB_EMPTY_STRING, self.mask_active_word(definition, SB_DEFINITION_HIDE_EXPLICIT), flags=re.IGNORECASE)
+                    masked_definition = re.sub('^\*', SB_EMPTY_STRING, self.mask_active_word(word, definition, SB_DEFINITION_HIDE_EXPLICIT), flags=re.IGNORECASE)
 
                     # Check for override definitions from the word list prefixed with "*"
                     if re.match(r'^\*', definition):
@@ -568,7 +568,7 @@ class SpellingBee(object):
                     definitionIndex += 1
 
             # Print info lines
-            for definition in self.activeDictEntry.definitions:
+            for definition in dictEntry.definitions:
                 coutput.print_watcher(SB_ERR_DEBUG, _FUNC_NAME_, 'definition')
 
                 # Print info with #! prefix
@@ -580,31 +580,31 @@ class SpellingBee(object):
                     infoText = re.sub('^#!', SB_EMPTY_STRING, definition, flags=re.IGNORECASE)
 
                     # Mask info lines that contain the word itself
-                    coutput.print_color('cyan', self.mask_active_word(infoText, SB_DEFINITION_HIDE_EXPLICIT))
+                    coutput.print_color('cyan', self.mask_active_word(word, infoText, SB_DEFINITION_HIDE_EXPLICIT))
 
 
-    def pronounce_word(self):
+    def pronounce_word(self, word, dictEntry):
         _FUNC_NAME_ = "pronounce_word"
 
-        coutput.print_watcher(SB_ERR_DEBUG, _FUNC_NAME_, 'self.activeDictEntry.has_pronunciation_audio()')
+        coutput.print_watcher(SB_ERR_DEBUG, _FUNC_NAME_, 'dictEntry.has_pronunciation_audio()')
 
-        if self.activeDictEntry is None:
+        if dictEntry is None:
             coutput.print_err("Unable to lookup audio pronunciation")
         else:
-            if self.activeDictEntry.has_respelling():            
-                coutput.print_watcher(SB_ERR_DEBUG, _FUNC_NAME_, 'self.activeDictEntry.respelling')
-                coutput.print_watcher(SB_ERR_DEBUG, _FUNC_NAME_, 'self.activeDictEntry.respelling.text')
-                coutput.print_color('cyan', 'Respelling: ' + self.activeDictEntry.respelling.text )
+            if dictEntry.has_respelling():            
+                coutput.print_watcher(SB_ERR_DEBUG, _FUNC_NAME_, 'dictEntry.respelling')
+                coutput.print_watcher(SB_ERR_DEBUG, _FUNC_NAME_, 'dictEntry.respelling.text')
+                coutput.print_color('cyan', 'Respelling: ' + dictEntry.respelling.text )
             
             if not self.silentMode:
-                if self.activeDictEntry.has_pronunciation_audio() is False:
+                if dictEntry.has_pronunciation_audio() is False:
                     coutput.print_err("Unable to lookup audio pronunciation")
 
                 else:
-                    keyWord = self.activeWord
+                    keyWord = word
 
-                    if self.activeDictEntry.has_pronunciation():
-                        entryWord = self.activeDictEntry.pronunciation.spelling
+                    if dictEntry.has_pronunciation():
+                        entryWord = dictEntry.pronunciation.spelling
                     else:
                         entryWord = SB_EMPTY_STRING
 
@@ -615,11 +615,11 @@ class SpellingBee(object):
 
                     coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "Executing cfile.play")
                     
-                    cfile.play(self.activeDictEntry.pronunciation.audio_file, SB_AUDIO_OUTPUT, SB_REPEAT_COUNT, SB_REPEAT_DELAY)
+                    cfile.play(dictEntry.pronunciation.audio_file, SB_AUDIO_OUTPUT, SB_REPEAT_COUNT, SB_REPEAT_DELAY)
 
 
-    def print_word_tip(self):
-        overrideTipFileName = SB_DICT_OVERRIDE_DIR + SB_DICT_OVERRIDE_MSG.format(WORD=self.activeWord).replace(" ", "_")
+    def print_word_tip(self, word):
+        overrideTipFileName = SB_DICT_OVERRIDE_DIR + SB_DICT_OVERRIDE_MSG.format(WORD=word).replace(" ", "_")
 
         # Check for word message/instruction override
         if os.path.isfile(overrideTipFileName) and os.path.getsize(overrideTipFileName) > 0:
@@ -627,20 +627,20 @@ class SpellingBee(object):
             coutput.print_tip(activeTip)
 
 
-    def print_word_rule(self):
+    def print_word_rule(self, word):
         # Check for word rules
-        if self.activeWord.lower() in self.ruleBook:
-            coutput.print_color('green', 'RULE BOOK: ' + self.ruleBook[self.activeWord.lower()]['Etymology'])
-            for rule in self.ruleBook[self.activeWord.lower()]['Rule']:
+        if word.lower() in self.ruleBook:
+            coutput.print_color('green', 'RULE BOOK: ' + self.ruleBook[word.lower()]['Etymology'])
+            for rule in self.ruleBook[word.lower()]['Rule']:
                 coutput.print_color('green', SB_LIST_BULLET + rule)
 
 
-    def print_pronunciation_key(self):
+    def print_pronunciation_key(self, dictEntry):
         _FUNC_NAME_ = "print_pronunciation_key"
 
         # Retrieve respelling override
         respellText = SB_EMPTY_STRING
-        for override in self.activeDictEntry.definitions:
+        for override in dictEntry.definitions:
             overrideRespell = re.search(r"#!Respelling: (.*)", override)
 
             if overrideRespell is not None:
@@ -648,14 +648,15 @@ class SpellingBee(object):
                 break
 
         # Retrieve respelling
-        if respellText == SB_EMPTY_STRING and self.activeDictEntry.has_respelling():
-            respellText = self.activeDictEntry.respelling.text
+        if respellText == SB_EMPTY_STRING and dictEntry.has_respelling():
+            respellText = dictEntry.respelling.text
 
         if respellText != SB_EMPTY_STRING:
-            print("Pronunciation Key:")
+            coutput.print_color('cyan', "\nPronunciation Key:")
             coutput.print_columnized_list(self.dictConfig.pronunciation_key(respellText), SB_KEY_COLUMN_COUNT)
         else:
-            print("Pronunciation Guide:")
+            coutput.print_warn("No respelling available")
+            coutput.print_color('cyan', "\nPronunciation Guide:")
             coutput.print_columnized_list(self.dictConfig.build_pronunciation_guide(), SB_GUIDE_COLUMN_COUNT)
 
 
@@ -664,17 +665,37 @@ class SpellingBee(object):
         coutput.print_color('green', title)
 
         coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "Executing self.print_word_definition")
-        self.print_word_definition()
+        self.print_word_definition(self.activeWord, self.activeDictEntry)
 
         coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "Executing self.pronounce_word")
-        self.pronounce_word()
+        self.pronounce_word(self.activeWord, self.activeDictEntry)
 
         coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "Executing self.print_word_tip")
-        self.print_word_tip()
+        self.print_word_tip(self.activeWord)
 
         if testMode.lower() != "test":
             coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "Executing self.print_word_rule")
-            self.print_word_rule()
+            self.print_word_rule(self.activeWord)
+
+
+    def display_pronunciation_key(self):
+        _FUNC_NAME_ = "display_pronunciation_key"
+
+        self.print_pronunciation_key(self.activeDictEntry)
+
+
+    def display_word_lookup(self, word, title, testMode):
+        _FUNC_NAME_ = "display_word_lookup"
+        coutput.print_color('green', title)
+
+        entryData = self.dictAssist.download_entry(self.connectionPool, word)
+        dictEntry = cdictapi.DictionaryEntry(self.dictConfig, word, entryData).simplified_word_entry
+
+        for entryLine in dictEntry.__unicode__().splitlines():
+            print(entryLine)
+
+        if testMode.lower() != "test":
+            self.print_word_rule(word)
 
 
     def reset_test_result(self):
@@ -926,74 +947,65 @@ def run_practice(spellBee, practiceMode):
             titleText = SB_PRACTICE_WORD_DEFN_TITLE.format(INDEX=wordIndex + 1)
 
         spellBee.display_word_cue(titleText, userPracticeMode)
-        userInput = cinput.get_keypress(SB_PROMPT_SYMBOL)
+        userInput = cinput.get_keypress(SB_PROMPT_SYMBOL).lower()
         
         while True:
             # Move to [n]ext word
-            if userInput.lower() == "n":
+            if userInput == "n":
                 activeWordIndex += 1
                 break
             # Move to [p]revious word
-            elif userInput.lower() == "p":
+            elif userInput == "p":
                 activeWordIndex -= 1
                 break
             # [R]epeat current word
-            elif userInput.lower() == "r":
-                spellBee.display_word_cue(titleText, userPracticeMode)
-                userInput = cinput.get_keypress(SB_PROMPT_SYMBOL)
+            elif userInput == "r":
+                break
             # Re[v]iew active word list
-            elif userInput.lower() == "v":
+            elif userInput == "v":
                 print(SB_EMPTY_STRING)
                 spellBee.print_active_word_list()
-                display_help(userPracticeMode)
-                userInput = cinput.get_keypress(SB_PROMPT_SYMBOL)
             # [S]how current word spelling and dictionary entry
-            elif userInput.lower() == "s":
+            elif userInput == "s":
                 spellBee.display_word_cue(titleText, userPracticeMode)
                 coutput.print_color('cyan', "\nDictionary Entry:")
                 #print spellBee.activeDictEntry
                 for entryLine in spellBee.activeDictEntry.__unicode__().splitlines():
                     print(entryLine)
-                display_help(userPracticeMode)
-                userInput = cinput.get_keypress(SB_PROMPT_SYMBOL)
             # [G]oto to word
-            elif userInput.lower() == "g":
-                nextWord = cinput.get_input("\nEnter word to be jumped to: ")
+            elif userInput == "g":
+                nextWord = cinput.get_input("\nGo to word" + SB_PROMPT_SYMBOL)
                 nextIndex = spellBee.get_active_word_index(nextWord)                
                 if (nextIndex < 0) or (nextIndex >= len(spellBee.activeWordIndexList)):
                     coutput.print_err("Unable to locate '{0}' in word list".format(nextWord))
-                    display_help(userPracticeMode)
-                    userInput = cinput.get_keypress(SB_PROMPT_SYMBOL)
                 else:
                     activeWordIndex = nextIndex
                     break
             # [L]ookup word definition and pronunciation
-            elif userInput.lower() == "l":
-                print("\nLookup feature under construction.")
-                display_help(userPracticeMode)
-                #userLookupWord = cinput.get_input("\nEnter word to be looked up: ")
+            elif userInput == "l":
+                userLookupWord = cinput.get_input("\nLook up word" + SB_PROMPT_SYMBOL)
+                #coutput.print_warn("Lookup feature under construction.")
                 #spellBee.lookup_all_dictionaries_by_word(userLookupWord)
-                userInput = cinput.get_keypress(SB_PROMPT_SYMBOL)
+                spellBee.display_word_lookup(userLookupWord, SB_LOOKUP_WORD_DEFN_TITLE.format(WORD=userLookupWord), userPracticeMode)
             # Display pronunciation [k]ey
-            elif userInput.lower() == "k":
-                print(SB_EMPTY_STRING)
-                spellBee.print_pronunciation_key()
-                display_help(userPracticeMode)
-                userInput = cinput.get_keypress(SB_PROMPT_SYMBOL)
+            elif userInput == "k":
+                spellBee.display_word_cue(titleText, userPracticeMode)
+                spellBee.display_pronunciation_key()
             # Display [h]elp and statistics
-            elif userInput.lower() == "h":
+            elif userInput == "h":
                 print(SB_EMPTY_STRING)
                 spellBee.display_about()
-                display_help(userPracticeMode)
-                userInput = cinput.get_keypress(SB_PROMPT_SYMBOL)
             # E[x]it application
-            elif userInput.lower() == "x":
+            elif userInput == "x":
                 spellBee.shut_down()
                 exit_app()
             else:
-                print("\nInvalid response.")
-                display_help(userPracticeMode)
-                userInput = cinput.get_keypress(SB_PROMPT_SYMBOL)
+                print(SB_EMPTY_STRING)
+                coutput.print_err("Invalid response")
+
+            # Prompt for user input
+            display_help(userPracticeMode)
+            userInput = cinput.get_keypress(SB_PROMPT_SYMBOL).lower()
 
 
 def run_test(spellBee):
@@ -1043,7 +1055,7 @@ def run_test(spellBee):
         # Display pronunciation [k]ey
         elif userResponse.lower() == "k":
             print(SB_EMPTY_STRING)
-            spellBee.print_pronunciation_key()
+            spellBee.display_pronunciation_key()
             display_help(userPracticeMode)
             continue
 
@@ -1140,7 +1152,7 @@ def run_revision(spellBee):
         # Display pronunciation [k]ey
         elif userResponse.lower() == "k":
             print(SB_EMPTY_STRING)
-            spellBee.print_pronunciation_key()
+            spellBee.display_pronunciation_key()
             display_help(userPracticeMode)
             continue
 
