@@ -157,6 +157,7 @@ class SpellingBee(object):
         self.runMode = runMode.lower()
         self.activeMode = mode.lower()
         self.silentMode = silentMode
+        self.offlineMode = False
         self.contestList = listID
         self.wordList = []
         self.vocabList = []
@@ -387,22 +388,29 @@ class SpellingBee(object):
         # Pass #2: Check primary source online for word entry
         coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "Pass #2: Check primary source online for word entry")
         if self.activeDictEntry is None:
-            # Download dictionary entry
-            coutput.print_watcher(SB_ERR_DEBUG, _FUNC_NAME_, 'offlineEntryFileName')
-            coutput.print_watcher(SB_ERR_DEBUG, _FUNC_NAME_, 'self.activeWord')
-            self.activeEntry = self.dictAssist.download_entry(self.connectionPool, self.activeWord)
+            try:
+                # Download dictionary entry
+                coutput.print_watcher(SB_ERR_DEBUG, _FUNC_NAME_, 'offlineEntryFileName')
+                coutput.print_watcher(SB_ERR_DEBUG, _FUNC_NAME_, 'self.activeWord')
+
+                self.activeEntry = self.dictAssist.download_entry(self.connectionPool, self.activeWord)
+
+                coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "Saving offline dictionary entry to file")
+                coutput.print_watcher(SB_ERR_DEBUG, _FUNC_NAME_, 'self.activeEntry')
+
+                # Save dictionary entry offline
+                cfile.write(offlineEntryFileName, self.activeEntry)
+
+                # Set active dictionary entry
+                if os.path.isfile(offlineEntryFileName) and os.path.getsize(offlineEntryFileName) > 100:
+                    self.activeDictEntry = cdictapi.DictionaryEntry(self.dictConfig, self.activeWord, self.activeEntry).simplified_word_entry
+        
+                coutput.print_watcher(SB_ERR_DEBUG, _FUNC_NAME_, 'self.activeDictEntry')
+                self.offlineMode = False
+
+            except:
+                self.offlineMode = True
             
-            coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "Saving offline dictionary entry to file")
-            coutput.print_watcher(SB_ERR_DEBUG, _FUNC_NAME_, 'self.activeEntry')
-
-            # Save dictionary entry offline
-            cfile.write(offlineEntryFileName, self.activeEntry)
-
-            # Set active dictionary entry
-            if os.path.isfile(offlineEntryFileName) and os.path.getsize(offlineEntryFileName) > 100:
-                self.activeDictEntry = cdictapi.DictionaryEntry(self.dictConfig, self.activeWord, self.activeEntry).simplified_word_entry
-    
-            coutput.print_watcher(SB_ERR_DEBUG, _FUNC_NAME_, 'self.activeDictEntry')
 
         # Pass #3A: Check for dictionary definition and respelling override
         coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "Pass #3A: Check for dictionary definition and respelling override")
@@ -478,17 +486,23 @@ class SpellingBee(object):
 
         if self.activeDictEntry is not None and self.activeDictEntry.has_pronunciation() and self.activeDictEntry.has_pronunciation_audio() is False:
 
-            # Download and save pronunciation audio offline
-            cfile.download(self.connectionPool, self.activeDictEntry.pronunciation.audio_url, offlineProncnFileName)
+            try:
+                # Download and save pronunciation audio offline
+                cfile.download(self.connectionPool, self.activeDictEntry.pronunciation.audio_url, offlineProncnFileName)
 
-            if os.path.isfile(offlineProncnFileName) and os.path.getsize(offlineProncnFileName) > 1000:
-                onlineProncnURL = "[Online Dictionary Pronunciation URL]"
-                onlineProncnForm = "[Online Dictionary Pronunciation Form]"
-                onlineProncnSpell = "[Online Dictionary Pronunciation Spelling]"
+                if os.path.isfile(offlineProncnFileName) and os.path.getsize(offlineProncnFileName) > 1000:
+                    onlineProncnURL = "[Online Dictionary Pronunciation URL]"
+                    onlineProncnForm = "[Online Dictionary Pronunciation Form]"
+                    onlineProncnSpell = "[Online Dictionary Pronunciation Spelling]"
 
-                self.activeDictEntry.set_offline_pronunciation(onlineProncnURL, onlineProncnForm, onlineProncnSpell, offlineProncnFileName)
+                    self.activeDictEntry.set_offline_pronunciation(onlineProncnURL, onlineProncnForm, onlineProncnSpell, offlineProncnFileName)
 
-                coutput.print_watcher(SB_ERR_DEBUG, _FUNC_NAME_, 'self.activeDictEntry')
+                    coutput.print_watcher(SB_ERR_DEBUG, _FUNC_NAME_, 'self.activeDictEntry')
+
+                self.offlineMode = False
+
+            except:
+                self.offlineMode = True
 
         # Check and log errors
         wordToken = coutput.tokenize(self.activeWord)
@@ -542,7 +556,10 @@ class SpellingBee(object):
         _FUNC_NAME_ = "print_word_definition"
 
         if dictEntry is None or dictEntry.has_definitions() is False:
-            coutput.print_err("Unable to lookup dictionary definition")
+            if self.offlineMode is True:
+                coutput.print_err("Unable to lookup definition while offline")
+            else:
+                coutput.print_err("Unable to lookup definition")
         else:
             # Print definitions
             definitionIndex = 0
@@ -589,7 +606,11 @@ class SpellingBee(object):
         coutput.print_watcher(SB_ERR_DEBUG, _FUNC_NAME_, 'dictEntry.has_pronunciation_audio()')
 
         if dictEntry is None:
-            coutput.print_err("Unable to lookup audio pronunciation")
+            if self.offlineMode is True:
+                coutput.print_err("Unable to lookup pronunciation while offline")
+            else:
+                coutput.print_err("Unable to lookup pronunciation")
+            
         else:
             if dictEntry.has_respelling():            
                 coutput.print_watcher(SB_ERR_DEBUG, _FUNC_NAME_, 'dictEntry.respelling')
@@ -598,7 +619,7 @@ class SpellingBee(object):
             
             if not self.silentMode:
                 if dictEntry.has_pronunciation_audio() is False:
-                    coutput.print_err("Unable to lookup audio pronunciation")
+                    coutput.print_err("Unable to lookup pronunciation")
 
                 else:
                     keyWord = word
@@ -686,17 +707,20 @@ class SpellingBee(object):
 
     def display_word_lookup(self, word, title, testMode):
         _FUNC_NAME_ = "display_word_lookup"
-        coutput.print_color('green', title)
 
-        entryData = self.dictAssist.download_entry(self.connectionPool, word)
-        dictEntry = cdictapi.DictionaryEntry(self.dictConfig, word, entryData).simplified_word_entry
+        try:
+            entryData = self.dictAssist.download_entry(self.connectionPool, word)
+            dictEntry = cdictapi.DictionaryEntry(self.dictConfig, word, entryData).simplified_word_entry
 
-        for entryLine in dictEntry.__unicode__().splitlines():
-            print(entryLine)
+            coutput.print_color('green', title)
+            for entryLine in dictEntry.__unicode__().splitlines():
+                print(entryLine)
 
-        if testMode.lower() != "test":
-            self.print_word_rule(word)
+            if testMode.lower() != "test":
+                self.print_word_rule(word)
 
+        except:
+            coutput.print_err("Unable to lookup dictionary entry while offline")
 
     def reset_test_result(self):
         self.activeTestScore = SB_EMPTY_STRING
@@ -1299,3 +1323,4 @@ git status
 git add <filename>
 git commit -m "<comment>"
 git push "https://<user>:<pwd>@github.com/<user>/<repo>.git" master
+'''
