@@ -26,37 +26,38 @@ from pydub.utils import mediainfo
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 import pygame
 
-
-################################################################
-# Internal variables
-################################################################
-
 # Set to True to turn debug messages on
-#ERR_DEBUG = True
-ERR_DEBUG = False
+#APP_DEBUG_MODE_ENABLED = True
+APP_DEBUG_MODE_ENABLED = False
 
 ################################################################
 # File handlers
 ################################################################
 
 def make_directory(directoryList):
-    _FUNC_NAME_ = "make_directory"
 
     for directory in directoryList:
         Path(directory).mkdir(parents=True, exist_ok=True)
 
 
 def download(connectionPool, sourceURL, targetFileName):
-    _FUNC_NAME_ = "download"
 
     DEBUG_VAR="sourceURL"
-    coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, type(sourceURL)))
-    coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, eval(DEBUG_VAR))
+    coutput.print_debug("{0} :: {1}".format(DEBUG_VAR, type(sourceURL)))
+    coutput.print_debug(eval(DEBUG_VAR))
 
     fileData = connectionPool.request('GET', sourceURL).data
     targetFile = open(targetFileName, "wb")
     targetFile.write(fileData)
     targetFile.close()
+
+
+def delete(fileName):
+    try:
+        os.remove(fileName)
+    except OSError as e:            # this would be "except OSError, e:" before Python 2.6
+        if e.errno != errno.ENOENT: # errno.ENOENT = no such file or directory
+            raise                   # re-raise exception if a different error occured
 
 
 def read(inputFileName):
@@ -87,12 +88,26 @@ def log(outputFileName, outputEntry, outputText=None):
     outputFile.close()
 
 
-def delete(fileName):
-    try:
-        os.remove(fileName)
-    except OSError as e:            # this would be "except OSError, e:" before Python 2.6
-        if e.errno != errno.ENOENT: # errno.ENOENT = no such file or directory
-            raise                   # re-raise exception if a different error occured
+# Print to stdout and write to file simultaneously
+def display_write(outputFileName, outputText):
+    outputFile = codecs.open(outputFileName, mode='w', encoding='utf-8')
+    print(outputText)
+    print(outputText, file=outputFile)
+    outputFile.close()
+
+
+# Print to stdout and append to file simultaneously
+def display_append(outputFileName, outputText):
+    outputFile = codecs.open(outputFileName, mode='a', encoding='utf-8')
+    print(outputText)
+    print(outputText, file=outputFile)
+    outputFile.close()
+
+
+# Print to stdout and write to file handle simultaneously
+def display_write_file(outputFile, outputText):
+    print(outputText)
+    print(outputText, file=outputFile)
 
 
 ################################################################
@@ -113,35 +128,33 @@ def play(fileName, audioOutput, loopCount, loopDelaySec):
     # https://www.pygame.org/docs/ref/mixer.html#pygame.mixer.init
     # http://techqa.info/programming/question/27745134/how-can-i-extract-the-metadata-and-bitrate-info-from-a-audio/video-file-in-python
 
-    _FUNC_NAME_ = "play"
-
-    coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "Executing set_audio_output")
+    coutput.print_debug("Executing set_audio_output")
     set_audio_output(audioOutput)
 
-    coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "Executing mediainfo")
+    coutput.print_debug("Executing mediainfo")
     fileInfo = mediainfo(fileName)
     # todo: Print filename as part of debug message
-    coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "{TITLE} [{VALUE}]".format(TITLE="sample_rate", VALUE=fileInfo['sample_rate']))
-    coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "{TITLE} [{VALUE}]".format(TITLE="bits_per_sample", VALUE=fileInfo['bits_per_sample']))
-    coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "{TITLE} [{VALUE}]".format(TITLE="channels", VALUE=fileInfo['channels']))
+    coutput.print_debug("{TITLE} [{VALUE}]".format(TITLE="sample_rate", VALUE=fileInfo['sample_rate']))
+    coutput.print_debug("{TITLE} [{VALUE}]".format(TITLE="bits_per_sample", VALUE=fileInfo['bits_per_sample']))
+    coutput.print_debug("{TITLE} [{VALUE}]".format(TITLE="channels", VALUE=fileInfo['channels']))
 
     for loopIndex in range (0, loopCount):
         # Syntax: init(frequency=22050, size=-16, channels=2, buffer=4096)
         pygame.mixer.init()
         #pygame.mixer.init(frequency=long(float(fileInfo['sample_rate'])), channels=int(fileInfo['channels']))
 
-        coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "Executing pygame.mixer.music.load")
+        coutput.print_debug("Executing pygame.mixer.music.load")
         pygame.mixer.music.load(fileName)
 
-        coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "Executing pygame.mixer.music.play")
+        coutput.print_debug("Executing pygame.mixer.music.play")
         pygame.mixer.music.play()
         while pygame.mixer.music.get_busy() == True:
             continue
         time.sleep(0.06)            # introduce delay to ensure that the end of the audio is not clipped during playback
         
-        coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "Executing pygame.mixer.stop")
+        coutput.print_debug("Executing pygame.mixer.stop")
         pygame.mixer.stop()
-        coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "Executing pygame.mixer.quit")
+        coutput.print_debug("Executing pygame.mixer.quit")
         pygame.mixer.quit()
 
         if loopIndex != (loopCount - 1):
@@ -151,9 +164,8 @@ def play(fileName, audioOutput, loopCount, loopDelaySec):
 
 
 def play_url(connectionPool, sourceURL, audioOutput, loopCount, loopDelay):
-    _FUNC_NAME_ = "play_url"
 
-    coutput.print_debug(ERR_DEBUG, _FUNC_NAME_, "Executing set_audio_output")
+    coutput.print_debug("Executing set_audio_output")
     set_audio_output(audioOutput)
 
     if '.mp3' in sourceURL or '.wav' in sourceURL:

@@ -32,8 +32,8 @@ import common.rpimod.stdio.output as coutput
 import common.rpimod.stdio.fileio as cfile
 
 # Set to True to turn debug messages on
-#MOD_ERR_DEBUG = True
-MOD_ERR_DEBUG = False
+#APP_DEBUG_MODE_ENABLED = True
+APP_DEBUG_MODE_ENABLED = False
 
 ################################################################
 # General Lexical Variables and Functions
@@ -285,11 +285,9 @@ class WordEntry(object):
         return objectText
 
     def __str__(self):
-        _FUNC_NAME_ = "WordEntry.__str__"
         return str(self.__unicode__())
 
     def __repr__(self):
-        _FUNC_NAME_ = "WordEntry.__repr__"
         return "WordEntry({0})".format(self.__str__())
 
 
@@ -317,11 +315,9 @@ class SimplifiedWordEntry(object):
         return objectText
 
     def __str__(self):
-        _FUNC_NAME_ = "SimplifiedWordEntry.__str__"
         return str(self.__unicode__())
 
     def __repr__(self):
-        _FUNC_NAME_ = "SimplifiedWordEntry.__repr__"
         return "SimplifiedWordEntry({0})".format(self.__str__())
 
     def has_definitions(self):
@@ -353,7 +349,6 @@ class SimplifiedWordEntry(object):
             return True
 
     def has_mispronunciation(self):
-        _FUNC_NAME_ = "SimplifiedWordEntry.has_mispronunciation"
 
         if not self.has_pronunciation():
             return False      
@@ -372,7 +367,7 @@ class SimplifiedWordEntry(object):
 
     # Override definition
     def override_definitions(self, source, entry_word, overrides):
-        _FUNC_NAME_ = "SimplifiedWordEntry.override_definitions"
+
         if len(overrides) > 0:
             self.source = source
             self.entry_word = entry_word
@@ -382,16 +377,16 @@ class SimplifiedWordEntry(object):
                 
                 # Handle overrides that are marked special by the application using a prefix e.g. *
                 override_text = re.sub(r'(^[^\(a-zA-Z0-9]|[\. ]+$)', DICT_UNICODE_EMPTY_STR, override, flags=re.IGNORECASE)
-                coutput.print_watcher(MOD_ERR_DEBUG, _FUNC_NAME_, 'override')
-                coutput.print_watcher(MOD_ERR_DEBUG, _FUNC_NAME_, 'override_text')
+                coutput.print_watcher('override')
+                coutput.print_watcher('override_text')
 
                 for definition in self.definitions:
                     definition_text = re.sub(r'(^[^\(a-zA-Z0-9]|[\. ]+$)', DICT_UNICODE_EMPTY_STR, definition, flags=re.IGNORECASE)
-                    coutput.print_watcher(MOD_ERR_DEBUG, _FUNC_NAME_, 'definition')
-                    coutput.print_watcher(MOD_ERR_DEBUG, _FUNC_NAME_, 'definition_text')
+                    coutput.print_watcher('definition')
+                    coutput.print_watcher('definition_text')
                     if definition_text == override_text:
                         self.definitions.remove(definition)
-                        coutput.print_debug(MOD_ERR_DEBUG, _FUNC_NAME_, "Removed duplicate definition")
+                        coutput.print_debug("Removed duplicate definition")
             
             # Override definitions
             self.definitions = overrides + self.definitions
@@ -423,8 +418,6 @@ class SimplifiedWordEntry(object):
 
 
     def generate_override(self):
-        _FUNC_NAME_ = "SimplifiedWordEntry.generate_override"
-
         """
         #!Source: <Name of source>
         #!Respelling: <Respelling>
@@ -476,7 +469,6 @@ class DictionaryConfig(object):
 
 
     def is_required_element(self, element):
-        _FUNC_NAME_ = "DictionaryConfig.is_required_element"
 
         isRequiredElement = False
         
@@ -504,7 +496,6 @@ class DictionaryConfig(object):
 
 
     def is_entry_element(self, element):
-        _FUNC_NAME_ = "DictionaryConfig.is_entry_element"
 
         isEntryElement = False
         
@@ -532,13 +523,11 @@ class DictionaryConfig(object):
 
 
     def build_entry_url(self, key_word):
-        _FUNC_NAME_ = "DictionaryConfig.build_entry_url"
 
         return self.entry_url_format.format(WORD=coutput.normalize(key_word)).replace(" ", "%20")
 
 
     def build_pronunciation_guide(self):
-        _FUNC_NAME_ = "DictionaryConfig.build_pronunciation_guide"
 
         pronunciation_guide = []
         if self.pronunciation_guide_file != DICT_UNICODE_EMPTY_STR:
@@ -549,7 +538,6 @@ class DictionaryConfig(object):
 
 
     def pronunciation_key(self, respelling):
-        _FUNC_NAME_ = "DictionaryConfig.pronunciation_key"
 
         pronunciation_key = []
         if respelling != DICT_UNICODE_EMPTY_STR:
@@ -571,7 +559,6 @@ class DictionaryConfig(object):
 
 class DictionaryEntry(object):
     def __init__(self, dict_config, key_word, entry_raw_text):
-        _FUNC_NAME_ = "DictionaryEntry.__init__"
 
         # Configuration Attributes
         self.config = dict_config
@@ -587,12 +574,10 @@ class DictionaryEntry(object):
 
 
     def build_audio_url(self, url_fragment):
-        _FUNC_NAME_ = "DictionaryEntry.build_audio_url"
         return url_fragment
 
 
     def build_illustration_url(self, url_fragment):
-        _FUNC_NAME_ = "DictionaryEntry.build_illustration_url"
         return url_fragment
 
 
@@ -601,7 +586,6 @@ class DictionaryEntry(object):
 
     
     def set_simplified_word_entry(self):
-        _FUNC_NAME_ = "DictionaryEntry.set_simplified_word_entry"
                 
         simplifiedWordEntry = None
 
@@ -643,8 +627,8 @@ class DictionaryEntry(object):
                 break
 
         # Populate conformed entry attributes
-        coutput.print_watcher(MOD_ERR_DEBUG, _FUNC_NAME_, 'matchEntryFound')
-        coutput.print_watcher(MOD_ERR_DEBUG, _FUNC_NAME_, 'matchType')
+        coutput.print_watcher('matchEntryFound')
+        coutput.print_watcher('matchType')
 
         # If matching entry is found, populate pronunciation attributes
         if matchEntryFound:
@@ -654,15 +638,15 @@ class DictionaryEntry(object):
                 simplifiedWordEntry.functional_label = coutput.coalesce(matchInflection.functional_label, matchEntries[0].functional_label)
 
                 if matchInflection.pronunciation is not None:
-                    coutput.print_watcher(MOD_ERR_DEBUG, _FUNC_NAME_, 'matchInflection.pronunciation.audio_url')
+                    coutput.print_watcher('matchInflection.pronunciation.audio_url')
                     simplifiedWordEntry.pronunciation = WordPronunciation(matchInflection.pronunciation.audio_url)
                     simplifiedWordEntry.pronunciation.word_pronunciation = matchInflection.pronunciation.word_pronunciation
                     simplifiedWordEntry.pronunciation.form = matchInflection.pronunciation.form
                     simplifiedWordEntry.pronunciation.spelling = matchInflection.pronunciation.spelling
 
-                    coutput.print_watcher(MOD_ERR_DEBUG, _FUNC_NAME_, 'simplifiedWordEntry.pronunciation.word_pronunciation')
-                    coutput.print_watcher(MOD_ERR_DEBUG, _FUNC_NAME_, 'simplifiedWordEntry.pronunciation.form')
-                    coutput.print_watcher(MOD_ERR_DEBUG, _FUNC_NAME_, 'simplifiedWordEntry.pronunciation.spelling')
+                    coutput.print_watcher('simplifiedWordEntry.pronunciation.word_pronunciation')
+                    coutput.print_watcher('simplifiedWordEntry.pronunciation.form')
+                    coutput.print_watcher('simplifiedWordEntry.pronunciation.spelling')
 
                 if matchInflection.respelling is not None:
                     simplifiedWordEntry.respelling = WordRespelling(matchInflection.respelling.text, matchInflection.respelling.source)
@@ -673,7 +657,7 @@ class DictionaryEntry(object):
                 simplifiedWordEntry = SimplifiedWordEntry(matchEntries[0].source, self.key_word, matchEntries[0].entry_word)
                 simplifiedWordEntry.functional_label = matchEntries[0].functional_label
 
-                coutput.print_watcher(MOD_ERR_DEBUG, _FUNC_NAME_, 'matchEntries[0].pronunciation')
+                coutput.print_watcher('matchEntries[0].pronunciation')
                 simplifiedWordEntry.pronunciation = copy.deepcopy(matchEntries[0].pronunciation)
 
                 simplifiedWordEntry.respelling = copy.deepcopy(matchEntries[0].respelling)
@@ -684,7 +668,7 @@ class DictionaryEntry(object):
 
             for we in matchEntries:
                 
-                coutput.print_watcher(MOD_ERR_DEBUG, _FUNC_NAME_, 'we')
+                coutput.print_watcher('we')
 
                 if we.etymology != DICT_UNICODE_EMPTY_STR and we.etymology not in etymologies:
                     etymologies.append(we.etymology)
@@ -720,12 +704,11 @@ class DictionaryEntry(object):
         # Set conformed entry
         self.simplified_word_entry = simplifiedWordEntry
 
-        coutput.print_watcher(MOD_ERR_DEBUG, _FUNC_NAME_, 'simplifiedWordEntry')
+        coutput.print_watcher('simplifiedWordEntry')
 
 
 class DictionaryAssistant(object):
     def __init__(self, dict_config):
-        _FUNC_NAME_ = "DictionaryAssistant.__init__"
 
         # Set configuration attributes
         self.config = dict_config
@@ -750,36 +733,34 @@ class DictionaryAssistant(object):
 
 
     def download_entry(self, connection_pool, key_word):
-        _FUNC_NAME_ = "DictionaryAssistant.download_entry"
 
         connectionResponse = connection_pool.request('GET', self.config.build_entry_url(key_word))
 
-        coutput.print_watcher(MOD_ERR_DEBUG, _FUNC_NAME_, "key_word")
-        coutput.print_watcher(MOD_ERR_DEBUG, _FUNC_NAME_, "self.config.build_entry_url(key_word)")
-        coutput.print_watcher(MOD_ERR_DEBUG, _FUNC_NAME_, "connectionResponse")
+        coutput.print_watcher("key_word")
+        coutput.print_watcher("self.config.build_entry_url(key_word)")
+        coutput.print_watcher("connectionResponse")
 
         # Perform unicode conversion
-        coutput.print_watcher(MOD_ERR_DEBUG, _FUNC_NAME_, "connectionResponse.data")
+        coutput.print_watcher("connectionResponse.data")
         entryData = connectionResponse.data.decode('utf8')
-        coutput.print_watcher(MOD_ERR_DEBUG, _FUNC_NAME_, "entryData")
+        coutput.print_watcher("entryData")
 
         return entryData
 
 
     def compare_word_form(self, key_word, entry_word):
-        _FUNC_NAME_ = "DictionaryAssistant.compare_word_form"
 
         keyWordToken = coutput.tokenize(key_word)
         entryWordToken = coutput.tokenize(entry_word)
 
-        coutput.print_watcher(MOD_ERR_DEBUG, _FUNC_NAME_, 'keyWordToken')
-        coutput.print_watcher(MOD_ERR_DEBUG, _FUNC_NAME_, 'entryWordToken')
+        coutput.print_watcher('keyWordToken')
+        coutput.print_watcher('entryWordToken')
 
         if keyWordToken != entryWordToken:
             coutput.print_warn("A different form of the word is being pronounced.")
 
             for posPattern in self.posRules:
-                coutput.print_watcher(MOD_ERR_DEBUG, _FUNC_NAME_, "posPattern['form']")
+                coutput.print_watcher("posPattern['form']")
 
                 if posPattern['regexPattern'].match(keyWordToken):
                     coutput.print_tip("The {0} form ({1}) of the word is to be spelled.".format(posPattern['form'], posPattern['pattern']))

@@ -13,6 +13,7 @@
 # sys._getframe: https://docs.python.org/2/library/sys.html?highlight=_getframe#sys._getframe
 #--------------------------------------------------------------------------------------------------
 
+import os
 import sys
 import unicodedata
 import math
@@ -20,8 +21,11 @@ import re
 import logging
 
 # Set to True to turn debug messages on
-#ERR_DEBUG = True
-ERR_DEBUG = False
+#APP_DEBUG_MODE_ENABLED = True
+APP_DEBUG_MODE_ENABLED = False
+
+# Environment variable name for identifying debug mode
+DEBUG_MODE_VARNAME = "APP_DEBUG_MODE_ENABLED"
 
 # Display a list as evenly spaced columns
 OUT_MARGIN_WIDTH = 4                                    # set margin width to 4 characters
@@ -44,7 +48,6 @@ def visual_len(word):
     return rlen
 
 def columnize(elementList, numCols):
-    _FUNC_NAME_ = "columnize"
     elementCount = len(elementList)
     colCount = numCols
     rowCount = int(math.ceil(float(elementCount)/float(colCount)))
@@ -54,8 +57,6 @@ def columnize(elementList, numCols):
 
     if elementCount > 0:
         elementMaxLength = max([visual_len(element) for element in elementList])
-        DEBUG_VAR="elementMaxLength"
-        print_debug(ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, eval(DEBUG_VAR)))
 
         for rowIndex in range(0, rowCount):
             row = []
@@ -104,14 +105,13 @@ def coalesce(*args):
     return None
 
 def normalize(word):
-    _FUNC_NAME_ = "normalize"
+
     wordToken = word
     wordToken = unicodedata.normalize('NFKD', wordToken)
    
     return wordToken
 
 def tokenize(word):
-    _FUNC_NAME_ = "tokenize"
 
     wordToken = word
     wordToken = unicodedata.normalize('NFKD', wordToken.lower())
@@ -205,11 +205,10 @@ def print_tip (msg):
 # Logging and debugging
 # Usage:
 # import common.rpimod.stdio.output as coutput
-# SB_ERR_DEBUG = True
+# APP_DEBUG_MODE_ENABLED = True
 # To print debug statements:
-# _FUNC_NAME_ = "function_name"
-# DEBUG_VAR="searchWord"
-# coutput.print_debug(SB_ERR_DEBUG, _FUNC_NAME_, "WATCH: {0} :: {1}".format(DEBUG_VAR, eval(DEBUG_VAR)))
+# coutput.print_debug("Executing step #1")
+# coutput.print_watcher('variable_1')
 #################################################################################
 
 def addLoggingLevel(levelName, levelNum, methodName=None):
@@ -276,15 +275,36 @@ TRACE_DEBUG_LEVEL_NAME = "TRACE"
 addLoggingLevel(TRACE_DEBUG_LEVEL_NAME, TRACE_DEBUG_LEVEL_NUM)
 # END: "TRACE" debug level
 
-def print_debug (debugEnabled, context, msg):
-    if debugEnabled:
-        logger.setLevel(logging.DEBUG)
-        logger.debug('[%s] %s', context, msg)
-        logger.setLevel(logging.CRITICAL)
+def print_debug (msg):
+    # Set frame as previous code frame (calling function)
+    frame = sys._getframe(1)    
+    # Set context as name of calling function
+    module = os.path.splitext(os.path.basename(frame.f_code.co_filename))[0]
+    function = frame.f_code.co_name
+    context = "{0}.{1}".format(module, function)
+            
+    try:
+        debugEnabled = eval(DEBUG_MODE_VARNAME, frame.f_globals, frame.f_locals)
+        if debugEnabled:
+            logger.setLevel(logging.DEBUG)
+            logger.debug('[%s] %s', context, msg)
+            logger.setLevel(logging.CRITICAL)
+    except:
+        print_err("Debug mode [{1}] not set for {0}".format(context, DEBUG_MODE_VARNAME))
 
-def print_watcher (debugEnabled, context, expr):
-    if debugEnabled:
-        frame = sys._getframe(1)
-        logger.setLevel(logging.TRACE)
-        logger.trace('[%s] %s :: %s :: %s', context, expr, type(eval(expr, frame.f_globals, frame.f_locals)), repr(eval(expr, frame.f_globals, frame.f_locals)))
-        logger.setLevel(logging.CRITICAL)
+def print_watcher (expr):
+    # Set frame as previous code frame (calling function)
+    frame = sys._getframe(1)    
+    # Set context as name of calling function
+    module = os.path.splitext(os.path.basename(frame.f_code.co_filename))[0]
+    function = frame.f_code.co_name
+    context = "{0}.{1}".format(module, function)
+            
+    try:
+        debugEnabled = eval(DEBUG_MODE_VARNAME, frame.f_globals, frame.f_locals)
+        if debugEnabled:
+            logger.setLevel(logging.TRACE)
+            logger.trace('[%s] %s :: %s :: %s', context, expr, type(eval(expr, frame.f_globals, frame.f_locals)), repr(eval(expr, frame.f_globals, frame.f_locals)))
+            logger.setLevel(logging.CRITICAL)
+    except:
+        print_err("Debug mode [{1}] not set for {0}".format(context, DEBUG_MODE_VARNAME))
