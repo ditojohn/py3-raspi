@@ -19,8 +19,8 @@ import common.rpimod.wordproc.dict.dictionaryapi as cdict
 
 
 # Set to True to turn debug messages on
-#MOD_ERR_DEBUG = True
-MOD_ERR_DEBUG = False
+#APP_DEBUG_MODE_ENABLED = True
+APP_DEBUG_MODE_ENABLED = False
 
 ################################################################
 # Merriam Webster Collegiate Dictionary
@@ -45,10 +45,9 @@ class DictionaryConfig(cdict.DictionaryConfig):
 
 
     def build_entry_url(self, key_word):
-        _FUNC_NAME_ = "DictionaryConfig.build_entry_url"
 
-        coutput.print_watcher(MOD_ERR_DEBUG, _FUNC_NAME_, 'key_word')
-        coutput.print_watcher(MOD_ERR_DEBUG, _FUNC_NAME_, 'coutput.normalize(key_word)')
+        coutput.print_watcher('key_word')
+        coutput.print_watcher('coutput.normalize(key_word)')
 
         #return self.entry_url_format.format(WORD=key_word, KEY=self.api_key).replace(u" ", u"%20")
         return self.entry_url_format.format(WORD=coutput.normalize(key_word), KEY=self.api_key).replace(" ", "%20")
@@ -57,7 +56,6 @@ class DictionaryConfig(cdict.DictionaryConfig):
 class DictionaryEntry(cdict.DictionaryEntry):
 
     def build_audio_url(self, url_fragment):
-        _FUNC_NAME_ = "DictionaryEntry.build_audio_url"
 
         if url_fragment == cdict.DICT_UNICODE_EMPTY_STR:
             return url_fragment
@@ -79,7 +77,6 @@ class DictionaryEntry(cdict.DictionaryEntry):
 
 
     def build_illustration_url(self, url_fragment):
-        _FUNC_NAME_ = "DictionaryEntry.build_illustration_url"
 
         if url_fragment == cdict.DICT_UNICODE_EMPTY_STR:
             return url_fragment
@@ -93,7 +90,6 @@ class DictionaryEntry(cdict.DictionaryEntry):
 
     def build_pronunciation(self, element, word_form):
         # Accepts <sound> element as input
-        _FUNC_NAME_ = "DictionaryEntry.build_pronunciation"
         
         pronunciation = None
 
@@ -107,11 +103,11 @@ class DictionaryEntry(cdict.DictionaryEntry):
             if subElement.name == 'wav':
                 subElementText = self.build_audio_url(subElementText)
                 wavElementText = subElementText
-                coutput.print_watcher(MOD_ERR_DEBUG, _FUNC_NAME_, 'wavElementText')
+                coutput.print_watcher('wavElementText')
 
             elif subElement.name == 'wpr':
                 wprElementText = subElementText
-                coutput.print_watcher(MOD_ERR_DEBUG, _FUNC_NAME_, 'wprElementText')
+                coutput.print_watcher('wprElementText')
 
         if wavElementText != cdict.DICT_UNICODE_EMPTY_STR:
             pronunciation = cdict.WordPronunciation(wavElementText)        
@@ -168,7 +164,6 @@ class DictionaryEntry(cdict.DictionaryEntry):
 
     def build_senses(self, element):
         # Accepts <def> or <ct> elements as input
-        _FUNC_NAME_ = "DictionaryEntry.build_senses"
 
         """
         <!ELEMENT def (vt?, date?, sl*, sense, ss?, us?)+ >
@@ -217,7 +212,6 @@ class DictionaryEntry(cdict.DictionaryEntry):
 
     def build_cross_entries(self, element, entry_word):
         # Accepts <cx> element as input and returns an inflection
-        _FUNC_NAME_ = "DictionaryEntry.build_cross_entries"
         
         wordInfl = cdict.WordInflection(entry_word)
         wordInfl.spelling = entry_word.replace('*', '')
@@ -231,12 +225,11 @@ class DictionaryEntry(cdict.DictionaryEntry):
             elif subelement.name == 'ct':
                 wordInfl.senses.extend(self.build_senses(subelement))
         
-        coutput.print_watcher(MOD_ERR_DEBUG, _FUNC_NAME_, 'wordInfl')
+        coutput.print_watcher('wordInfl')
         return wordInfl
 
 
     def set_word_entries(self):
-        _FUNC_NAME_ = "DictionaryEntry.set_word_entries"
 
         soup = BeautifulSoup(self.entry_raw_text, self.config.parser)
         nameFilter = re.compile(r'(hw|fl|pr|et|sound|def|cx|art)')
@@ -266,7 +259,7 @@ class DictionaryEntry(cdict.DictionaryEntry):
             miscElements = entry.find_all(['in', 'dro', 'uro', 'vr']) 
             [x.extract() for x in entry.findAll(['in', 'dro', 'uro', 'vr'])]
 
-            coutput.print_debug(MOD_ERR_DEBUG, _FUNC_NAME_, "Process all <ew> elements")
+            coutput.print_debug("Process all <ew> elements")
             for element in entry.find_all('ew'):
                 
                 elementText = element.get_text().strip()
@@ -275,19 +268,19 @@ class DictionaryEntry(cdict.DictionaryEntry):
             for element in entry.find_all(nameFilter):
 
                 elementText = element.get_text().strip()
-                coutput.print_watcher(MOD_ERR_DEBUG, _FUNC_NAME_, 'element.name')
-                coutput.print_watcher(MOD_ERR_DEBUG, _FUNC_NAME_, 'elementText')
+                coutput.print_watcher('element.name')
+                coutput.print_watcher('elementText')
 
                 if element.name == 'hw':
-                    coutput.print_debug(MOD_ERR_DEBUG, _FUNC_NAME_, "Process <hw> element")
+                    coutput.print_debug("Process <hw> element")
                     wordEntry.head_word = elementText
 
                 elif element.name == 'fl':
-                    coutput.print_debug(MOD_ERR_DEBUG, _FUNC_NAME_, "Process <fl> element")
+                    coutput.print_debug("Process <fl> element")
                     wordEntry.functional_label = elementText
 
                 elif element.name == 'et':
-                    coutput.print_debug(MOD_ERR_DEBUG, _FUNC_NAME_, "Process <et> element")
+                    coutput.print_debug("Process <et> element")
                     wordEntry.etymology = elementText
 
                 elif element.name == 'pr':
@@ -300,7 +293,7 @@ class DictionaryEntry(cdict.DictionaryEntry):
                     wordEntry.illustrations.extend(self.build_illustrations(element, wordEntry.entry_word))
 
                 elif element.name == 'def':
-                    coutput.print_debug(MOD_ERR_DEBUG, _FUNC_NAME_, "Process <def> element")
+                    coutput.print_debug("Process <def> element")
                     wordEntry.senses.extend(self.build_senses(element))
 
                 elif element.name == 'cx':
@@ -327,11 +320,11 @@ class DictionaryEntry(cdict.DictionaryEntry):
                 for element in miscElement.find_all(['il', 'sound', 'pr', 'def']):
 
                     DEBUG_VAR = "element.name"
-                    coutput.print_debug(MOD_ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, eval(DEBUG_VAR)))
+                    coutput.print_debug("{0} :: {1}".format(DEBUG_VAR, eval(DEBUG_VAR)))
 
                     elementText = element.get_text().strip()
                     DEBUG_VAR = "elementText"
-                    coutput.print_debug(MOD_ERR_DEBUG, _FUNC_NAME_, "{0} :: {1}".format(DEBUG_VAR, eval(DEBUG_VAR)))
+                    coutput.print_debug("{0} :: {1}".format(DEBUG_VAR, eval(DEBUG_VAR)))
 
                     if element.name == 'il':
                         winf.functional_label = elementText
@@ -347,5 +340,5 @@ class DictionaryEntry(cdict.DictionaryEntry):
 
                 wordEntry.inflections.append(winf)
 
-            coutput.print_watcher(MOD_ERR_DEBUG, _FUNC_NAME_, 'wordEntry')
+            coutput.print_watcher('wordEntry')
             self.word_entries.append(wordEntry)
