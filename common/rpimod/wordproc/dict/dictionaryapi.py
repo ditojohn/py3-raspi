@@ -301,6 +301,8 @@ class SimplifiedWordEntry(object):
         self.pronunciation = None
         self.respelling = None
         self.definitions = []
+        self.usage = []
+        self.examples = DICT_UNICODE_EMPTY_STR
 
     def __unicode__(self):
         objectText = ""
@@ -312,6 +314,8 @@ class SimplifiedWordEntry(object):
         objectText = objectText + format_obj('[Pronunciation]', self.pronunciation)
         objectText = objectText + format_obj('[Respelling   ]', self.respelling)
         objectText = objectText + format_obj('[Definitions  ]', self.definitions)
+        objectText = objectText + format_obj('[Usage        ]', self.usage)
+        objectText = objectText + format_txt('[Examples     ]', self.examples)
         return objectText
 
     def __str__(self):
@@ -357,7 +361,6 @@ class SimplifiedWordEntry(object):
         else:
             return True
 
-
     def has_respelling(self):
         if self.respelling is None:
             return False
@@ -365,15 +368,75 @@ class SimplifiedWordEntry(object):
             return True
 
 
-    # Override definition
-    def override_definitions(self, source, entry_word, overrides):
+    # Override entry
+    def override_entry(self, source, entry_word, overrides):
 
         if len(overrides) > 0:
-            self.source = source
             self.entry_word = entry_word
 
-            # Remove duplicate definitions
+            overrideInfo = {}
+            overrideDefinitions = []
             for override in overrides:
+                if override.startswith('#!'):
+                    override_elements = override.split(':')
+                    override_name = override_elements[0].strip()
+                    override_value = re.sub('^#![a-zA-Z0-9]+: ', DICT_UNICODE_EMPTY_STR, override).strip()
+                    
+                    if override_value != DICT_UNICODE_EMPTY_STR:
+                        overrideInfo[override_name] = override_value
+                else:
+                    if override != DICT_UNICODE_EMPTY_STR:
+                        overrideDefinitions.append(override)
+
+            # Process info lines
+            for key in overrideInfo:
+                if key == '#!Etymology':
+                    self.etymology = overrideInfo[key]
+
+                elif key == '#!AudioURL':
+                    if self.pronunciation is None:
+                        self.pronunciation = WordPronunciation(overrideInfo[key])
+                    else:
+                        self.pronunciation.audio_url = overrideInfo[key]
+
+                    if '#!Word' in overrideInfo.keys():
+                        self.pronunciation.form = overrideInfo['#!Word']
+                        self.pronunciation.spelling = overrideInfo['#!Word']
+
+                elif key == '#!Respelling':
+                    if self.respelling is None:
+                        self.respelling = WordRespelling(overrideInfo[key], overrideInfo['#!Source'])
+                    else:
+                        self.respelling.source = self.respelling.source + ';' + overrideInfo['#!Source']
+                        self.respelling.text = overrideInfo[key]
+                    
+                    if '#!Word' in overrideInfo.keys():
+                        self.respelling.form = overrideInfo['#!Word']
+                        self.respelling.spelling = overrideInfo['#!Word']
+
+                elif key == '#!Sentence':
+                    self.usage = [overrideInfo[key]] + self.usage
+
+                elif key == '#!Examples':
+                    self.examples = overrideInfo[key]
+
+                else:
+                    self.definitions.append("{}: {}".format(key, overrideInfo[key]))
+
+            # Process #!Source info lines
+            if '#!Source' in overrideInfo.keys():
+                altSource = overrideInfo['#!Source']
+            else:
+                altSource = source
+
+            if self.source == DICT_UNICODE_EMPTY_STR:
+                self.source = altSource
+            else:
+                self.source = self.source + ';' + altSource
+
+            # Process definitions
+            # Remove duplicate definitions
+            for override in overrideDefinitions:
                 
                 # Handle overrides that are marked special by the application using a prefix e.g. *
                 override_text = re.sub(r'(^[^\(a-zA-Z0-9]|[\. ]+$)', DICT_UNICODE_EMPTY_STR, override, flags=re.IGNORECASE)
@@ -389,7 +452,7 @@ class SimplifiedWordEntry(object):
                         coutput.print_debug("Removed duplicate definition")
             
             # Override definitions
-            self.definitions = overrides + self.definitions
+            self.definitions = overrideDefinitions + self.definitions
 
 
     def set_offline_pronunciation(self, pron_url, word_form, word_spelling, file_name):        
@@ -410,7 +473,8 @@ class SimplifiedWordEntry(object):
         if self.pronunciation is None:
             self.pronunciation = WordPronunciation(default_url)
         else:
-            self.pronunciation.audio_url = default_url
+            #self.pronunciation.audio_url = default_url
+            pass
 
         self.pronunciation.form = word_form
         self.pronunciation.spelling = word_spelling      

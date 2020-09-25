@@ -20,6 +20,9 @@ import math
 import re
 import logging
 
+sys.path.insert(0, "..")
+import common.rpimod.stdio.input as cinput
+
 # Set to True to turn debug messages on
 #APP_DEBUG_MODE_ENABLED = True
 APP_DEBUG_MODE_ENABLED = False
@@ -124,7 +127,7 @@ def tokenize(word):
 # http://kishorelive.com/2011/12/05/printing-colors-in-the-terminal/
 
 termColors = ['black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'white']
-termEffects = ['bold', 'underline', 'blink', 'inverse', 'conceal']
+termEffects = ['normal', 'bold', 'faint', 'italic', 'underline', 'blink', 'inverse', 'conceal']
 
 termSGRCodes = {
 
@@ -133,6 +136,8 @@ termSGRCodes = {
 
     'normal':    "0",
     'bold':      "1",
+    'faint':      "2",
+    'italic':   "3",
     'underline': "4",
     'blink':     "5",
     'inverse':   "7",
@@ -147,7 +152,15 @@ termSGRCodes = {
         'blue':      "34",
         'magenta':   "35",
         'cyan':      "36",
-        'white':     "37"
+        'white':     "37",
+
+        'lightRed':       "91",
+        'lightGreen':     "92",
+        'lightYellow':    "93",
+        'lightBlue':      "94",
+        'lightMagenta':   "95",
+        'lightCyan':      "96"
+
     },
 
     'background': {
@@ -159,11 +172,19 @@ termSGRCodes = {
         'blue':      "44",
         'magenta':   "45",
         'cyan':      "46",
-        'white':     "47"
+        'white':     "47",
+
+        'lightRed':       "101",
+        'lightGreen':     "102",
+        'lightYellow':    "103",
+        'lightBlue':      "104",
+        'lightMagenta':   "105",
+        'lightCyan':      "106"
+
     }   
 }
 
-def get_term_color (textColor, backgroundColor, effect):
+def get_term_color(textColor, backgroundColor, effect):
     colorCode = termSGRCodes['prefix']
     
     if effect in termEffects:
@@ -183,14 +204,17 @@ def get_term_color (textColor, backgroundColor, effect):
 
     return colorCode
 
-def print_color (color, msg):
 
+def print_color(color, msg):
     if isinstance(msg, str):
         msgText = msg
     else:
         msgText = msg
 
     print("{colorOn}{text}{colorOff}".format(colorOn=get_term_color(color, 'normal', 'normal'), text=msgText, colorOff=get_term_color('normal', 'normal', 'normal')))
+
+def print_info (msg):
+    print_color ('cyan', 'INFO: ' + msg)
 
 def print_err (msg):
     print_color ('red', 'ERROR: ' + msg)
@@ -200,6 +224,17 @@ def print_warn (msg):
 
 def print_tip (msg):
     print_color ('magenta', 'TIP: ' + msg)
+
+
+def print_effect(effect, msg):
+    print("{colorOn}{text}{colorOff}".format(colorOn=get_term_color('normal', 'normal', effect), text=msg, colorOff=get_term_color('normal', 'normal', 'normal')))
+
+def print_italic(msg):
+    print_effect('italic', msg)
+
+def print_faint(msg):
+    print_effect('faint', msg)
+
 
 #################################################################################
 # Logging and debugging
@@ -306,5 +341,20 @@ def print_watcher (expr):
             logger.setLevel(logging.TRACE)
             logger.trace('[%s] %s :: %s :: %s', context, expr, type(eval(expr, frame.f_globals, frame.f_locals)), repr(eval(expr, frame.f_globals, frame.f_locals)))
             logger.setLevel(logging.CRITICAL)
+    except:
+        print_err("Debug mode [{1}] not set for {0}".format(context, DEBUG_MODE_VARNAME))
+
+def print_wait ():
+    # Set frame as previous code frame (calling function)
+    frame = sys._getframe(1)    
+    # Set context as name of calling function
+    module = os.path.splitext(os.path.basename(frame.f_code.co_filename))[0]
+    function = frame.f_code.co_name
+    context = "{0}.{1}".format(module, function)
+            
+    try:
+        debugEnabled = eval(DEBUG_MODE_VARNAME, frame.f_globals, frame.f_locals)
+        if debugEnabled:
+            cinput.get_keypress("\n[{}] Press any key to continue...".format(context))
     except:
         print_err("Debug mode [{1}] not set for {0}".format(context, DEBUG_MODE_VARNAME))

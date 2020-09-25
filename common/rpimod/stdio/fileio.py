@@ -34,17 +34,32 @@ APP_DEBUG_MODE_ENABLED = False
 # File handlers
 ################################################################
 
-def make_directory(directoryList):
 
+def cleanse_filename(fileName):
+    cleanFileName = re.sub('[ /]', ' ', fileName.lower(), flags=re.IGNORECASE)
+    cleanFileName = cleanFileName.replace("\\", " ")
+    cleanFileName = re.sub('[ ]+', ' ', cleanFileName)
+    cleanFileName = cleanFileName.strip().replace(" ", "_")
+    return cleanFileName
+
+
+def make_directory(directoryList):
     for directory in directoryList:
         Path(directory).mkdir(parents=True, exist_ok=True)
 
 
-def download(connectionPool, sourceURL, targetFileName):
+def find_file(fileName, directoryList, sizeLimit=0):
+    fullFileName = None
+    for directory in directoryList:
+        checkFileName = directory + fileName
+        if os.path.isfile(checkFileName) and os.path.getsize(checkFileName) > sizeLimit:
+            fullFileName = checkFileName
+            break
+    return fullFileName
 
-    DEBUG_VAR="sourceURL"
-    coutput.print_debug("{0} :: {1}".format(DEBUG_VAR, type(sourceURL)))
-    coutput.print_debug(eval(DEBUG_VAR))
+
+def download(connectionPool, sourceURL, targetFileName):
+    coutput.print_watcher("sourceURL")
 
     fileData = connectionPool.request('GET', sourceURL).data
     targetFile = open(targetFileName, "wb")
@@ -128,55 +143,62 @@ def play(fileName, audioOutput, loopCount, loopDelaySec):
     # https://www.pygame.org/docs/ref/mixer.html#pygame.mixer.init
     # http://techqa.info/programming/question/27745134/how-can-i-extract-the-metadata-and-bitrate-info-from-a-audio/video-file-in-python
 
-    coutput.print_debug("Executing set_audio_output")
-    set_audio_output(audioOutput)
+    try:
+        coutput.print_debug("Executing set_audio_output")
+        set_audio_output(audioOutput)
 
-    coutput.print_debug("Executing mediainfo")
-    fileInfo = mediainfo(fileName)
-    # todo: Print filename as part of debug message
-    coutput.print_debug("{TITLE} [{VALUE}]".format(TITLE="sample_rate", VALUE=fileInfo['sample_rate']))
-    coutput.print_debug("{TITLE} [{VALUE}]".format(TITLE="bits_per_sample", VALUE=fileInfo['bits_per_sample']))
-    coutput.print_debug("{TITLE} [{VALUE}]".format(TITLE="channels", VALUE=fileInfo['channels']))
-
-    for loopIndex in range (0, loopCount):
-        # Syntax: init(frequency=22050, size=-16, channels=2, buffer=4096)
-        pygame.mixer.init()
-        #pygame.mixer.init(frequency=long(float(fileInfo['sample_rate'])), channels=int(fileInfo['channels']))
-
-        coutput.print_debug("Executing pygame.mixer.music.load")
-        pygame.mixer.music.load(fileName)
-
-        coutput.print_debug("Executing pygame.mixer.music.play")
-        pygame.mixer.music.play()
-        while pygame.mixer.music.get_busy() == True:
-            continue
-        time.sleep(0.06)            # introduce delay to ensure that the end of the audio is not clipped during playback
+        coutput.print_debug("Executing mediainfo")
+        fileInfo = mediainfo(fileName)
         
-        coutput.print_debug("Executing pygame.mixer.stop")
-        pygame.mixer.stop()
-        coutput.print_debug("Executing pygame.mixer.quit")
-        pygame.mixer.quit()
+        coutput.print_watcher("fileName")
+        coutput.print_watcher("fileInfo['sample_rate']")
+        coutput.print_watcher("fileInfo['bits_per_sample']")
+        coutput.print_watcher("fileInfo['channels']")
 
-        if loopIndex != (loopCount - 1):
-            time.sleep(loopDelaySec)
+        for loopIndex in range (0, loopCount):
+            # Syntax: init(frequency=22050, size=-16, channels=2, buffer=4096)
+            pygame.mixer.init()
+            #pygame.mixer.init(frequency=long(float(fileInfo['sample_rate'])), channels=int(fileInfo['channels']))
 
-    set_audio_output('auto')
+            coutput.print_debug("Executing pygame.mixer.music.load")
+            pygame.mixer.music.load(fileName)
+
+            coutput.print_debug("Executing pygame.mixer.music.play")
+            pygame.mixer.music.play()
+            while pygame.mixer.music.get_busy() == True:
+                continue
+            time.sleep(0.06)            # introduce delay to ensure that the end of the audio is not clipped during playback
+            
+            coutput.print_debug("Executing pygame.mixer.stop")
+            pygame.mixer.stop()
+            coutput.print_debug("Executing pygame.mixer.quit")
+            pygame.mixer.quit()
+
+            if loopIndex != (loopCount - 1):
+                time.sleep(loopDelaySec)
+
+        set_audio_output('auto')
+    except:
+        coutput.print_err("Unable to play audio from " + fileName)
 
 
 def play_url(connectionPool, sourceURL, audioOutput, loopCount, loopDelay):
 
-    coutput.print_debug("Executing set_audio_output")
-    set_audio_output(audioOutput)
+    try:
+        coutput.print_debug("Executing set_audio_output")
+        set_audio_output(audioOutput)
 
-    if '.mp3' in sourceURL or '.wav' in sourceURL:
-        tempFileName = "dlfile_ts{TIMESTAMP}_rnd{RAND}.tmp".format(TIMESTAMP=time.strftime("%Y%m%d%H%M%S"), RAND=str(uuid.uuid4()))
-        download(connectionPool, sourceURL, tempFileName)
-        play(tempFileName, audioOutput, loopCount, loopDelay)
-        delete(tempFileName)
-    else:
-        coutput.print_err("ERROR: Unable to play audio from " + sourceURL)
+        if '.mp3' in sourceURL or '.wav' in sourceURL:
+            tempFileName = "dlfile_ts{TIMESTAMP}_rnd{RAND}.tmp".format(TIMESTAMP=time.strftime("%Y%m%d%H%M%S"), RAND=str(uuid.uuid4()))
+            download(connectionPool, sourceURL, tempFileName)
+            play(tempFileName, audioOutput, loopCount, loopDelay)
+            delete(tempFileName)
+        else:
+            coutput.print_err("Unable to play audio from " + sourceURL)
 
-    set_audio_output('auto')
+        set_audio_output('auto')
+    except:
+        coutput.print_err("Unable to play audio from " + sourceURL)
 
 
 def stream_wav(sourceURL, audioOutput):
