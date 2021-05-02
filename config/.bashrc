@@ -2,11 +2,14 @@
 alias off="sudo poweroff"
 alias py="sudo python"
 
-export REPO_NAME=py3-raspi
+export BASH_SOURCE=$(dirname "${BASH_SOURCE[0]}")
+export REPO_PATH=`echo $BASH_SOURCE | grep -o '^.*projects'`
+export REPO_NAME=`echo $BASH_SOURCE | sed 's/^.*projects\///g' | sed 's/\/.*//g'`
 
-if [ -d "$HOME/projects/${REPO_NAME}" ] ; then
+
+if [ -d "${REPO_PATH}/${REPO_NAME}" ] ; then
     
-    export REPO_ROOT=$HOME/projects/${REPO_NAME}
+    export REPO_ROOT=${REPO_PATH}/${REPO_NAME}
 fi
 
 # file maintenance
