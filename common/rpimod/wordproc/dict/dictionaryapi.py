@@ -387,7 +387,7 @@ class SimplifiedWordEntry(object):
                 else:
                     if override != DICT_UNICODE_EMPTY_STR:
                         overrideDefinitions.append(override)
-
+          
             # Process info lines
             for key in overrideInfo:
                 if key == '#!Etymology':
@@ -405,9 +405,11 @@ class SimplifiedWordEntry(object):
 
                 elif key == '#!Respelling':
                     if self.respelling is None:
-                        self.respelling = WordRespelling(overrideInfo[key], overrideInfo['#!Source'])
+                        #self.respelling = WordRespelling(overrideInfo[key], overrideInfo['#!Source'])
+                        self.respelling = WordRespelling(overrideInfo[key], source)
                     else:
-                        self.respelling.source = self.respelling.source + ';' + overrideInfo['#!Source']
+                        #self.respelling.source = self.respelling.source + ';' + overrideInfo['#!Source']
+                        self.respelling.source = self.respelling.source + ';' + source
                         self.respelling.text = overrideInfo[key]
                     
                     if '#!Word' in overrideInfo.keys():
