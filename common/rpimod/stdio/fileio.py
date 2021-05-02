@@ -17,6 +17,7 @@ import re
 import logging
 from datetime import datetime
 from pathlib import Path
+import platform
 
 sys.path.insert(0, "../../..")
 import common.rpimod.stdio.output as coutput
@@ -26,9 +27,21 @@ from pydub.utils import mediainfo
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 import pygame
 
+
 # Set to True to turn debug messages on
 #APP_DEBUG_MODE_ENABLED = True
 APP_DEBUG_MODE_ENABLED = False
+
+
+################################################################
+# Configuration
+################################################################
+
+alsaAudioOutputConfig = {
+    'JMQuad' : { 'speaker': 'plughw:0,0', 'hdmi': 'plughw:0,7', 'auto': ''},
+    'RaspberryPi' : { 'speaker': '', 'hdmi': '', 'auto': ''}
+}
+
 
 ################################################################
 # File handlers
@@ -130,20 +143,38 @@ def display_write_file(outputFile, outputText):
 ################################################################
 
 def set_audio_output(audioOutput):
+    # Reference:
+    # https://wiki.archlinux.org/index.php/Advanced_Linux_Sound_Architecture/Troubleshooting#HDMI_Output_does_not_work
+
+    '''
     if audioOutput.lower() == 'hdmi':
         os.system("amixer -q cset numid=3 2")
     elif audioOutput.lower() == 'speaker':
         os.system("amixer -q cset numid=3 1")
     elif audioOutput.lower() == 'auto':
         os.system("amixer -q cset numid=3 0")
+    '''
+
+    pass
+
+def get_audio_output(audioOutput):
+    # Reference:
+    # https://wiki.archlinux.org/index.php/Advanced_Linux_Sound_Architecture/Troubleshooting#HDMI_Output_does_not_work
+
+    coutput.print_watcher("alsaAudioOutputConfig")
+    coutput.print_watcher("platform.node()")
+    coutput.print_watcher("audioOutput.lower()")
+    coutput.print_watcher("alsaAudioOutputConfig[platform.node()][audioOutput.lower()]")
+    return alsaAudioOutputConfig[platform.node()][audioOutput.lower()]
 
 
-def play(fileName, audioOutput, loopCount, loopDelaySec):
+def play_legacy(fileName, audioOutput, loopCount, loopDelaySec):
     # Reference:
     # https://www.pygame.org/docs/ref/mixer.html#pygame.mixer.init
     # http://techqa.info/programming/question/27745134/how-can-i-extract-the-metadata-and-bitrate-info-from-a-audio/video-file-in-python
 
     try:
+        #Enable for RaspberryPi
         coutput.print_debug("Executing set_audio_output")
         set_audio_output(audioOutput)
 
@@ -180,6 +211,34 @@ def play(fileName, audioOutput, loopCount, loopDelaySec):
         set_audio_output('auto')
     except:
         coutput.print_err("Unable to play audio from " + fileName)
+        coutput.print_watcher("sys.exc_info()")
+
+
+def play(fileName, audioOutput, loopCount, loopDelaySec):
+    # Reference:
+    # https://realpython.com/playing-and-recording-sound-python/#playing-audio-files
+    # https://askubuntu.com/questions/115369/how-to-play-mp3-files-from-the-command-line
+    # https://www.ffmpeg.org/ffplay.html
+    # https://www.ffmpeg.org/ffmpeg-devices.html#Examples-8
+    # Use aplay -L to find audio output device. e.g. HDMI is plughw
+
+    playCommand = "ffmpeg -f alsa {outputdevice} -loglevel quiet -i {filename} 2>/dev/null".format(outputdevice=get_audio_output(audioOutput), filename=fileName)
+
+    try:
+
+        coutput.print_watcher("fileName")
+
+        for loopIndex in range (0, loopCount):
+            coutput.print_debug("Executing play")
+            coutput.print_watcher("playCommand")
+            os.system(playCommand)
+
+            if loopIndex != (loopCount - 1):
+                time.sleep(loopDelaySec)
+
+    except:
+        coutput.print_err("Unable to play audio from " + fileName)
+        coutput.print_watcher("sys.exc_info()")
 
 
 def play_url(connectionPool, sourceURL, audioOutput, loopCount, loopDelay):
