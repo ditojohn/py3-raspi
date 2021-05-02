@@ -1,11 +1,11 @@
-Latin;"f" is used in Latin for the /f/ sound (NOT "ph");fringe,fluoride,infinity,finery,fiddlehead,flora,infantry,foil,infrequently,filmscript,inferior,defer,confection,curfew,fatality,benefit,referendum,flamingo,profane,portfolio
-Latin;"c" represents the /k/ sound (NOT "k");compromise,catch,product,coppernose,contract,unicorn,convention,sect,constrict,compound,declaim,recant,dislocated,reactant,radical,companion,modicum,retrospective,anticlimax,cortex,percolate,incumbency,capitol,recto,ventricle
-Latin;"c" can have a soft sound representing /s/ sound before "e", "i", and "y";replacements,fiercest,perchance,facial,bracelet,ace,cancel,decent,precipitate,circulate,adjacent,civics,celebrate
-Latin;"g" can have a soft sound representing /g/ sound "e", "i", and "y";general,fringe,gentle,regency,gentry,preengagement,germinate,refuge,argentine,generate
+Latin;"f" is used in Latin for the \f\ sound (NOT "ph");fringe,fluoride,infinity,finery,fiddlehead,flora,infantry,foil,infrequently,filmscript,inferior,defer,confection,curfew,fatality,benefit,referendum,flamingo,profane,portfolio
+Latin;"c" represents the \k\ sound (NOT "k");compromise,catch,product,coppernose,contract,unicorn,convention,sect,constrict,compound,declaim,recant,dislocated,reactant,radical,companion,modicum,retrospective,anticlimax,cortex,percolate,incumbency,capitol,recto,ventricle
+Latin;"c" can have a soft sound representing \s\ sound before "e", "i", and "y";replacements,fiercest,perchance,facial,bracelet,ace,cancel,decent,precipitate,circulate,adjacent,civics,celebrate
+Latin;"g" can have a soft sound representing \g\ sound "e", "i", and "y";general,fringe,gentle,regency,gentry,preengagement,germinate,refuge,argentine,generate
 Latin;"i" is a very common connecting vowel and used frequently for the schwa sound;gravimetric,polarimetric,animation,administer,omnipotent,auditorium,obstinate,nominee,marinate,ventilate,infidel,ordinary,plentiful,omnivorous,meditate,herbivore,sacrifice,omnilegent,inanimate
-Latin;"‐tion" for /shUHn/ sound, "‐sion" for /zhUHn/ sound;devotions,mention,division,invention,operation,nonintervention,conversion,convulsion,subversion,explosion,lamentation
+Latin;"‐tion" for \shUHn\ sound, "‐sion" for \zhUHn\ sound;devotions,mention,division,invention,operation,nonintervention,conversion,convulsion,subversion,explosion,lamentation
 Latin;double letters can be common;confess,mission,bulletin,approve,access,appoint,alleviate,drilling,subshell,cellular,college,missive,truffled,attuned,litter,gullet,respell,posttest,volley,immediately,corrupt,disapprove,anniversary,offensive,oppress,connote,narrative,accommodate,collapse,missile,acceptance,polluted,illiteracy,rebellion,collision
-Latin;"tu" represents the /ch/ sound, usually preceding a "u";mutual,ritual,rupture,impetuous,prematurely
-Latin;"sc" can also represent the /s/ sound;scent,muscle,discipline
-Latin;"s" can represent the /zh/ sound when surrounded by two vowels;measure,season
-Latin;"u" is very common, always used to spell /oo/ and /yoo/ sound;June,lunatic,menu,vascular,studious,granule,formula,cellular,singular,pupil,bugle,articulate,mural,mucous,duple,ridiculous,jurisprudence,mercurial,peruse,petunia,prelude,capsule,turbulence,unique,refugee,duplex,dilute
+Latin;"tu" represents the \ch\ sound, usually preceding a "u";mutual,ritual,rupture,impetuous,prematurely
+Latin;"sc" can also represent the \s\ sound;scent,muscle,discipline
+Latin;"s" can represent the \zh\ sound when surrounded by two vowels;measure,season
+Latin;"u" is very common, always used to spell \oo\ and \yoo\ sound;June,lunatic,menu,vascular,studious,granule,formula,cellular,singular,pupil,bugle,articulate,mural,mucous,duple,ridiculous,jurisprudence,mercurial,peruse,petunia,prelude,capsule,turbulence,unique,refugee,duplex,dilute

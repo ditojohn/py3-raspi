@@ -5,5 +5,5 @@ Japanese;long e at end of word is spelled as e;Kamikaze,momme,mume
 Japanese;long i is spelled as ai;bonsai,yamamai,mai,samurai,banzai,haikai,shintai,aikido,kaiseki
 Japanese;long o is spelled as o;mikado,pachinko,koto,miso,odori,genro,gyokuro,judo,kendo,mondo,sumo,tenno,dojo,zendo,gingko
 Japanese;"oo" as in ooze at the end of word is spelled as u;chanoyu,Bunraku,ayu,kudzu,haiku,hokku,shiatsu,zaibatsu,tofu,ansu,kwazoku,maru,Gagaku
-Japanese;/k/ is spelled as k;kakemono,bugaku,kana,kimono,haiku
+Japanese;\k\ is spelled as k;kakemono,bugaku,kana,kimono,haiku
 Japanese;schwa at end of word is spelled as a;ikebana,ama,katana,geisha,sayonara,kana,mana,ninja,soba

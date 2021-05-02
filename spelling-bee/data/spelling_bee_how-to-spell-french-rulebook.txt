@@ -2,7 +2,7 @@ French;long a is spelled as e or é;carburetor,elite,regime,dégringolade,decoup
 French;long a is spelled as ez;suivez,rendezvous,oyez
 French;long a at end of word is spelled as et;sachet,crochet,duvet,parquet,beignet,gourmet,chalet,ricochet,buffet,ballet,valet,piolet
 French;long a at end of word is spelled as e/ee or é/ée;café,macrame,abbé,entrée,matinee,melee
-French;/y/ + long a at end of word is spelled as ier;dossier,costumier,atelier,cahier,espalier,métier,pompier,tapissier,douanier
+French;\y\ + long a at end of word is spelled as ier;dossier,costumier,atelier,cahier,espalier,métier,pompier,tapissier,douanier
 French;long e at end of word is spelled as ee;fricassee,marquee
 French;long e at end of word is spelled as ie;papeterie,japonaiserie,bourgeoisie,menagerie,bijouterie,minauderie,jalousie,batterie,gaucherie,gaminerie,coterie,fourberie,sortie
 French;long i is spelled as aille;rocaille,trouvaille,grisaille
@@ -10,24 +10,24 @@ French;long o is spelled as aut;auteur,soubresaut,hauteur,sauterne
 French;long o is spelled as eau;eau,beau,trousseau,nouveau,chapeau,gateau,jambeau,plateau,heaume
 French;long o is spelled as eaux (plural of words ending in -eau);bordereaux,tableaux,Watteaux,morceaux
 French;long o is spelled as au;mauve,taupe,paupiette,gaufrette,soubresaut
-French;/et/ is spelled as ette;banquette,estafette,layette,croquette,fanchonette,blanquette,lorgnette,noisette,marionette,pirouette
-French;Exception to: /et/ is spelled as ette;baronet,motet,annulet,coronet,flageolet,martinet,bayonet
+French;\et\ is spelled as ette;banquette,estafette,layette,croquette,fanchonette,blanquette,lorgnette,noisette,marionette,pirouette
+French;Exception to: \et\ is spelled as ette;baronet,motet,annulet,coronet,flageolet,martinet,bayonet
 French;"ahzh" at end of word is spelled as age;fuselage,garage,camouflage,sabotage,dressage,bavardage,espionage,persiflage,barrage,montage,maquillage,triage,vernissage
 French;"odd" at end of word is spelled as ade;facade,croustade,ballade,chamade,persillade,glissade,roulade,levade
 French;"air" at end of word is spelled as aire;doctrinaire,billionaire,legionnaire,solitaire,luminaire
 French;"oo" as in ooze is spelled as ou;soufflé,boudoir,coup,bouquet,loupe,boutique,rouge,soubriquet,bouffant,bouillon,moulage,tourlourou,bijou,froufrou,rouleau
 French;"oo" as in ooze is spelled as u;fondu,ecru,fichu,impromptu,menu,ormolu,parvenu,tutu
 French;"oo" as in ooze is spelled as ieu;lieu,bondieuserie,purlieu,lieutenant,milieu
-French;/sh/ at beginning of word is spelled as ch;chagrin,chablis,chevaline,chaise
-French;/sh/ at beginning of word is spelled as sh;shallot,shalloon,shako,shagreen
-French;/sh/ at end of word is spelled as che;gobemouche,brioche,cache,demarche,gauche,louche,panache,quiche,seiche,parfleche,potiche
-French;/k/ at end of word is spelled as que;antique,grotesque,cinque,technique,mosque,arabesque,boutique,pique,claque,roque,clique
-French;/g/ at end of word is spelled as gue;gigue,vogue,morgue,intrigue,fugue,fatigue,colleague,plague
+French;\sh\ at beginning of word is spelled as ch;chagrin,chablis,chevaline,chaise
+French;\sh\ at beginning of word is spelled as sh;shallot,shalloon,shako,shagreen
+French;\sh\ at end of word is spelled as che;gobemouche,brioche,cache,demarche,gauche,louche,panache,quiche,seiche,parfleche,potiche
+French;\k\ at end of word is spelled as que;antique,grotesque,cinque,technique,mosque,arabesque,boutique,pique,claque,roque,clique
+French;\g\ at end of word is spelled as gue;gigue,vogue,morgue,intrigue,fugue,fatigue,colleague,plague
 French;"el" at end of word is spelled as elle;gazelle,mademoiselle,nacelle,belle,chandelle,jumelle
 French;Exception to: "el" at end of word is spelled as elle (A few words are spelled as el);noel,morel
-French;schwa + /l/ is spelled as el;bevel,estoppel,camel,cancel,caramel,enamel,gravel,kennel
-French;/w/ + "oz" is spelled as oise;ardoise,dacquoise,bourgeoise,nicoise,reboise,genoise
-French;/n/ + /y/ is spelled as gn;beignet,rognon,chignon,espagnole,vigneron,guignol,vignette,poignant,lorgnette,seigneur,champignon
-French;/n/ + /w/ is spelled as gnoi;baignoire,peignoir
-French;schwa + /r/ is spelled as eur (Also see note on er/-re and -orl-our);friseur,persifleur,jongleur,auteur,flaneur,fleuron,tiqueur
+French;schwa + \l\ is spelled as el;bevel,estoppel,camel,cancel,caramel,enamel,gravel,kennel
+French;\w\ + "oz" is spelled as oise;ardoise,dacquoise,bourgeoise,nicoise,reboise,genoise
+French;\n\ + \y\ is spelled as gn;beignet,rognon,chignon,espagnole,vigneron,guignol,vignette,poignant,lorgnette,seigneur,champignon
+French;\n\ + \w\ is spelled as gnoi;baignoire,peignoir
+French;schwa + \r\ is spelled as eur (Also see note on er/-re and -orl-our);friseur,persifleur,jongleur,auteur,flaneur,fleuron,tiqueur
 French;"il" at end of word is spelled as ille;coquille,escadrille,quadrille

@@ -2,19 +2,19 @@ Afrikaans;familiarize yourself with distinct letter combinations in words;uintji
 Arabic;long e is sometimes spelled ih;mihrab,ihram,faqih,tasbih,Lihyanic
 Arabic;many words are spelled more or less as they sound;mancala,masjid,kemancha,albetad,azoth,bejel
 Arabic;there is sometimes a silent h;madhab,dhimmi,dhikr,dukhn,fellagha
-Eskimo;/k/ is almost always spelled k;Eskimo,komatik,manak,kooletah,muktuk,anorak,kamik,makluk,kashim
-Eskimo;/k/ is sometimes spelled q;qiviut
+Eskimo;\k\ is almost always spelled k;Eskimo,komatik,manak,kooletah,muktuk,anorak,kamik,makluk,kashim
+Eskimo;\k\ is sometimes spelled q;qiviut
 Hawaiian;there are no silent letters such as the e;hole
 Hawaiian;the only consonants used are h, k, l, m, n, p,and w;hole
 Hawaiian;consonants are never doubled;hole
 Hawaiian;the last letter is always a vowel;hole
 Hebrew;a final "ah" sound and a final schwa sound are often spelled ah;bedikah,genizah,menorah,aliyah,takkanah,bamah,amidah,Asherah,neilah,taharah,parashah,gezerah,hashkabah,Jeremiah,kapparah,Jonah,kabbalah,mizpah,messiah
 Hebrew;double consonants seem relatively common;hosanna,kibbutz,shibboleth,Gehenna,akkum,kiddush,bikkurim,kapparah,kinnor,gabbai,koppa,messiah,hallel,Perizzite,rabbi,sabbath,shittah,takkanah,viddui
-Hungarian;/s/ can occasionally be spelled s or tz but is nearly always sz;tzigane,Kuvasz,Lisztian,puszta,szaibelyite,veszelyite,szmikite,Szekler
-Polish;/v/ is usually spelled with a w;kujawiak,krakowiak
-Polish;/k/ is usually spelled with a k;kielbasa,babka,oberek
-Russian;/k/ is usually spelled with a k;tokamak,apparatchik,zolotnik,bolshevik,chinovnik,gopak,gudok,kulak,obrok,sputnik,kurgan
-Russian;/k/ is sometimes spelled with a ck;cossack
-Russian;/k/ + schwa is usually spelled ka;babushka,burka,perestroika,balalaika,chastushka,nagaika,troika
-Scandinavian;Many borrowed Old Norse words contain the consonant group /sk/, which is still spelled sk as it was in Old Norse;skid,skin,skip,skirl,skirt,skulk,skull,sky
-Scandinavian;Exception: Some Old Norse words that had the consonant group /sk/ took a detour when they landed in present day English and their /sk/ sounds were spelled sc;scab,scale,score,scrape,scowl,scrimp
+Hungarian;\s\ can occasionally be spelled s or tz but is nearly always sz;tzigane,Kuvasz,Lisztian,puszta,szaibelyite,veszelyite,szmikite,Szekler
+Polish;\v\ is usually spelled with a w;kujawiak,krakowiak
+Polish;\k\ is usually spelled with a k;kielbasa,babka,oberek
+Russian;\k\ is usually spelled with a k;tokamak,apparatchik,zolotnik,bolshevik,chinovnik,gopak,gudok,kulak,obrok,sputnik,kurgan
+Russian;\k\ is sometimes spelled with a ck;cossack
+Russian;\k\ + schwa is usually spelled ka;babushka,burka,perestroika,balalaika,chastushka,nagaika,troika
+Scandinavian;Many borrowed Old Norse words contain the consonant group \sk\, which is still spelled sk as it was in Old Norse;skid,skin,skip,skirl,skirt,skulk,skull,sky
+Scandinavian;Exception: Some Old Norse words that had the consonant group \sk\ took a detour when they landed in present day English and their \sk\ sounds were spelled sc;scab,scale,score,scrape,scowl,scrimp

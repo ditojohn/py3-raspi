@@ -3,13 +3,13 @@ Italian;long e at end of word is spelled as i;spaghetti,salami,macaroni,perciate
 Italian;long e at end of word is spelled as e;minestrone,torrone,fettuccelle,schiavone,brillante,campanile,canzone,pococurante,monte,lazzarone,pallone,panettone
 Italian;long e + long o at end of word is spelled as io;impresario,atrio,punctilio,arpeggio,nuncio,oratorio,pistachio,studio,capriccio,intaglio
 Italian;long o at end of word is spelled as o;alto,bravo,crescendo,bambino,fiasco,motto,maestro,libretto,largo,ghetto,graffito,inferno,incognito,palmetto,pesto,piano,piccolo,capriccioso,prosciutto,Reggio,soprano,tremolo,zero,amaretto
-Italian;/y/ + long o at end of word is spelled as io;imbroglio,intaglio,bardiglio,latticinio,preludio,verdicchio
+Italian;\y\ + long o at end of word is spelled as io;imbroglio,intaglio,bardiglio,latticinio,preludio,verdicchio
 Italian;"eenie" at end of word is spelled as ini;rappini,spiedini,ditalini,spaghettini,zucchini,tortellini
-Italian;/ch/ is spelled as cc;breccia,carpaccio,capriccio,fettuccelle,mostaccioli,focaccia,fettuccine
-Italian;/k/ before schwa or long o is spelled as cc;beccafico,spiccato,squacco,zocco,zoccolo,zacco,stucco,piccolo
-Italian;/k/ before schwa,short a,or long o is spelled as c;cantata,pecorino,cambio,campanile,magnifico,giocoso,pococurante
-Italian;/k/ before long e,short e,or long a is spelled as ch;chianti,chiaroseuro,marchesa
-Italian;/ts/ is spelled as zz;pizza,intermezzo,mozzarella,palazzo,pizzicato
-Italian;/ny/ is spelled as gn;agnolotti,signorina,Bolognese,malmignatte
-Italian;/sk/ before long or short e is spelled as sch;maraschino,scherzo
+Italian;\ch\ is spelled as cc;breccia,carpaccio,capriccio,fettuccelle,mostaccioli,focaccia,fettuccine
+Italian;\k\ before schwa or long o is spelled as cc;beccafico,spiccato,squacco,zocco,zoccolo,zacco,stucco,piccolo
+Italian;\k\ before schwa,short a,or long o is spelled as c;cantata,pecorino,cambio,campanile,magnifico,giocoso,pococurante
+Italian;\k\ before long e,short e,or long a is spelled as ch;chianti,chiaroseuro,marchesa
+Italian;\ts\ is spelled as zz;pizza,intermezzo,mozzarella,palazzo,pizzicato
+Italian;\ny\ is spelled as gn;agnolotti,signorina,Bolognese,malmignatte
+Italian;\sk\ before long or short e is spelled as sch;maraschino,scherzo
 Italian;schwa at end of word is spelled as a;regatta,bravura,buffa,camorra,durezza,fughetta,saltimbocca,sonatina,toccata,cantata,ocarina,piazza

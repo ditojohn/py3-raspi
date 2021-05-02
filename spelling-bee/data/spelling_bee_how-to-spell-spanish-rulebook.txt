@@ -1,12 +1,12 @@
 Spanish;long a is spelled as e;ceja,rejoneador,zarzuela,coleta,capeador,sevillana
-Spanish;/g/ + long a is spelled as gue;vargueno,malaguena
+Spanish;\g\ + long a is spelled as gue;vargueno,malaguena
 Spanish;long a at end of word is spelled as e/é;suerte,padre,atole,baile,compadre,guanche,infante,jarabe,olé,jefe,molave,norte,pinche,sucre,tiple,hombre,amole,bisagre
 Spanish;long e at end of word is spelled as i;bonaci,Bribri,caji,guazuti,houvari,javali,mani,macabi,tecali,zemi,aguaji
 Spanish;long e at end of word is spelled as e;vigilante,amole,adobe,bisagre,casabe,cenote,jinete,chapote,chayote,mole,monte,pinole,rosinante,timbe,Apache,hombre
 Spanish;long e followed by "yuh"/"yoh" is spelled as illa/illo;banderilla,mantilla,tortilla,blanquillo,piloncillo,tomatillo
 Spanish;long o is spelled as o;desperado,pronto,rodeo,Latino,amigo,concho,diablo,gazpacho,tango,zocalo
-Spanish;/h/ is spelled as j;jicama,junta,aparejo,rejoneador,jacal
-Spanish;/k/ is spelled as c;cabana,cacao,cordovan,hurricane,cafeteria,cantina
-Spanish;/k/ is spelled as qu;ronquil,quiaquia,quinta,vaquero
+Spanish;\h\ is spelled as j;jicama,junta,aparejo,rejoneador,jacal
+Spanish;\k\ is spelled as c;cabana,cacao,cordovan,hurricane,cafeteria,cantina
+Spanish;\k\ is spelled as qu;ronquil,quiaquia,quinta,vaquero
 Spanish;"kay" is spelled as que;quesadilla,quebrada,quebracho
 Spanish;schwa at end of word is spelled as a;bonanza,bodega,hacienda,cabana,junta,plaza,fajita,chinchilla

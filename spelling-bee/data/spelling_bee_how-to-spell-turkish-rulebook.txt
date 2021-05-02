@@ -1,5 +1,5 @@
 Turkish;long e at end of word is spelled as i;vali,Azeri,raki,effendi,kasseri
 Turkish;long i is spelled as ai;taiga,Bairam,serai
-Turkish;/k/ is spelled as c;canun,caza
-Turkish;/k/ is spelled as k;kilim,altilik,kismet,Mamluk,palanka,sanjak,moussaka,kasseri
-Turkish;/k/ is spelled as kh;khagan,khilafat,tarkhan
+Turkish;\k\ is spelled as c;canun,caza
+Turkish;\k\ is spelled as k;kilim,altilik,kismet,Mamluk,palanka,sanjak,moussaka,kasseri
+Turkish;\k\ is spelled as kh;khagan,khilafat,tarkhan

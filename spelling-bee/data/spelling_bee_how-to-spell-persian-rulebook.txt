@@ -1,6 +1,6 @@
 Persian;long e at end of word is spelled as i;abbasi,Kabuli,kusti,tangi,Turki
-Persian;/g/ is spelled as g;idgah
-Persian;/g/ is spelled as gh;ispaghul,ghorkhar
-Persian;/k/ is spelled as c;calean,carboy,caravan
-Persian;/k/ is spelled as k;abkar,kamboh,kusti,Kabuli,karez,kran
-Persian;/k/ is spelled as kh;Bakhtiari,dakhma,farsakh,ghorkhar,nakhoda
+Persian;\g\ is spelled as g;idgah
+Persian;\g\ is spelled as gh;ispaghul,ghorkhar
+Persian;\k\ is spelled as c;calean,carboy,caravan
+Persian;\k\ is spelled as k;abkar,kamboh,kusti,Kabuli,karez,kran
+Persian;\k\ is spelled as kh;Bakhtiari,dakhma,farsakh,ghorkhar,nakhoda

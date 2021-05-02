@@ -1,9 +1,9 @@
 Greek;"y" is very common;tyrant,hydrate,canopy,strategy,catalytic,apology,dynamic,hydra,trilogy
 Greek;"o" is the common connecting vowel and used frequently for the schwa sound;zoology,stoma,biotic,exobiology,hormone,microwave,cosmos,deprogram,exotic,heroine,isobath,hydroperiod,hippopotamus,defectoscope,plutology,benthograph,acronym,biopsy,climatologist
 Greek;Exception to: "o" is the common connecting vowel and used frequently for the schwa sound (due to Latin origin);quadricycle
-Greek;"ch" for the /k/ sound;school,scholar,schedule,orchestra,arachnid,echoed,character
-Greek;"ph" for the /f/ sound;videography,phase,demography,photic,prophet,benthograph,apostrophe
-Greek;Exception to: "ph" for the /f/ sound;videography,phase,demography,photic,prophet,benthograph,apostrophe
-Greek;Exception to: "ph" for the /f/ sound (due to Latin origin);defectoscope
+Greek;"ch" for the \k\ sound;school,scholar,schedule,orchestra,arachnid,echoed,character
+Greek;"ph" for the \f\ sound;videography,phase,demography,photic,prophet,benthograph,apostrophe
+Greek;Exception to: "ph" for the \f\ sound;videography,phase,demography,photic,prophet,benthograph,apostrophe
+Greek;Exception to: "ph" for the \f\ sound (due to Latin origin);defectoscope
 Greek;"th" is common;orthodontic,mathematics,enthusiasm,isobath,thermal,theology,misanthropy,benthograph
 Greek;many words are formed from two root words;antibiotic,videography,diamagnetic,orthodontic,diabetic,television,diatomic,deprogram,epidemic,telepathic,polygon,isobath,catalytic,hippopotamus,diagnosis,agnostic,quadricycle

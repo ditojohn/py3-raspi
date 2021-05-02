@@ -1,7 +1,7 @@
 Latin;long e at end of plural noun is spelled as ae (many of these words can also be pronounced with a long i);algae,larvae,antennae
 Latin;long i at end of plural noun is spelled as i (some of these words can also be pronounced with a long e);magi,fungi,cacti,alumni
 Latin;"oo" (as in ooze) is spelled as u;recluse,revolution,nucleus,rumor,affluent,ruin
-Latin;/y/ + "oo" (as in ooze) is spelled as u;commute,acute,municipal,nucleus,diffuse,tunic,deduce,cumulus
-Latin;/y/ + schwa ("yuh") is spelled as u;deciduous,cellular,cumulus,argument,accurate
-Latin;/gz/ is spelled as x;exist,exhume,auxiliary,exaggerate,exonerate,exhaust,examine
-Latin;/k/ is spelled as c;candidate,execute,proclaim,constitution,college,locate,facsimile
+Latin;\y\ + "oo" (as in ooze) is spelled as u;commute,acute,municipal,nucleus,diffuse,tunic,deduce,cumulus
+Latin;\y\ + schwa ("yuh") is spelled as u;deciduous,cellular,cumulus,argument,accurate
+Latin;\gz\ is spelled as x;exist,exhume,auxiliary,exaggerate,exonerate,exhaust,examine
+Latin;\k\ is spelled as c;candidate,execute,proclaim,constitution,college,locate,facsimile
